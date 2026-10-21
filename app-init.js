@@ -1,4 +1,4 @@
-const FIREBASE_CONFIG={apiKey:"AIzaSyCtYc8uZICLzQrA1b7l00Yo_9V_rqNVOu0",authDomain:"mds-visit.firebaseapp.com",projectId:"mds-visit",storageBucket:"mds-visit.firebasestorage.app",messagingSenderId:"732603054928",appId:"1:732603054928:web:9f946bfa13d56d860a8a55"};
+const FIREBASE_CONFIG={apiKey:"AIzaSyDO3IzpBcP9VT5cL7QT4RlK_a9jpGS0Yvo",authDomain:"displaywowsulawesi.firebaseapp.com",projectId:"displaywowsulawesi",storageBucket:"displaywowsulawesi.firebasestorage.app",messagingSenderId:"430961661167",appId:"1:430961661167:web:fa6ae3497bb336a4bc771a"};
 function initFirebaseApp(){
   try{
     firebase.initializeApp(FIREBASE_CONFIG);

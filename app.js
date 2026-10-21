@@ -23814,7 +23814,7 @@ function resetRka(){
 /* ═══════════════════════════════════════
    VALIDASI DISPLAY WOW
 ═══════════════════════════════════════ */
-const WOW = { step:0, area:'', mds:'', date:'', store:'', storePasangan:'', keterangan:'', photo:null, photoUpload:null, uploadDone:false, items:{} };
+const WOW = { step:0, area:'', mds:'', date:'', store:'', storePasangan:'', keterangan:'', photo:null, photoUpload:null, uploadDone:false, items:{}, photos:[null,null,null], uploads:[null,null,null], done:[true,true,true] };
 let WOW_CUSTOM_STORES=[];
 (function(){try{WOW_CUSTOM_STORES=JSON.parse(localStorage.getItem('mds_wow_custom_stores')||'[]');}catch(e){}})();
 function wowCustomName(s){ return typeof s==='string'?s:s.name; }
@@ -23898,7 +23898,7 @@ function wowGetItems(){
   return ns.concat(hilo,ts);
 }
 function initWow(){
-  Object.assign(WOW,{step:0,area:'',mds:'',date:'',store:'',storePasangan:'',photo:null,photoUpload:null,uploadDone:false,items:{}});
+  Object.assign(WOW,{step:0,area:'',mds:'',date:'',store:'',storePasangan:'',photo:null,photoUpload:null,uploadDone:false,items:{},photos:[null,null,null],uploads:[null,null,null],done:[true,true,true]});
   const as=document.getElementById('wow-area-sel');
   as.innerHTML='<option value="">— Pilih Area —</option>';
   AREAS.forEach(n=>{ const o=document.createElement('option'); o.value=n; o.textContent=n; as.appendChild(o); });
@@ -24025,7 +24025,7 @@ function wowCheck(step){
     const val=document.getElementById('wow-store-input').value.trim();
     ok=val!=='';
   } else if(step===2){
-    ok=!!WOW.photo&&WOW.uploadDone;
+    ok=!!WOW.photos[0]&&WOW.done.every(Boolean);
   } else if(step===3){
     const ITEMS=wowGetItems();
     const checked=Object.values(WOW.items).filter(v=>v!==null&&v!==undefined).length;
@@ -24093,26 +24093,27 @@ function setWowItem(i,v){
   row.querySelectorAll('.tgl')[2].classList.toggle('on',v==='perlu');
   wowCheck(3);
 }
-function handleWowPhoto(){
-  const file=document.getElementById('wow-cam0').files[0];
+function handleWowPhoto(i){
+  i=i||0;
+  const file=document.getElementById('wow-cam'+i).files[0];
   if(!file) return;
   const reader=new FileReader();
   reader.onload=e=>{
     const src=e.target.result;
-    WOW.photo=src;
-    document.getElementById('wow-pview0').src=src;
-    document.getElementById('wow-pzone0').classList.add('shot');
+    WOW.photos[i]=src;
+    document.getElementById('wow-pview'+i).src=src;
+    document.getElementById('wow-pzone'+i).classList.add('shot');
     const now=new Date();
     document.getElementById('wow-dt-txt').textContent=
       now.toLocaleDateString('id-ID')+' · '+now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
     document.getElementById('wow-dt').classList.remove('hidden');
-    WOW.uploadDone=false;
+    WOW.done[i]=false;
     wowCheck(2);
-    const _st=document.getElementById('wow-upstatus0');
+    const _st=document.getElementById('wow-upstatus'+i);
     if(_st)_st.textContent='⬆ Kompres...';
-    WOW.photoUpload=compressAndUpload(src)
-      .then(b64=>{if(_st)_st.textContent='✅ Siap';WOW.uploadDone=true;wowCheck(2);return b64;})
-      .catch(e=>{if(_st)_st.textContent='⚠️ Gagal';WOW.uploadDone=true;wowCheck(2);throw e;});
+    WOW.uploads[i]=compressAndUpload(src)
+      .then(b64=>{if(_st)_st.textContent='✅ Siap';WOW.done[i]=true;wowCheck(2);return b64;})
+      .catch(e=>{if(_st)_st.textContent='⚠️ Gagal';WOW.done[i]=true;WOW.photos[i]=null;wowCheck(2);throw e;});
   };
   reader.readAsDataURL(file);
 }
@@ -24135,8 +24136,10 @@ async function submitWow(){
   if(WOW.storePasangan){ pasRow.classList.remove('hidden'); document.getElementById('wow-sm-pasangan').textContent=WOW.storePasangan; }
   else pasRow.classList.add('hidden');
 
-  let photoB64=null;
-  try{ if(WOW.photoUpload) photoB64=await WOW.photoUpload; }catch(e){console.warn('compress failed',e);}
+  const PH=[];
+  for(let i=0;i<3;i++){try{PH[i]=WOW.uploads[i]?await WOW.uploads[i]:null;}catch(e){console.warn('compress failed',e);PH[i]=null;}}
+  const photoB64=PH[0]||null;
+  const nFoto=PH.filter(Boolean).length;
 
   document.getElementById('wow-sm-status').textContent='⏳ Menyimpan...';
   document.getElementById('wow-sm-foto').textContent=photoB64?'⏳ foto...':'—';
@@ -24151,9 +24154,9 @@ async function submitWow(){
     const _tout=new Promise((_,r)=>setTimeout(()=>r(new Error('Tersimpan offline — akan sinkron otomatis saat sinyal bagus')),30000));
     const _ITEMS=wowGetItems();
     const _namedItems={};Object.entries(WOW.items).forEach(([i,v])=>{const it=_ITEMS[+i];if(it)_namedItems[it.name]=v;});
-    await withFirestoreRetry(()=>Promise.race([db.collection('wow_logs').add({id,area:WOW.area,mds:WOW.mds,store:WOW.store,...(WOW.storePasangan?{storePasangan:WOW.storePasangan}:{}),tanggalVisit:WOW.date,timestamp:firebase.firestore.FieldValue.serverTimestamp(),avail,unavail,needsval,items:_namedItems,...(photoB64?{photoData:photoB64}:{})}),_tout]));
+    await withFirestoreRetry(()=>Promise.race([db.collection('wow_logs').add({id,area:WOW.area,mds:WOW.mds,store:WOW.store,...(WOW.storePasangan?{storePasangan:WOW.storePasangan}:{}),tanggalVisit:WOW.date,timestamp:firebase.firestore.FieldValue.serverTimestamp(),avail,unavail,needsval,items:_namedItems,...(PH[0]?{photoData:PH[0]}:{}),...(PH[1]?{photoData2:PH[1]}:{}),...(PH[2]?{photoData3:PH[2]}:{})}),_tout]));
     document.getElementById('wow-sm-status').textContent='✅ Tersimpan ke server';
-    document.getElementById('wow-sm-foto').textContent=photoB64?'✅ 1 foto':'—';
+    document.getElementById('wow-sm-foto').textContent=nFoto?'✅ '+nFoto+' foto':'—';
   }catch(e){
     console.warn('Firestore wow failed',e);
     const offline=String(e.message).includes('offline');
@@ -24163,10 +24166,8 @@ async function submitWow(){
   }
 }
 function resetWow(){
-  Object.assign(WOW,{step:0,area:'',mds:'',date:'',store:'',storePasangan:'',photo:null,photoUpload:null,uploadDone:false,items:{}});
-  document.getElementById('wow-pzone0').classList.remove('shot');
-  document.getElementById('wow-pview0').src='';
-  document.getElementById('wow-cam0').value='';
+  Object.assign(WOW,{step:0,area:'',mds:'',date:'',store:'',storePasangan:'',photo:null,photoUpload:null,uploadDone:false,items:{},photos:[null,null,null],uploads:[null,null,null],done:[true,true,true]});
+  [0,1,2].forEach(i=>{document.getElementById('wow-pzone'+i).classList.remove('shot');document.getElementById('wow-pview'+i).src='';document.getElementById('wow-cam'+i).value='';});
   document.getElementById('wow-dt').classList.add('hidden');
   document.getElementById('wow-area-sel').value='';
   document.getElementById('wow-mds-sel').value='';

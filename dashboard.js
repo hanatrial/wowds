@@ -63,12 +63,12 @@ const NS_JP_KEY  = 'NS JERUK PERAS PLS';
 const NS_ASO_KEY = 'NS AMERICAN SWEET ORANGE PLS';
 
 var db;
-try{const FB={apiKey:"AIzaSyCtYc8uZICLzQrA1b7l00Yo_9V_rqNVOu0",authDomain:"mds-visit.firebaseapp.com",projectId:"mds-visit",storageBucket:"mds-visit.firebasestorage.app",messagingSenderId:"732603054928",appId:"1:732603054928:web:9f946bfa13d56d860a8a55"};
+try{const FB={apiKey:"AIzaSyDO3IzpBcP9VT5cL7QT4RlK_a9jpGS0Yvo",authDomain:"displaywowsulawesi.firebaseapp.com",projectId:"displaywowsulawesi",storageBucket:"displaywowsulawesi.firebasestorage.app",messagingSenderId:"430961661167",appId:"1:430961661167:web:fa6ae3497bb336a4bc771a"};
 firebase.initializeApp(FB);
 db=firebase.firestore();}catch(e){console.warn("Firebase init failed",e);}
 
 var dbSulawesi;
-try{const FB2={apiKey:"AIzaSyCA8Q8athqYIsY3By5wPxcU97GjDBR6DAs",authDomain:"mds-sulawesi.firebaseapp.com",projectId:"mds-sulawesi",storageBucket:"mds-sulawesi.firebasestorage.app",messagingSenderId:"511949021685",appId:"1:511949021685:web:bc32007af0555449e7c0bc"};
+try{const FB2={apiKey:"AIzaSyDO3IzpBcP9VT5cL7QT4RlK_a9jpGS0Yvo",authDomain:"displaywowsulawesi.firebaseapp.com",projectId:"displaywowsulawesi",storageBucket:"displaywowsulawesi.firebasestorage.app",messagingSenderId:"430961661167",appId:"1:430961661167:web:fa6ae3497bb336a4bc771a"};
 const sulawesiApp=firebase.initializeApp(FB2,"sulawesi");
 dbSulawesi=sulawesiApp.firestore();}catch(e){console.warn("Firebase (sulawesi) init failed",e);}
 
@@ -933,7 +933,7 @@ async function fetchPhotoData(coll,docId){
    The SDK has no field masks, but the Firestore REST API does — so on mobile we list
    these two collections over REST with an explicit field mask that simply never
    includes photoData. The photos are then fetched one at a time, on demand. */
-const FS_PROJECT='mds-visit', FS_KEY='AIzaSyCtYc8uZICLzQrA1b7l00Yo_9V_rqNVOu0';
+const FS_PROJECT='displaywowsulawesi', FS_KEY='AIzaSyDO3IzpBcP9VT5cL7QT4RlK_a9jpGS0Yvo';
 const RKA_FIELDS=['id','timestamp','mds','area','store','avail','unavail','items'];
 const BELI_FIELDS=['id','timestamp','mds','area','store','nominal','totalRenceng','groupTotals','itemQty'];
 function fsVal(v){
@@ -3197,6 +3197,7 @@ function toggleWowDetail(tr,vid){
   });
   let html=`<td colspan="99" style="padding:6px 16px 12px;background:${ov(1)};border-top:none">`;
   if(r.photoData){
+    [r.photoData2,r.photoData3].forEach((p,k)=>{if(p)html+=`<div style="margin:0 0 10px;max-width:160px"><div style="font-size:8px;color:var(--t3);margin-bottom:3px;text-transform:uppercase;letter-spacing:.08em">Foto ${k+2}</div><img src="${p}" style="width:100%;border-radius:8px;border:1px solid var(--border);object-fit:cover;aspect-ratio:4/3;cursor:zoom-in" onclick="this.style.maxWidth=this.style.maxWidth?'':'none';this.style.width=this.style.width==='auto'?'100%':'auto'"></div>`;});
     html+=`<div style="margin-bottom:10px;max-width:160px"><div style="font-size:8px;color:var(--t3);margin-bottom:3px;text-transform:uppercase;letter-spacing:.08em">Foto Hanger</div><img src="${r.photoData}" style="width:100%;border-radius:8px;border:1px solid var(--border);object-fit:cover;aspect-ratio:4/3;cursor:zoom-in" onclick="this.style.maxWidth=this.style.maxWidth?'':'none';this.style.width=this.style.width==='auto'?'100%':'auto'"></div>`;
   }
   ['NS','HILO','TS'].forEach(brand=>{

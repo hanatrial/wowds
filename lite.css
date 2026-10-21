@@ -57,3 +57,5 @@ body::before,body::after{display:none!important;}
 @media(max-width:640px){.tb-brands img{height:18px;}.tb-brands{gap:10px;}}
 [class*="kpi"],[class*="card"],.filter-shell,.filter-inner,.topbar,.main-nav{background-image:none!important;}
 [class*="kpi"],[class*="card"]{background-color:var(--bg2)!important;}
+/* tanpa tambah toko baru */
+#wow-store-box,[onclick*="wow-store-box"]{display:none!important;}

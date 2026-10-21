@@ -91,7 +91,7 @@
       <!-- Step 2: Photo -->
       <div class="step-section" id="wow-s2">
         <div class="s-title">Foto Pajangan Hanger</div>
-        <div class="s-sub">Ambil foto pajangan hanger di toko</div>
+        <div class="s-sub">Ambil foto pajangan hanger di toko (maksimal 3 foto, minimal 1)</div>
         <div class="photo-zone" id="wow-pzone0" onclick="trigCam('wow-cam0')">
           <div class="ph-placeholder">
             <div class="ph-icon">📷</div>
@@ -102,7 +102,29 @@
           <div class="ph-upstatus" id="wow-upstatus0">⬆ Uploading...</div>
           <div class="ph-retake">↺ Ganti Foto</div>
         </div>
-        <input type="file" id="wow-cam0" accept="image/*" capture="environment" onchange="handleWowPhoto()">
+        <input type="file" id="wow-cam0" accept="image/*" capture="environment" onchange="handleWowPhoto(0)">
+        <div class="photo-zone" id="wow-pzone1" onclick="trigCam('wow-cam1')">
+          <div class="ph-placeholder">
+            <div class="ph-icon">📷</div>
+            <div class="ph-lbl">Foto 2 (opsional)</div>
+            <div class="ph-sub">Tap untuk buka kamera</div>
+          </div>
+          <img class="ph-preview" id="wow-pview1" alt="">
+          <div class="ph-upstatus" id="wow-upstatus1">⬆ Uploading...</div>
+          <div class="ph-retake">↺ Ganti Foto</div>
+        </div>
+        <input type="file" id="wow-cam1" accept="image/*" capture="environment" onchange="handleWowPhoto(1)">
+        <div class="photo-zone" id="wow-pzone2" onclick="trigCam('wow-cam2')">
+          <div class="ph-placeholder">
+            <div class="ph-icon">📷</div>
+            <div class="ph-lbl">Foto 3 (opsional)</div>
+            <div class="ph-sub">Tap untuk buka kamera</div>
+          </div>
+          <img class="ph-preview" id="wow-pview2" alt="">
+          <div class="ph-upstatus" id="wow-upstatus2">⬆ Uploading...</div>
+          <div class="ph-retake">↺ Ganti Foto</div>
+        </div>
+        <input type="file" id="wow-cam2" accept="image/*" capture="environment" onchange="handleWowPhoto(2)">
         <div class="dt-pill hidden" id="wow-dt">📅 <span id="wow-dt-txt"></span></div>
       </div>
 
