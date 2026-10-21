@@ -16,6 +16,7 @@ const SHEET_ID = '1uSwNeozmwTrfQuR40-D-L4zYXj-OAI8-Uy7tasIqmkY';
 const GID_TOKO = '0';             // tab "Database" (tab pertama)
 const GID_KAB = '1403688639';      // tab "Database Kabupaten"
 const FILE = path.join(__dirname, '..', 'wow_toko_master.js');
+const JANJI = path.join(__dirname, '..', '.wow-berubah'); // penanda "ada data berubah, belum di-push"
 const DRY = process.argv.includes('--dry');
 
 const norm = (s) => String(s == null ? '' : s).replace(/\s+/g, ' ').trim();
@@ -200,6 +201,7 @@ function bacaLama() {
   const berubah = isiBaru !== isiLama;
   if (!berubah) {
     console.log('Tidak ada perubahan — file dibiarkan.');
+    if (!DRY) fs.rmSync(JANJI, { force: true });
     return;
   }
   if (DRY) {
@@ -207,6 +209,7 @@ function bacaLama() {
     return;
   }
   fs.writeFileSync(FILE, isiBaru);
+  fs.writeFileSync(JANJI, JSON.stringify({ tgl: new Date().toISOString(), toko: urutan.length, pic: picUrut.length }));
   console.log('Ditulis: wow_toko_master.js');
 })().catch((e) => {
   console.error('GAGAL: ' + e.message);

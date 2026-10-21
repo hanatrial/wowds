@@ -72,24 +72,43 @@ if [ $RC -ne 0 ]; then
 fi
 [ "$MODE" = "--dry" ] && { log "SELESAI (dry)"; exit 0; }
 
-# 2. Commit + push kalau ada perubahan
-if git diff --quiet -- wow_toko_master.js; then
-  if [ "$MODE" != "--force" ]; then
-    log "Tidak ada perubahan data — tidak push"
-    exit 0
-  fi
-  log "Tidak ada perubahan, tapi --force: cek apakah ada commit tertunda"
+# 2. Commit + push kalau ada perubahan.
+#    Sumber kebenaran = isi file vs commit terakhir. Penanda .wow-berubah dipakai
+#    sebagai cadangan kalau data yang ditulis ternyata sama (tidak perlu di-commit),
+#    dan dihapus hanya sesudah push berhasil.
+BELUM_TERKIRIM=$(git rev-list --count origin/main..HEAD)
+ADA_PERUBAHAN=0
+if [ -f .wow-berubah ]; then
+  ADA_PERUBAHAN=1
+  log "  data diperbarui: $(cat .wow-berubah)"
+fi
+if ! git diff --quiet -- wow_toko_master.js; then
+  ADA_PERUBAHAN=1
 fi
 
+if [ "$ADA_PERUBAHAN" -eq 0 ] && [ "$BELUM_TERKIRIM" -eq 0 ] && [ "$MODE" != "--force" ]; then
+  rm -f .wow-berubah
+  log "Tidak ada perubahan data — tidak push"
+  exit 0
+fi
+
+# commit hanya kalau memang ada beda nyata yang belum di-commit
 if ! git diff --quiet -- wow_toko_master.js; then
   git add wow_toko_master.js
-  git -c user.name="hanatrial" -c user.email="hanatrial@users.noreply.github.com" \
-      commit -q -m "Update database WOW $(date '+%F')" || { log "GAGAL commit"; exit 1; }
-  log "  commit dibuat: Update database WOW $(date '+%F')"
+  if git -c user.name="hanatrial" -c user.email="hanatrial@users.noreply.github.com" \
+      commit -q -m "Update database WOW $(date '+%F')"; then
+    log "  commit dibuat: Update database WOW $(date '+%F')"
+  else
+    log "GAGAL commit"
+    exit 1
+  fi
+else
+  log "Isi file sama dengan commit terakhir — tidak ada yang perlu di-commit"
 fi
 
-# masih ada commit yang belum terkirim?
-if [ "$MODE" = "--force" ] || ! git diff --quiet origin/main -- wow_toko_master.js; then
+# masih ada yang belum terkirim?
+BELUM_TERKIRIM=$(git rev-list --count origin/main..HEAD)
+if [ "$MODE" = "--force" ] || [ "$BELUM_TERKIRIM" -gt 0 ]; then
   if [ -n "${GITHUB_TOKEN:-}" ]; then
     OUT=$(git push "https://x-access-token:${GITHUB_TOKEN}@github.com/hanatrial/wowds.git" HEAD:main 2>&1); RC=$?
   else
@@ -97,11 +116,13 @@ if [ "$MODE" = "--force" ] || ! git diff --quiet origin/main -- wow_toko_master.
   fi
   echo "$OUT" | while IFS= read -r line; do log "  $line"; done
   if [ $RC -ne 0 ]; then
-    log "GAGAL push (exit $RC)"
+    log "GAGAL push (exit $RC) — data baru masih tersimpan lokal, dicoba lagi di jadwal berikutnya"
     exit $RC
   fi
+  rm -f .wow-berubah
   log "SELESAI — terkirim ke https://github.com/hanatrial/wowds"
 else
+  rm -f .wow-berubah
   log "Sudah sinkron dengan origin/main — tidak perlu push"
 fi
 exit 0
