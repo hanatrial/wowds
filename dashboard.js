@@ -1078,7 +1078,7 @@ function loadAll(){
     render();
   }).catch(e=>console.error('spg_daily_logs FAILED',e.code,e.message));
   // ringan: baca lewat REST tanpa kolom foto; foto diambil saat baris dibuka
-  if(has('sec-wow')||has('sec-insight'))wowLoadLogs().then(list=>{
+  if(has('sec-wow')||has('sec-insight')||has('sec-real'))wowLoadLogs().then(list=>{
     WOW_ALL=list.map(v=>({...wowRenameVisit(wowRenameItems(v)),photoData:true}));
     WOW_ALL.sort((a,b)=>b.timestamp-a.timestamp);
     render();
@@ -1462,7 +1462,7 @@ function wowRenameVisit(v){
 }
 function switchTab(t){
   TAB=t;
-  ['rka','beli','stock','pjmds','formula','ned','spg','wow','insight','sales','combo'].forEach(x=>{
+  ['rka','beli','stock','pjmds','formula','ned','spg','wow','insight','sales','combo','real'].forEach(x=>{
     const el=document.getElementById('ntab-'+x);
     if(el){el.classList.toggle('on',x===t);el.classList.toggle(x,true);}
   });
@@ -1477,6 +1477,7 @@ function switchTab(t){
   const si=document.getElementById('sec-insight');if(si)si.style.display=t==='insight'?'block':'none';
   const ssl=document.getElementById('sec-sales');if(ssl)ssl.style.display=t==='sales'?'block':'none';
   const scb=document.getElementById('sec-combo');if(scb)scb.style.display=t==='combo'?'block':'none';
+  const srl=document.getElementById('sec-real');if(srl)srl.style.display=t==='real'?'block':'none';
   render();
 }
 function switchSubTab(main,sub){
@@ -1594,6 +1595,8 @@ function render(){
     renderWowSales();
   }else if(TAB==='combo'){
     renderWowCombo();
+  }else if(TAB==='real'){
+    renderWowReal();
   }
 }
 
@@ -4965,4 +4968,91 @@ function wsSvgDumbbell(o){
 // bar 100% bertumpuk (HTML): rows [{l,parts:[{v,c,t}]}]
 function wsStack100(rows,legend){
   return '<div class="ws-leg">'+legend.map(x=>'<span><i style="background:'+x.c+'"></i>'+x.t+'</span>').join('')+'</div><div class="st100">'+rows.map(r=>{const tot=r.parts.reduce((a,p)=>a+p.v,0)||1;return '<div class="st-row"><span class="st-l">'+wsEsc(r.l)+(r.s?'<small>'+wsEsc(r.s)+'</small>':'')+'</span><span class="st-b">'+r.parts.map(p=>'<i style="width:'+(p.v/tot*100).toFixed(1)+'%;background:'+p.c+'" title="'+wsEsc(p.t)+': '+p.v+'">'+(p.v/tot>=0.09?Math.round(p.v/tot*100)+'%':'')+'</i>').join('')+'</span></div>';}).join('')+'</div>';
+}
+
+
+// ═══ REALISASI: kode, nama kedai, kabupaten, foto kunjungan terakhir ═══
+let REAL_SEL=new Set(),REAL_HIDE_CANCEL=true,REAL_ITEMS=[];
+function wrKey(t){return t.pic+'|'+t.name;}
+function wrLoadLib(url,test){return new Promise((ok,err)=>{if(test()){ok();return;}const sc=document.createElement('script');sc.src=url;sc.onload=()=>test()?ok():err(new Error('lib'));sc.onerror=()=>err(new Error('lib'));document.head.appendChild(sc);});}
+function wrSafe(x,max){return String(x==null?'':x).replace(/[\\/:*?"<>|\r\n\t]+/g,' ').replace(/\s+/g,' ').trim().slice(0,max||70)||'-';}
+function wrBase(it){return wrSafe(it.t.k1||it.t.k2||'tanpa-kode',30)+' - '+wrSafe(wowSides(it.t.name,it.t.pair)[0]||wowSides(it.t.name,it.t.pair)[1]||it.t.name,70)+' - '+wrSafe(it.t.kab||'tanpa-kabupaten',30);}
+function wrItems(){
+  const gf=(document.getElementById('f-mds')||{}).value||'',gk=(document.getElementById('f-area')||{}).value||'',gs=((document.getElementById('f-store')||{}).value||'').trim().toLowerCase();
+  if(!gf||typeof WOW_TOKO_MASTER==='undefined')return [];
+  const lastV={};WOW_ALL.slice().sort((a,b)=>a.timestamp-b.timestamp).forEach(r=>{lastV[String(r.store).trim().toUpperCase()]=r;});
+  let l=WOW_TOKO_MASTER.filter(t=>t.pic===gf&&(!gk||t.kab===gk)&&(!gs||String(t.name).toLowerCase().includes(gs)||String(t.pair||'').toLowerCase().includes(gs)||String(t.k1||'').toLowerCase().includes(gs)||String(t.k2||'').toLowerCase().includes(gs)));
+  if(REAL_HIDE_CANCEL)l=l.filter(t=>t.st!=='Cancel');
+  return l.map(t=>({t,v:lastV[String(t.name).trim().toUpperCase()]||(t.pair?lastV[String(t.pair).trim().toUpperCase()]:null)||null})).sort((a,b)=>(b.v?1:0)-(a.v?1:0)||String(a.t.kab||'').localeCompare(String(b.t.kab||''))||a.t.name.localeCompare(b.t.name));
+}
+function wrToggle(k){if(REAL_SEL.has(k))REAL_SEL.delete(k);else REAL_SEL.add(k);renderWowReal();}
+function wrAll(){REAL_ITEMS.forEach(it=>{if(it.v)REAL_SEL.add(wrKey(it.t));});renderWowReal();}
+function wrNone(){REAL_SEL.clear();renderWowReal();}
+function wrHide(v){REAL_HIDE_CANCEL=!!v;renderWowReal();}
+async function wrPhotos(it){
+  if(!it.v)return [];
+  if(it.v.photoData===true)await fetchWowPhotos(it.v);
+  return [it.v.photoData,it.v.photoData2,it.v.photoData3].filter(x=>x&&typeof x==='string'&&x.startsWith('data:'));
+}
+function wrDl(href,name){const a=document.createElement('a');a.href=href;a.download=name;document.body.appendChild(a);a.click();a.remove();}
+async function wrShow(i){
+  const it=REAL_ITEMS[i];const row=document.getElementById('wr-ph-'+i);if(!row)return;
+  if(row.dataset.open==='1'){row.dataset.open='0';row.innerHTML='';row.style.display='none';return;}
+  row.style.display='';row.dataset.open='1';row.innerHTML='<td colspan="7" class="wr-phc">Memuat foto…</td>';
+  const ph=await wrPhotos(it);
+  row.innerHTML='<td colspan="7" class="wr-phc">'+(ph.length?ph.map((p,k)=>'<img src="'+p+'" alt="foto '+(k+1)+'" onclick="this.classList.toggle(\'big\')">').join('')+'<button class="ins-exp" onclick="wrDlOne('+i+')">⬇ Unduh '+ph.length+' foto</button>':'<span class="wu-nil">Tidak ada foto pada kunjungan terakhir.</span>')+'</td>';
+}
+async function wrDlOne(i){const it=REAL_ITEMS[i];const ph=await wrPhotos(it);const b=wrBase(it);ph.forEach((p,k)=>wrDl(p,b+(ph.length>1?' ('+(k+1)+')':'')+'.jpg'));}
+function wrSelItems(){return REAL_ITEMS.filter(it=>REAL_SEL.has(wrKey(it.t)));}
+function wrCopy(){
+  const l=wrSelItems();if(!l.length){alert('Pilih toko dulu.');return;}
+  const txt=['Kode Dist 1\tKode Dist 2\tNama Kedai\tKabupaten\tPIC\tStatus'].concat(l.map(it=>[it.t.k1||'',it.t.k2||'',wowSides(it.t.name,it.t.pair).filter(Boolean).join(' / '),it.t.kab||'',it.t.pic,it.t.st||''].join('\t'))).join('\n');
+  (navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>alert(l.length+' toko disalin. Tempel ke WA, email, atau Excel.')).catch(()=>{const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');alert(l.length+' toko disalin.');}catch(e){alert('Gagal menyalin.');}ta.remove();});
+}
+async function wrZip(btn){
+  const l=wrSelItems();if(!l.length){alert('Pilih toko dulu.');return;}
+  const old=btn.textContent;btn.disabled=true;
+  try{
+    btn.textContent='Menyiapkan…';
+    await ensureXlsx();
+    await wrLoadLib('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js',()=>typeof JSZip!=='undefined');
+    const zip=new JSZip();const fol=zip.folder('foto');
+    const rows=[['No','PIC','Kode Dist 1','Kode Dist 2','Nama Outlet 1','Nama Outlet 2','Kabupaten','Status','Distributor','Kunjungan terakhir','Jumlah foto','Nama berkas foto']];
+    for(let i=0;i<l.length;i++){
+      const it=l[i];btn.textContent='Foto '+(i+1)+'/'+l.length+'…';
+      const ph=await wrPhotos(it);const b=wrBase(it);const names=[];
+      ph.forEach((p,k)=>{const nm=b+(ph.length>1?' ('+(k+1)+')':'')+'.jpg';fol.file(nm,p.split(',')[1],{base64:true});names.push(nm);});
+      const sd=wowSides(it.t.name,it.t.pair);
+      rows.push([i+1,it.t.pic,it.t.k1||'',it.t.k2||'',sd[0],sd[1],it.t.kab||'',it.t.st||'',it.t.d||'',it.v&&it.v.timestamp?it.v.timestamp.toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'}):'',ph.length,names.join(' ; ')]);
+    }
+    const ws=XLSX.utils.aoa_to_sheet(rows);ws['!cols']=[5,12,16,16,44,40,22,10,18,18,10,60].map(w=>({wch:w}));
+    const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Realisasi');
+    zip.file('realisasi.xlsx',XLSX.write(wb,{type:'array',bookType:'xlsx'}));
+    btn.textContent='Membuat ZIP…';
+    const blob=await zip.generateAsync({type:'blob'});
+    const url=URL.createObjectURL(blob);wrDl(url,'realisasi_'+wrSafe(l[0].t.pic,20)+'_'+new Date().toISOString().slice(0,10)+'.zip');setTimeout(()=>URL.revokeObjectURL(url),30000);
+  }catch(e){alert('Gagal membuat ZIP: '+(e.message||e));}
+  btn.textContent=old;btn.disabled=false;
+}
+function renderWowReal(){
+  const box=document.getElementById('wow-real');if(!box)return;
+  const gf=(document.getElementById('f-mds')||{}).value||'';
+  if(!gf){box.innerHTML='<div class="ins-empty" style="padding:24px 0">Pilih <b>PIC</b> di filter atas untuk menampilkan daftar toko realisasi.</div>';return;}
+  REAL_ITEMS=wrItems();
+  const nV=REAL_ITEMS.filter(x=>x.v).length;
+  const selN=wrSelItems().length;
+  const bar='<div class="wr-bar"><div class="wr-t"><b>'+wsEsc(gf)+'</b> · '+REAL_ITEMS.length+' toko · '+nV+' sudah punya kunjungan (foto)</div><label class="wr-ck"><input type="checkbox" '+(REAL_HIDE_CANCEL?'checked':'')+' onchange="wrHide(this.checked)"> Sembunyikan Cancel</label><button class="ins-exp" onclick="wrAll()">Pilih semua yang ada foto</button><button class="ins-exp" onclick="wrNone()">Kosongkan</button><span class="wr-sp"></span><button class="ins-exp" onclick="wrCopy()">⎘ Salin data ('+selN+')</button><button class="ins-exp wr-primary" onclick="wrZip(this)">⬇ Export ZIP ('+selN+')</button></div>';
+  const head='<tr><th></th><th>Kode</th><th>Nama kedai</th><th>Kabupaten</th><th>Status</th><th>Kunjungan terakhir</th><th>Foto</th></tr>';
+  const body=REAL_ITEMS.map((it,i)=>{
+    const k=wrKey(it.t),sd=wowSides(it.t.name,it.t.pair);
+    const dt=it.v&&it.v.timestamp?it.v.timestamp.toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'}):'';
+    return '<tr><td><input type="checkbox" '+(REAL_SEL.has(k)?'checked ':'')+(it.v?'':'disabled ')+'data-k="'+wsEsc(k)+'" onchange="wrToggle(this.dataset.k)"></td>'
+      +'<td class="wr-kode">'+(it.t.k1?'<b>'+wsEsc(it.t.k1)+'</b>':'<span class="wu-nil">—</span>')+(it.t.k2?'<small>'+wsEsc(it.t.k2)+'</small>':'')+'</td>'
+      +'<td class="wr-nm">'+(sd[0]?'<b>'+wsEsc(sd[0])+'</b>':'')+(sd[1]?'<small>'+wsEsc(sd[1])+'</small>':'')+'</td>'
+      +'<td>'+(it.t.kab?wsEsc(it.t.kab):'<span class="wu-nil">belum diisi</span>')+'</td>'
+      +'<td>'+(it.t.st?'<span class="wu-pill st-'+wsEsc(it.t.st)+'">'+wsEsc(it.t.st)+'</span>':'<span class="wu-nil">—</span>')+'</td>'
+      +'<td>'+(dt||'<span class="wu-nil">belum ada kunjungan</span>')+'</td>'
+      +'<td>'+(it.v?'<button class="wr-ph" onclick="wrShow('+i+')">Lihat foto</button>':'<span class="wu-nil">—</span>')+'</td></tr><tr id="wr-ph-'+i+'" style="display:none" class="wr-phr"></tr>';
+  }).join('');
+  box.innerHTML=bar+'<div class="wu-wrap"><table class="wu-t wr-t">'+'<thead>'+head+'</thead><tbody>'+(body||'<tr><td colspan="7" style="text-align:center;color:var(--t3);padding:28px">Tidak ada toko.</td></tr>')+'</tbody></table></div><p class="ins-note" style="margin-top:10px">Foto diambil dari kunjungan terakhir tiap toko (maksimal 3 foto). ZIP berisi realisasi.xlsx dan folder foto dengan nama berkas “kode - nama kedai - kabupaten”.</p>';
 }

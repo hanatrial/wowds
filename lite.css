@@ -289,3 +289,20 @@ body::before,body::after{display:none!important;}
 .st-b{display:flex;height:24px;border-radius:5px;overflow:hidden;background:var(--bg2);}
 .st-b i{display:flex;align-items:center;justify-content:center;font-style:normal;font-size:10px;font-weight:700;color:#0B2B26;min-width:0;}
 .st-b i:last-child{color:#fff;}
+
+/* realisasi */
+.wr-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px;}
+.wr-t{font-size:13px;color:var(--text);margin-right:8px;}
+.wr-sp{flex:1;}
+.wr-ck{font-size:12px;color:var(--t2);display:flex;align-items:center;gap:5px;}
+.wr-bar .ins-exp{margin-top:0;}
+.wr-primary{background:var(--primary);color:#fff;}
+.wr-primary:hover{background:#235347;}
+.wr-t td{vertical-align:top;}
+.wr-kode b,.wr-nm b{display:block;font-weight:600;}
+.wr-kode small,.wr-nm small{display:block;font-size:11px;color:var(--t3);}
+.wr-ph{border:1px solid var(--border);background:#fff;border-radius:8px;padding:4px 10px;font:inherit;font-size:12px;cursor:pointer;color:var(--primary);}
+.wr-phc{background:var(--bg2);padding:12px!important;}
+.wr-phc img{height:150px;width:auto;border-radius:8px;border:1px solid var(--border);margin:0 8px 8px 0;cursor:zoom-in;vertical-align:top;}
+.wr-phc img.big{height:auto;max-width:100%;cursor:zoom-out;}
+.wr-t input[type=checkbox]{width:16px;height:16px;}
