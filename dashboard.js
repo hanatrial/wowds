@@ -5152,3 +5152,432 @@ function renderWowReal(){
   }).join('');
   box.innerHTML=bar+'<div class="wu-wrap"><table class="wu-t wr-t">'+'<thead>'+head+'</thead><tbody>'+(body||'<tr><td colspan="7" style="text-align:center;color:var(--t3);padding:28px">Tidak ada toko.</td></tr>')+'</tbody></table></div><p class="ins-note" style="margin-top:10px">Foto diambil dari kunjungan terakhir tiap toko (maksimal 3 foto). PDF A4: 3 toko per halaman, berisi nama kedai (dengan SO Group Code dan kabupaten) dan foto display kunjungan terakhir.</p>';
 }
+
+// ══════════════════════════════════════════════════════════════════════════════
+// EXPORT PDF INSIGHT KOMPREHENSIF PER PIC (AV, PENJUALAN, GABUNGAN)
+// ══════════════════════════════════════════════════════════════════════════════
+function openExportInsightPdfModal(){
+  const m=document.getElementById('modal-export-pdf-insight');
+  const sel=document.getElementById('sel-export-pic');
+  if(!m||!sel)return;
+  const curPic=(document.getElementById('f-mds')||{}).value||INS_PIC||'';
+  const picList=typeof WOW_PIC_KAB!=='undefined'?Object.keys(WOW_PIC_KAB).sort():[];
+  sel.innerHTML=picList.map(p=>`<option value="${p}"${p===curPic?' selected':''}>${p}</option>`).join('');
+  m.classList.remove('hidden');
+}
+function closeExportInsightPdfModal(){
+  const m=document.getElementById('modal-export-pdf-insight');
+  if(m)m.classList.add('hidden');
+}
+
+async function generateInsightPdfFromModal(){
+  const sel=document.getElementById('sel-export-pic');
+  const btn=document.getElementById('btn-do-export-pdf');
+  const pic=sel?sel.value:'';
+  if(!pic){alert('Pilih PIC terlebih dahulu.');return;}
+  closeExportInsightPdfModal();
+  await exportInsightPdf(pic,btn);
+}
+
+async function exportInsightPdf(targetPic,btn){
+  let oldText='📄 Export PDF Insight';
+  if(btn){oldText=btn.textContent;btn.disabled=true;btn.textContent='Menyiapkan data…';}
+  try{
+    await wrLoadLib('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',()=>!!(window.jspdf&&window.jspdf.jsPDF));
+    await wrLoadLib('https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js',()=>!!(window.jspdf&&window.jspdf.jsPDF&&window.jspdf.jsPDF.API.autoTable));
+
+    if(typeof WOW_SALES==='undefined'){
+      if(btn)btn.textContent='Memuat data penjualan…';
+      await new Promise(ok=>wsEnsure(ok));
+    }
+    wsNormMaster();
+
+    if(btn)btn.textContent='Menganalisis data '+targetPic+'…';
+
+    const M_SALES=WOW_SALES.m,totalMonths=M_SALES.length;
+    const yrs=M_SALES.map(m=>m.slice(0,4));
+    const Y1=yrs[totalMonths-1],Y0=String(+Y1-1);
+    const idxY0=[],idxY1=[];
+    M_SALES.forEach((m,i)=>{
+      if(m.slice(0,4)===Y0)idxY0.push(i);
+      if(m.slice(0,4)===Y1)idxY1.push(i);
+    });
+    const sameY0=idxY1.map(i=>M_SALES.indexOf(Y0+M_SALES[i].slice(4))).filter(i=>i>=0);
+
+    // Filter toko aktif
+    const activeAll=WOW_SALES.r.filter(r=>r[1]&&!/^(aa|ccsad)$/i.test(r[0])&&r[3]!=='Cancel');
+    const picSales=activeAll.filter(r=>r[1]===targetPic);
+
+    // Kunjungan display terakhir tiap toko (WOW_ALL)
+    const avBy=new Map();
+    const lastVisitByStore={};
+    if(typeof WOW_ALL!=='undefined'&&Array.isArray(WOW_ALL)){
+      WOW_ALL.slice().sort((a,b)=>a.timestamp-b.timestamp).forEach(r=>{
+        if(r.store){
+          lastVisitByStore[String(r.store).trim().toUpperCase()]=r;
+        }
+      });
+      Object.entries(lastVisitByStore).forEach(([k,r])=>{
+        const av=wowInsAv(r.items);
+        avBy.set(k,{t:av.NS[0]+av.HILO[0]+av.TS[0],ns:av.NS[0],hilo:av.HILO[0],ts:av.TS[0],raw:r});
+      });
+    }
+
+    const avOfStore=r=>{
+      const s1=String(r[0]||'').trim().toUpperCase();
+      const s2=r[4]?String(r[4]).trim().toUpperCase():'';
+      return avBy.get(s1)||(s2?avBy.get(s2):null);
+    };
+
+    // ── 1. POSISI PIC DI SULAWESI ──
+    const picAgg={};
+    activeAll.forEach(r=>{
+      const p=r[1];
+      if(!picAgg[p])picAgg[p]={p,toko:0,sv1:0,sv0:0,l3_hilo:0,l3_ns:0,eaLast:0,avSum:0,avN:0};
+      picAgg[p].toko++;
+      idxY1.forEach(i=>picAgg[p].sv1+=r[7][i]);
+      idxY0.forEach(i=>picAgg[p].sv0+=r[7][i]);
+      [totalMonths-3,totalMonths-2,totalMonths-1].forEach(i=>{
+        picAgg[p].l3_hilo+=r[5][i];
+        picAgg[p].l3_ns+=r[6][i];
+      });
+      if(r[7][totalMonths-1]>0)picAgg[p].eaLast++;
+      const av=avOfStore(r);
+      if(av){picAgg[p].avSum+=av.t;picAgg[p].avN++;}
+    });
+
+    const picRankList=Object.values(picAgg).sort((a,b)=>b.sv1-a.sv1);
+    const sulawesiTotalOmzet1=picRankList.reduce((s,x)=>s+x.sv1,0);
+    const picRankIdx=picRankList.findIndex(x=>x.p===targetPic);
+    const mySulData=picRankList[picRankIdx]||{p:targetPic,toko:0,sv1:0,sv0:0,l3_hilo:0,l3_ns:0,eaLast:0,avSum:0,avN:0};
+
+    const myAvg1=idxY1.length?mySulData.sv1/idxY1.length:0;
+    const myAvg0=idxY0.length?mySulData.sv0/idxY0.length:0;
+    const myGrowth=myAvg0?((myAvg1/myAvg0-1)*100):null;
+    const myLineEa3=mySulData.toko?(mySulData.l3_hilo+mySulData.l3_ns)/3/mySulData.toko:0;
+    const myAvgAv=mySulData.avN?(mySulData.avSum/mySulData.avN):null;
+
+    // ── 2. BREAKDOWN PER KABUPATEN PIC ──
+    const kabMap={};
+    picSales.forEach(r=>{
+      const k=wsKabOf(r)||'(kabupaten kosong)';
+      if(!kabMap[k])kabMap[k]={kab:k,toko:0,sv1:0,sv0:0,l3_hilo:0,l3_ns:0,eaLast:0,avSum:0,avN:0,stores:[]};
+      kabMap[k].toko++;
+      kabMap[k].stores.push(r);
+      idxY1.forEach(i=>kabMap[k].sv1+=r[7][i]);
+      sameY0.forEach(i=>kabMap[k].sv0+=r[7][i]);
+      [totalMonths-3,totalMonths-2,totalMonths-1].forEach(i=>{
+        kabMap[k].l3_hilo+=r[5][i];
+        kabMap[k].l3_ns+=r[6][i];
+      });
+      if(r[7][totalMonths-1]>0)kabMap[k].eaLast++;
+      const av=avOfStore(r);
+      if(av){kabMap[k].avSum+=av.t;kabMap[k].avN++;}
+    });
+
+    const kabList=Object.values(kabMap).sort((a,b)=>b.sv1-a.sv1);
+
+    // Toko prioritas perbaikan (AV < 15 & omzet tinggi / aktif)
+    const storesPrioritas=[];
+    const medSulawesiOmzet=(()=>{
+      const v=activeAll.map(r=>idxY1.reduce((s,i)=>s+r[7][i],0)/idxY1.length).sort((a,b)=>a-b);
+      return v.length?v[Math.floor(v.length/2)]:0;
+    })();
+
+    picSales.forEach(r=>{
+      const av=avOfStore(r);
+      const om=idxY1.reduce((s,i)=>s+r[7][i],0)/idxY1.length;
+      if(av&&av.t<15&&om>=medSulawesiOmzet){
+        storesPrioritas.push({store:r[0],kab:wsKabOf(r)||'-',av:av.t,om});
+      }
+    });
+    storesPrioritas.sort((a,b)=>b.om-a.om);
+
+    // ── 3. GENERATE DOKUMEN PDF (A4 PORTRAIT) ──
+    const doc=new window.jspdf.jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+    const PW=210,PH=297,margin=14,CW=PW-2*margin;
+
+    const drawHeader=(title,sub)=>{
+      doc.setFillColor(11,43,38);
+      doc.rect(margin,12,CW,18,'F');
+      doc.setFont('helvetica','bold');
+      doc.setFontSize(13);
+      doc.setTextColor(218,241,222);
+      doc.text(title.toUpperCase(),margin+6,21);
+      doc.setFont('helvetica','normal');
+      doc.setFontSize(8.5);
+      doc.setTextColor(142,182,155);
+      doc.text(sub,margin+6,26);
+
+      // Tanggal cetak
+      const tglStr=new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
+      doc.setFontSize(8);
+      doc.setTextColor(218,241,222);
+      doc.text(tglStr,PW-margin-6,24,{align:'right'});
+    };
+
+    const drawFooter=(pNum,totalP)=>{
+      doc.setFont('helvetica','normal');
+      doc.setFontSize(7.5);
+      doc.setTextColor(120,135,130);
+      doc.text(`Laporan Eksekutif Insight WOW · Area PIC ${targetPic} · Sumber Database Borwita`,margin,PH-8);
+      doc.text(`Halaman ${pNum} dari ${totalP}`,PW-margin,PH-8,{align:'right'});
+    };
+
+    // ══════════════════════════════════════════════════════════════
+    // HALAMAN 1: EXECUTIVE SUMMARY & POSISI PIC DI SULAWESI
+    // ══════════════════════════════════════════════════════════════
+    drawHeader(`Laporan Insight Komprehensif — PIC ${targetPic}`,`Posisi Kompetitif Sulawesi & Ringkasan Eksekutif (Tahun Berjalan ${Y1})`);
+
+    let curY=35;
+
+    // 4 Bento KPI Cards
+    const kpiW=(CW-9)/4;
+    const kpis=[
+      {label:'Peringkat Omzet',val:`#${picRankIdx+1} / ${picRankList.length}`,sub:`Share ${(mySulData.sv1/sulawesiTotalOmzet1*100).toFixed(1)}% Sulawesi`,c:[11,43,38]},
+      {label:`Total Omzet ${Y1}`,val:wsRp(mySulData.sv1,true),sub:`Rata2/bln ${wsRp(myAvg1,true)} (${wsPct(myGrowth)})`,c:[35,83,71]},
+      {label:'Line / EA (3 Bln)',val:myLineEa3.toFixed(2),sub:`Sulawesi Rata2 ${(picRankList.reduce((s,x)=>s+(x.toko?(x.l3_hilo+x.l3_ns)/3/x.toko:0),0)/picRankList.length).toFixed(2)}`,c:[11,43,38]},
+      {label:'Rata-rata AV Display',val:myAvgAv?myAvgAv.toFixed(1)+' item':'—',sub:`${mySulData.avN} / ${mySulData.toko} toko ter-visit`,c:[35,83,71]}
+    ];
+
+    kpis.forEach((k,i)=>{
+      const kx=margin+i*(kpiW+3);
+      doc.setFillColor(245,248,246);
+      doc.roundedRect(kx,curY,kpiW,19,2,2,'F');
+      doc.setFillColor(...k.c);
+      doc.rect(kx,curY,kpiW,2,'F');
+      doc.setFont('helvetica','normal');
+      doc.setFontSize(7.5);
+      doc.setTextColor(90,105,100);
+      doc.text(k.label,kx+4,curY+6);
+      doc.setFont('helvetica','bold');
+      doc.setFontSize(11);
+      doc.setTextColor(11,43,38);
+      doc.text(k.val,kx+4,curY+12);
+      doc.setFont('helvetica','normal');
+      doc.setFontSize(6.5);
+      doc.setTextColor(110,125,120);
+      doc.text(k.sub,kx+4,curY+16);
+    });
+
+    curY+=24;
+
+    // Narasi Analisa Posisi PIC
+    doc.setFillColor(238,245,241);
+    doc.roundedRect(margin,curY,CW,18,2,2,'F');
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(8.5);
+    doc.setTextColor(11,43,38);
+    doc.text(`📌 POSISI PIC ${targetPic} TERHADAP KESELURUHAN SULAWESI:`,margin+4,curY+5);
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(8);
+    doc.setTextColor(30,45,40);
+    const narasi=[
+      `• Memegang ${mySulData.toko} toko aktif (tersebar di ${kabList.length} kabupaten) dengan total penjualan ${wsRp(mySulData.sv1)} pada tahun ${Y1}.`,
+      `• Kontribusi terhadap total sales Sulawesi: ${(mySulData.sv1/sulawesiTotalOmzet1*100).toFixed(1)}% (peringkat ke-${picRankIdx+1} dari ${picRankList.length} PIC). Laju pertumbuhan omzet bulanan rata-rata tercatat ${wsPct(myGrowth)}.`,
+      `• Kualitas kedalaman pajangan display rata-rata mencapai ${myAvgAv?myAvgAv.toFixed(1):'—'} item/toko dengan intensitas transaksi Line/EA sebesar ${myLineEa3.toFixed(2)}.`
+    ];
+    doc.text(narasi[0],margin+4,curY+9);
+    doc.text(narasi[1],margin+4,curY+13);
+    doc.text(narasi[2],margin+4,curY+17);
+
+    curY+=22;
+
+    // Tabel Benchmark Sulawesi Antar PIC
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(9.5);
+    doc.setTextColor(11,43,38);
+    doc.text('Tabel Benchmark Performa PIC Se-Sulawesi',margin,curY);
+    curY+=3;
+
+    const sulTableHead=[['Rank','Nama PIC','Jml Toko',`Total Omzet ${Y1}`,'Rata2 / Bln','Growth YoY','Line/EA','Rata2 AV']];
+    const sulTableBody=picRankList.map((x,idx)=>{
+      const isMe=x.p===targetPic;
+      const av=x.avN?(x.avSum/x.avN).toFixed(1):'—';
+      const a1=x.sv1/idxY1.length;
+      const a0=x.sv0/idxY0.length;
+      const gr=a0?((a1/a0-1)*100):null;
+      const le=x.toko?(x.l3_hilo+x.l3_ns)/3/x.toko:0;
+      return [
+        (idx+1)+(isMe?' ★':''),
+        x.p+(isMe?' (Target)':''),
+        x.toko+' toko',
+        wsRp(x.sv1),
+        wsRp(a1),
+        wsPct(gr),
+        le.toFixed(2),
+        av
+      ];
+    });
+
+    doc.autoTable({
+      startY:curY,
+      head:sulTableHead,
+      body:sulTableBody,
+      theme:'striped',
+      styles:{fontSize:7.5,cellPadding:2,textColor:[30,40,35]},
+      headStyles:{fillColor:[11,43,38],textColor:[255,255,255],fontStyle:'bold'},
+      alternateRowStyles:{fillColor:[248,251,249]},
+      columnStyles:{
+        0:{halign:'center',cellWidth:14},
+        1:{cellWidth:34,fontStyle:'bold'},
+        2:{halign:'right',cellWidth:18},
+        3:{halign:'right',cellWidth:28},
+        4:{halign:'right',cellWidth:25},
+        5:{halign:'right',cellWidth:22},
+        6:{halign:'right',cellWidth:18},
+        7:{halign:'right'}
+      },
+      didParseCell:(data)=>{
+        if(data.section==='body'&&picRankList[data.row.index]?.p===targetPic){
+          data.cell.styles.fillColor=[218,241,222];
+          data.cell.styles.fontStyle='bold';
+        }
+      }
+    });
+
+    drawFooter(1,2);
+
+    // ══════════════════════════════════════════════════════════════
+    // HALAMAN 2: DETAIL BREAKDOWN KABUPATEN & ACTION PLAN
+    // ══════════════════════════════════════════════════════════════
+    doc.addPage();
+    drawHeader(`Analisis Terinci per Kabupaten — PIC ${targetPic}`,`Distribusi Kunjungan AV Display, Penjualan, & Strategi Kuadran`);
+
+    curY=35;
+
+    // Tabel Breakdown Kabupaten
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(9.5);
+    doc.setTextColor(11,43,38);
+    doc.text(`Distribusi Kinerja per Kabupaten (${kabList.length} Kabupaten Terkelola)`,margin,curY);
+    curY+=3;
+
+    const kabTableHead=[['No','Kabupaten','Toko',`Omzet ${Y1}`,'Growth','Line/EA','Rata2 AV','Status Display']];
+    const kabTableBody=kabList.map((k,idx)=>{
+      const avK=k.avN?(k.avSum/k.avN):null;
+      const gr=k.sv0?((k.sv1/k.sv0-1)*100):null;
+      const le=k.toko?(k.l3_hilo+k.l3_ns)/3/k.toko:0;
+      let status='Optimal';
+      if(!avK||avK<15)status='Display Rendah';
+      else if(le<4.5)status='Penjualan Lemah';
+      else if(avK>=30&&le>=6.0)status='Unggulan';
+      return [
+        idx+1,
+        k.kab,
+        k.toko,
+        wsRp(k.sv1),
+        wsPct(gr),
+        le.toFixed(2),
+        avK?avK.toFixed(1)+' item':'Belum visit',
+        status
+      ];
+    });
+
+    doc.autoTable({
+      startY:curY,
+      head:kabTableHead,
+      body:kabTableBody,
+      theme:'striped',
+      styles:{fontSize:7.5,cellPadding:2,textColor:[30,40,35]},
+      headStyles:{fillColor:[35,83,71],textColor:[255,255,255],fontStyle:'bold'},
+      alternateRowStyles:{fillColor:[248,251,249]},
+      columnStyles:{
+        0:{halign:'center',cellWidth:10},
+        1:{cellWidth:42,fontStyle:'bold'},
+        2:{halign:'right',cellWidth:14},
+        3:{halign:'right',cellWidth:28},
+        4:{halign:'right',cellWidth:20},
+        5:{halign:'right',cellWidth:18},
+        6:{halign:'right',cellWidth:24},
+        7:{halign:'center',cellWidth:26}
+      },
+      didParseCell:(data)=>{
+        if(data.section==='body'){
+          const val=data.row.raw[7];
+          if(val==='Display Rendah')data.cell.styles.textColor=[190,50,30];
+          else if(val==='Unggulan')data.cell.styles.textColor=[11,43,38];
+        }
+      }
+    });
+
+    curY=doc.lastAutoTable.finalY+8;
+
+    // Evaluasi Kuadran & Aksi Prioritas Toko
+    doc.setFillColor(245,248,246);
+    doc.roundedRect(margin,curY,CW,26,2,2,'F');
+    doc.setFillColor(11,43,38);
+    doc.rect(margin,curY,CW,1.5,'F');
+
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(8.5);
+    doc.setTextColor(11,43,38);
+    doc.text('🎯 KESIMPULAN ANALISIS GABUNGAN & REKOMENDASI KERJA:',margin+4,curY+5.5);
+
+    // Ambil kabupaten terbesar & terlemah
+    const topKab=kabList[0];
+    const lowKab=kabList.filter(x=>x.toko>=2).sort((a,b)=>a.sv1-b.sv1)[0]||kabList[kabList.length-1];
+
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(7.5);
+    doc.setTextColor(30,45,40);
+
+    const reks=[
+      `1. Tulang Punggung Omzet: Kabupaten ${topKab?.kab||'-'} menyumbang ${topKab?wsRp(topKab.sv1):'-'} (${topKab?(topKab.sv1/mySulData.sv1*100).toFixed(0):0}% total omzet PIC). Pertahankan ketersediaan varian utama NS & HILO.`,
+      `2. Peluang Eksekusi Display: ${storesPrioritas.length} toko teridentifikasi ber-omzet aktif/tinggi namun AV < 15. Ini adalah kantong peningkatan tercepat bila display dirapikan.`,
+      `3. Kabupaten Rawan/Evaluasi: Kabupaten ${lowKab?.kab||'-'} memerlukan pengawalan kunjungan rutin dan aktivasi varian agar Line/EA terdongkrak mendekati target regional.`
+    ];
+
+    doc.text(reks[0],margin+4,curY+10.5);
+    doc.text(reks[1],margin+4,curY+15);
+    doc.text(reks[2],margin+4,curY+19.5);
+
+    curY+=29;
+
+    // Daftar Toko Prioritas Perbaikan (AV Rendah, Omzet Di Atas Median)
+    if(storesPrioritas.length>0&&curY<235){
+      doc.setFont('helvetica','bold');
+      doc.setFontSize(8.5);
+      doc.setTextColor(11,43,38);
+      doc.text(`Toko Prioritas Perbaikan Display (AV < 15, Omzet Di Atas Median) · Maksimal 6 Toko`,margin,curY);
+      curY+=3;
+
+      const prioTableHead=[['Nama Kedai / Toko','Kabupaten','AV Total','Rata-rata Omzet / Bulan','Rekomendasi']];
+      const prioTableBody=storesPrioritas.slice(0,6).map(s=>[
+        s.store,
+        s.kab,
+        s.av+' item',
+        wsRp(s.om),
+        'Perluasan varian NS & HILO segera'
+      ]);
+
+      doc.autoTable({
+        startY:curY,
+        head:prioTableHead,
+        body:prioTableBody,
+        theme:'plain',
+        styles:{fontSize:7,cellPadding:1.8,textColor:[30,40,35]},
+        headStyles:{fillColor:[218,241,222],textColor:[11,43,38],fontStyle:'bold'},
+        alternateRowStyles:{fillColor:[250,252,251]},
+        columnStyles:{
+          0:{cellWidth:70,fontStyle:'bold'},
+          1:{cellWidth:30},
+          2:{halign:'center',cellWidth:18,textColor:[190,50,30],fontStyle:'bold'},
+          3:{halign:'right',cellWidth:30},
+          4:{cellWidth:34}
+        }
+      });
+    }
+
+    drawFooter(2,2);
+
+    const fileName=`Insight_WOW_${wrSafe(targetPic,20)}_${new Date().toISOString().slice(0,10)}.pdf`;
+    doc.save(fileName);
+
+  }catch(err){
+    console.error('exportInsightPdf error',err);
+    alert('Gagal menghasilkan PDF: '+(err.message||err));
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent=oldText;}
+  }
+}
