@@ -194,3 +194,6 @@ body::before,body::after{display:none!important;}
 
 .ins-hm .hm-grp{text-transform:uppercase;letter-spacing:.14em;color:var(--accent);font-size:10px;border-bottom:1px solid var(--border);}
 .ins-hm .hm-tot td,.ins-hm .hm-tot th{font-weight:700;border-top:1px solid var(--border);background:transparent;color:var(--text);}
+
+.ins-exp{margin-top:12px;border:1px solid var(--primary);background:#fff;color:var(--primary);border-radius:10px;padding:9px 14px;font:inherit;font-size:12px;font-weight:600;cursor:pointer;}
+.ins-exp:hover{background:var(--primary);color:#fff;}

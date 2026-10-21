@@ -934,7 +934,7 @@ async function fetchPhotoData(coll,docId){
    these two collections over REST with an explicit field mask that simply never
    includes photoData. The photos are then fetched one at a time, on demand. */
 const FS_PROJECT='displaywowsulawesi', FS_KEY='AIzaSyDO3IzpBcP9VT5cL7QT4RlK_a9jpGS0Yvo';
-const WOW_FIELDS=['id','timestamp','mds','area','store','storePasangan','tanggalVisit','avail','unavail','needsval','items','keterangan','picValidated','statusToko'];
+const WOW_FIELDS=['id','timestamp','mds','area','store','storePasangan','tanggalVisit','avail','unavail','needsval','items','keterangan','picValidated','statusToko','mdsAsli'];
 async function fetchWowPhotos(r){
   try{
     const url=`https://firestore.googleapis.com/v1/projects/${FS_PROJECT}/databases/(default)/documents/wow_logs/${encodeURIComponent(r._docId)}?key=${FS_KEY}&mask.fieldPaths=photoData&mask.fieldPaths=photoData2&mask.fieldPaths=photoData3`;
@@ -4215,7 +4215,7 @@ async function tpDelete(id){
 
 
 // ── INSIGHT Display WOW: AV, item, kabupaten. Visual ringan (bar horizontal, heatmap, takeaways) tanpa pustaka grafik/foto ──
-let INS_MODE='all',INS_PIC='';
+let INS_MODE='all',INS_PIC='',WOW_MATCHA_TDK=[];
 function wowInsSetFilter(v){const f=document.getElementById('f-mds');if(f){f.value=v;wowFilterKab();}}
 function wowInsMode(m){
   INS_MODE=m;
@@ -4300,13 +4300,14 @@ function renderWowInsight(rows){
     (ada?mt.ada:mt.tdk).push(r);
     const g=mPic[r.mds||'—']||(mPic[r.mds||'—']={ada:0,tdk:0});ada?g.ada++:g.tdk++;
   });
+  WOW_MATCHA_TDK=mt.tdk;
   const mTot=mt.ada.length+mt.tdk.length;const mP=wowInsPct(mt.ada.length,mTot);
   const matchaPic=Object.entries(mPic).filter(([k])=>picList.includes(k)).map(([k,g])=>({k,ada:g.ada,n:g.ada+g.tdk,p:wowInsPct(g.ada,g.ada+g.tdk)})).sort((a,b)=>a.p-b.p);
   const secMatcha='<div class="ins-card ins-wide"><h4>HILO Matcha · sudah ada atau belum</h4>'
     +(mTot?'<div class="ins-big"><b>'+mt.ada.length+'</b><span>dari '+mTot+' toko sudah ada <em>('+mP+'%)</em></span><b class="w">'+mt.tdk.length+'</b><span>toko belum ada</span></div>'
       +'<p class="ins-note">Berdasarkan visit terakhir tiap toko'+(mt.blm?' · '+mt.blm+' toko visit terakhirnya belum mencatat item ini':'')+'.</p>'
       +(modePic?'':wowInsBars(matchaPic.map(x=>({l:x.k,v:x.p,t:x.p+'% <small>'+x.ada+'/'+x.n+'</small>',warn:x.p<50})),100))
-      +'<details style="margin-top:10px"><summary>Toko yang belum ada HILO Matcha ('+mt.tdk.length+')</summary><div class="ins-list">'+mt.tdk.slice(0,120).map(r=>wowInsEsc(r.store)+' <em style="color:var(--t3)">· '+wowInsEsc(r.mds)+' · '+wowInsEsc(r.area)+'</em>').join('<br>')+(mt.tdk.length>120?'<br>… +'+(mt.tdk.length-120)+' lagi':'')+'</div></details>'
+      +'<button class="ins-exp" onclick="exportMatchaBelum()">⬇ Export Excel · toko yang belum ada HILO Matcha ('+mt.tdk.length+')</button>'
     :'<div class="ins-empty">Belum ada visit yang mencatat HILO Matcha.</div>')+'</div>';
 
   // AV per PIC (hanya keseluruhan) dan per kabupaten
@@ -4435,3 +4436,14 @@ function wowFilterKab(){
 }
 function wowFilterPic(){wowFilterKab();render();}
 wowFilterFill();
+
+// Export Excel: toko yang belum ada HILO Matcha (nama PIC, nama MDS, nama toko) — mengikuti filter yang aktif
+async function exportMatchaBelum(){
+  const l=WOW_MATCHA_TDK||[];
+  if(!l.length){alert('Tidak ada toko yang belum ada HILO Matcha pada filter ini.');return;}
+  try{await ensureXlsx();}catch(e){alert('Gagal memuat pustaka Excel (XLSX). Cek koneksi lalu coba lagi.');return;}
+  const aoa=[['Nama PIC','Nama MDS','Nama Toko']].concat(l.slice().sort((a,b)=>String(a.mds).localeCompare(String(b.mds))||String(a.store).localeCompare(String(b.store))).map(r=>[r.mds||'',r.mdsAsli||'',r.store||'']));
+  const ws=XLSX.utils.aoa_to_sheet(aoa);ws['!cols']=[{wch:14},{wch:24},{wch:56}];
+  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Belum ada HILO Matcha');
+  XLSX.writeFile(wb,'toko_belum_ada_hilo_matcha_'+new Date().toISOString().slice(0,10)+'.xlsx');
+}
