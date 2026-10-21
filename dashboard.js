@@ -4572,7 +4572,7 @@ function wsSpark(vals){
   return '<svg viewBox="0 0 '+w+' '+h+'" width="'+w+'" height="'+h+'" class="ws-sp"><path d="'+d+'" fill="none" stroke="#235347" stroke-width="1.6"/></svg>';
 }
 function wsEsc(x){return wowInsEsc(x);}
-function wsYoyCls(p){return p==null?'hx':p<-20?'h0':p<0?'h1':p<=10?'h2':p<=30?'h3':'h4';}
+function wsYoyCls(p){return p==null?'hx':p<0?'h0':p<=10?'h2':p<=30?'h3':'h4';}
 
 // ── data ──
 let _wsMasterKab=null;
@@ -4704,7 +4704,7 @@ function renderWowSales(){
   // ── heatmap YoY (PIC x bulan) / (kabupaten x bulan) ──
   const hmGroups=modePic?kabArr.filter(x=>x.toko>=1).sort((a,b)=>b.sv1-a.sv1).slice(0,15).map(x=>({k:x.k,e:x.e})):picArr.map(x=>({k:x.k,e:wsAgg(x.rows,n)})).sort((a,b)=>picList.indexOf(a.k)-picList.indexOf(b.k));
   const hmRows=hmGroups.map(g=>'<tr><th>'+wsEsc(g.k)+'</th>'+idxY1.map(i=>{const j=M.indexOf(Y0+M[i].slice(4));const v=j>=0&&g.e.sv[j]>0?(g.e.sv[i]/g.e.sv[j]-1)*100:null;return '<td class="'+wsYoyCls(v)+'" title="'+lblM[i]+': '+wsRp(g.e.sv[i])+' vs '+wsRp(j>=0?g.e.sv[j]:0)+'">'+(v==null?'·':(v>0?'+':'')+Math.round(v)+'%')+'</td>';}).join('')+'</tr>').join('');
-  const hm='<div class="ins-card ins-wide"><h4>Heatmap pertumbuhan omzet (YoY) · '+(modePic?'per kabupaten':'per PIC')+'</h4><p class="ins-note">Omzet tiap bulan '+Y1+' dibanding bulan yang sama '+Y0+'. Titik = tidak ada pembanding.</p><div class="ins-hm"><table><thead><tr><th>'+(modePic?'Kabupaten':'PIC')+'</th>'+idxY1.map(i=>'<th>'+lblM[i]+'</th>').join('')+'</tr></thead><tbody>'+hmRows+'</tbody></table></div><div class="ins-legend"><span class="h0">&lt;-20%</span><span class="h1">-20 s/d 0%</span><span class="h2">0 s/d +10%</span><span class="h3">+10 s/d +30%</span><span class="h4">&gt;+30%</span></div></div>';
+  const hm='<div class="ins-card ins-wide"><h4>Heatmap pertumbuhan omzet (YoY) · '+(modePic?'per kabupaten':'per PIC')+'</h4><p class="ins-note">Omzet tiap bulan '+Y1+' dibanding bulan yang sama '+Y0+'. Titik = tidak ada pembanding.</p><div class="ins-hm"><table><thead><tr><th>'+(modePic?'Kabupaten':'PIC')+'</th>'+idxY1.map(i=>'<th>'+lblM[i]+'</th>').join('')+'</tr></thead><tbody>'+hmRows+'</tbody></table></div><div class="ins-legend"><span class="h0">minus (&lt;0%)</span><span class="h2">0 s/d +10%</span><span class="h3">+10 s/d +30%</span><span class="h4">&gt;+30%</span></div></div>';
 
   // ── status & konsentrasi ──
   const st={Existing:0,New:0,Cancel:0,Lain:0};rows.forEach(r=>{const v=idxY1.reduce((s,i)=>s+r[7][i],0);st[st[r[3]]!=null?r[3]:'Lain']+=v;});
@@ -4747,7 +4747,7 @@ function renderWowSales(){
   const gBody=gRows.map(x=>{const r=wsGrowthAvg(x.e,idxY1,sameY0);return '<tr><th>'+wsEsc(x.k)+'<small>'+x.toko+' toko</small></th>'+gCell(r.g.om,r.c.om,r.p.om,fOm)+gCell(r.g.ns,r.c.ns,r.p.ns,fLe)+gCell(r.g.hi,r.c.hi,r.p.hi,fLe)+'</tr>';}).join('');
   const gTot=wsGrowthAvg(A,idxY1,sameY0);
   const gFoot='<tr class="hm-tot"><th>'+(modePic?'Total '+wsEsc(INS_PIC):'Sulawesi')+'<small>'+rows.length+' toko</small></th>'+gCell(gTot.g.om,gTot.c.om,gTot.p.om,fOm)+gCell(gTot.g.ns,gTot.c.ns,gTot.p.ns,fLe)+gCell(gTot.g.hi,gTot.c.hi,gTot.p.hi,fLe)+'</tr>';
-  const hmG='<div class="ins-card ins-wide"><h4>Heatmap growth rata-rata · '+(modePic?'per kabupaten':'per PIC')+'</h4><p class="ins-note">Rata-rata bulanan '+lblM[idxY1[0]]+'–'+lblM[idxY1[idxY1.length-1]]+' dibanding bulan yang sama '+Y0+'. Angka kecil = rata-rata '+Y1+'. Line/EA = PA ÷ toko bertransaksi.</p><div class="ins-hm"><table class="ws-hmg"><thead><tr><th>'+(modePic?'Kabupaten':'PIC')+'</th><th>Omzet</th><th>Line/EA NS</th><th>Line/EA HILO</th></tr></thead><tbody>'+gBody+gFoot+'</tbody></table></div><div class="ins-legend"><span class="h0">&lt;-20%</span><span class="h1">-20 s/d 0%</span><span class="h2">0 s/d +10%</span><span class="h3">+10 s/d +30%</span><span class="h4">&gt;+30%</span></div></div>';
+  const hmG='<div class="ins-card ins-wide"><h4>Heatmap growth rata-rata · '+(modePic?'per kabupaten':'per PIC')+'</h4><p class="ins-note">Rata-rata bulanan '+lblM[idxY1[0]]+'–'+lblM[idxY1[idxY1.length-1]]+' dibanding bulan yang sama '+Y0+'. Angka kecil = rata-rata '+Y1+'. Line/EA = PA ÷ toko bertransaksi.</p><div class="ins-hm"><table class="ws-hmg"><thead><tr><th>'+(modePic?'Kabupaten':'PIC')+'</th><th>Omzet</th><th>Line/EA NS</th><th>Line/EA HILO</th></tr></thead><tbody>'+gBody+gFoot+'</tbody></table></div><div class="ins-legend"><span class="h0">minus (&lt;0%)</span><span class="h2">0 s/d +10%</span><span class="h3">+10 s/d +30%</span><span class="h4">&gt;+30%</span></div></div>';
   const card=(t,body,wide)=>'<div class="ins-card'+(wide?' ins-wide':'')+'"><h4>'+t+'</h4>'+body+'</div>';
   box.innerHTML=modeBar+kpis+tkHtml+'<div class="ins-grid">'
     +card('Tren omzet bulanan · '+Y0+' vs '+Y1,trenOmzet,true)
