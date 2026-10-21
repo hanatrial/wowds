@@ -4891,5 +4891,78 @@ function renderWowCombo(){
     '<b>'+highLow.length+' toko</b> sudah ber-AV tinggi tetapi omzet rendah; fokus ke eksekusi penjualan, bukan kelengkapan.'
   ];
   const tk='<div class="ins-tks">'+tks.map((t,i)=>'<div class="ins-tk"><em>0'+(i+1)+'</em><p>'+t+'</p></div>').join('')+'</div>';
-  box.innerHTML=modeBar+kpis+tk+'<div class="ins-grid">'+avCard+perPic+c1+c2+'</div>';
+  // ===== visual =====
+  const grpKey=x=>modePic?(wsKabOf(x.r)||'(kabupaten kosong)'):x.r[1];
+  const grp={};withAv.forEach(x=>{(grp[grpKey(x)]=grp[grpKey(x)]||[]).push(x);});
+  const l3=[n-3,n-2,n-1];
+  const gArr=Object.entries(grp).map(([k,l])=>{const e=wsAgg(l.map(x=>x.r),n);return {k,toko:l.length,av:l.reduce((a,x)=>a+x.av,0)/l.length,om:l.reduce((a,x)=>a+x.om,0)/l.length,le:l3.reduce((a,i)=>a+e.hilo[i]+e.ns[i],0)/3/l.length,sum:l.reduce((a,x)=>a+x.om,0),l};});
+  const mean=(a,f)=>a.length?a.reduce((q,x)=>q+f(x),0)/a.length:0;
+  const bubble=gArr.length>=2?'<div class="ins-card ins-wide"><h4>Kuadran: kualitas display vs Line/EA · per '+(modePic?'kabupaten':'PIC')+'</h4><p class="ins-note">Sumbu X = rata-rata AV total, Y = Line/EA (total line ÷ bulan ÷ toko, 3 bulan terakhir), ukuran = omzet. Garis hijau = rata-rata '+(modePic?'kabupaten':'PIC')+'.</p>'+wsSvgBubble({pts:gArr.map((g,i)=>({x:g.av,y:g.le,r:g.sum,l:g.k,c:WS_PAL[i%WS_PAL.length],t:g.toko+' toko · '+wsRp(g.om,true)+'/toko/bln'})),qx:mean(gArr,g=>g.av),qy:mean(gArr,g=>g.le),xl:'AV total',yl:'Line/EA',q1:'AV rendah, Line/EA tinggi',q2:'perlu dibenahi',q3:'display kuat, laku',q4:'AV tinggi, Line/EA rendah'})+'</div>':'';
+  const pts=withAv.map(x=>({x:x.av,y:x.om,l:x.r[0],c:(x.av<15&&x.om>medAll)?'#E8833A':(x.av>=30&&x.om<=medAll)?'#F2C94C':'#4F8A6B'}));
+  const scatter='<div class="ins-card ins-wide"><h4>Peta toko: AV vs omzet</h4><p class="ins-note">Satu titik = satu toko ('+withAv.length+' toko). Garis putus-putus: AV 15 dan 30, serta median omzet. Titik oranye = prioritas perbaikan display; kuning = display sudah lengkap tapi omzet rendah.</p>'+wsSvgScatter({pts,vx:[15,30],hy:medAll})+'</div>';
+  const dRows=gArr.map(g=>{const a=g.l.filter(x=>x.av<15),b=g.l.filter(x=>x.av>=30);return {l:g.k,a:a.length?mean(a,x=>x.om):null,b:b.length?mean(b,x=>x.om):null,n:a.length+b.length};}).filter(r=>r.a!=null||r.b!=null).sort((x,y)=>(y.b||0)-(x.b||0));
+  const dumb=dRows.length?'<div class="ins-card ins-wide"><h4>Omzet toko AV rendah vs AV tinggi · per '+(modePic?'kabupaten':'PIC')+'</h4>'+wsSvgDumbbell({rows:dRows})+'</div>':'';
+  const stackRows=gArr.map(g=>({l:g.k,s:g.toko+' toko',parts:[{v:g.l.filter(x=>x.av<15).length,c:'#E8833A',t:'AV < 15'},{v:g.l.filter(x=>x.av>=15&&x.av<30).length,c:'#F2C94C',t:'AV 15–29'},{v:g.l.filter(x=>x.av>=30).length,c:'#235347',t:'AV ≥ 30'}]})).sort((a,b)=>(b.parts[2].v/(b.parts[0].v+b.parts[1].v+b.parts[2].v||1))-(a.parts[2].v/(a.parts[0].v+a.parts[1].v+a.parts[2].v||1)));
+  const stack='<div class="ins-card"><h4>Kesiapan display · sebaran toko menurut AV</h4>'+wsStack100(stackRows,[{c:'#E8833A',t:'AV < 15'},{c:'#F2C94C',t:'15–29'},{c:'#235347',t:'≥ 30'}])+'</div>';
+  const totOm=withAv.reduce((a,x)=>a+x.om,0)||1;
+  const shareRows=[{l:'Jumlah toko',parts:bkDef.map((b,i)=>({v:withAv.filter(x=>b.t(x.av)).length,c:['#E8833A','#F2C94C','#235347'][i],t:b.n}))},{l:'Omzet',parts:bkDef.map((b,i)=>({v:withAv.filter(x=>b.t(x.av)).reduce((a,x)=>a+x.om,0),c:['#E8833A','#F2C94C','#235347'][i],t:b.n}))}];
+  const share='<div class="ins-card"><h4>Porsi toko vs porsi omzet menurut AV</h4>'+wsStack100(shareRows,[{c:'#E8833A',t:'AV < 15'},{c:'#F2C94C',t:'15–29'},{c:'#235347',t:'≥ 30'}])+'<p class="ins-note" style="margin-top:8px">Toko AV ≥ 30 = '+Math.round(withAv.filter(x=>x.av>=30).length/withAv.length*100)+'% dari toko, menyumbang '+Math.round(withAv.filter(x=>x.av>=30).reduce((a,x)=>a+x.om,0)/totOm*100)+'% omzet.</p></div>';
+  box.innerHTML=modeBar+kpis+tk+'<div class="ins-grid">'+bubble+scatter+dumb+stack+share+avCard+perPic+c1+c2+'</div>';
+}
+
+
+// ── visual Gabungan ──
+const WS_PAL=['#235347','#E8833A','#4F8A6B','#B5D334','#C0562A','#8EB69B','#0B2B26','#F2C94C','#5F6B66','#A9CDB5'];
+function wsTicks(mx,n){const o=[];for(let k=0;k<=n;k++)o.push(mx*k/n);return o;}
+// kuadran bubble: pts [{x,y,r,l,c}] ; garis kuadran di (qx,qy)
+function wsSvgBubble(o){
+  const Wd=680,H=380,pl=56,pr=18,pt=18,pb=46,pts=o.pts;
+  const mxX=Math.max.apply(null,pts.map(p=>p.x).concat([1]))*1.12,mxY=Math.max.apply(null,pts.map(p=>p.y).concat([1]))*1.15;
+  const X=v=>pl+(Wd-pl-pr)*v/mxX,Y=v=>H-pb-(H-pt-pb)*v/mxY;
+  const rmax=Math.max.apply(null,pts.map(p=>p.r).concat([1]));
+  let g='';
+  wsTicks(mxY,4).forEach(v=>{g+='<line x1="'+pl+'" x2="'+(Wd-pr)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" class="ws-g"/><text x="'+(pl-6)+'" y="'+(Y(v)+3)+'" class="ws-ay">'+wsNum(v,1)+'</text>';});
+  wsTicks(mxX,5).forEach(v=>{g+='<line y1="'+pt+'" y2="'+(H-pb)+'" x1="'+X(v)+'" x2="'+X(v)+'" class="ws-g"/><text x="'+X(v)+'" y="'+(H-pb+14)+'" class="ws-ax">'+Math.round(v)+'</text>';});
+  g+='<line x1="'+X(o.qx)+'" x2="'+X(o.qx)+'" y1="'+pt+'" y2="'+(H-pb)+'" stroke="#4F8A6B" stroke-width="1.6"/><line x1="'+pl+'" x2="'+(Wd-pr)+'" y1="'+Y(o.qy)+'" y2="'+Y(o.qy)+'" stroke="#4F8A6B" stroke-width="1.6"/>';
+  g+='<text x="'+(pl+6)+'" y="'+(pt+14)+'" class="ws-q">1 · '+o.q1+'</text><text x="'+(Wd-pr-6)+'" y="'+(pt+14)+'" class="ws-q" text-anchor="end">3 · '+o.q3+'</text><text x="'+(pl+6)+'" y="'+(H-pb-8)+'" class="ws-q">2 · '+o.q2+'</text><text x="'+(Wd-pr-6)+'" y="'+(H-pb-8)+'" class="ws-q" text-anchor="end">4 · '+o.q4+'</text>';
+  pts.slice().sort((a,b)=>b.r-a.r).forEach(p=>{const r=8+22*Math.sqrt(p.r/rmax);g+='<circle cx="'+X(p.x).toFixed(1)+'" cy="'+Y(p.y).toFixed(1)+'" r="'+r.toFixed(1)+'" fill="'+p.c+'" fill-opacity=".72" stroke="#fff" stroke-width="1.2"><title>'+wsEsc(p.l)+' · '+o.xl+' '+wsNum(p.x,1)+' · '+o.yl+' '+wsNum(p.y,2)+' · '+p.t+'</title></circle><text x="'+(X(p.x)+r+4).toFixed(1)+'" y="'+(Y(p.y)+3).toFixed(1)+'" class="ws-bl">'+wsEsc(p.l)+'</text>';});
+  g+='<text x="'+((pl+Wd-pr)/2)+'" y="'+(H-6)+'" class="ws-ax" style="font-weight:600">'+o.xl+'</text><text transform="rotate(-90)" x="'+(-(pt+H-pb)/2)+'" y="14" class="ws-ax" style="font-weight:600">'+o.yl+'</text>';
+  return '<svg viewBox="0 0 '+Wd+' '+H+'" class="ws-svg">'+g+'</svg>';
+}
+// peta toko: titik per toko (x = AV, y = omzet/bulan)
+function wsSvgScatter(o){
+  const Wd=680,H=340,pl=56,pr=16,pt=14,pb=38,pts=o.pts;
+  const ys=pts.map(p=>p.y).sort((a,b)=>a-b);const cap=ys[Math.floor(ys.length*0.97)]||1;
+  const mxY=Math.max(cap*1.1,1),mxX=Math.max.apply(null,pts.map(p=>p.x).concat([1]))*1.05;
+  const X=v=>pl+(Wd-pl-pr)*v/mxX,Y=v=>H-pb-(H-pt-pb)*Math.min(v,mxY)/mxY;
+  let g='';
+  wsTicks(mxY,4).forEach(v=>{g+='<line x1="'+pl+'" x2="'+(Wd-pr)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" class="ws-g"/><text x="'+(pl-6)+'" y="'+(Y(v)+3)+'" class="ws-ay">'+wsRp(v,true)+'</text>';});
+  wsTicks(mxX,6).forEach(v=>{g+='<text x="'+X(v)+'" y="'+(H-pb+14)+'" class="ws-ax">'+Math.round(v)+'</text>';});
+  o.vx.forEach(v=>{g+='<line x1="'+X(v)+'" x2="'+X(v)+'" y1="'+pt+'" y2="'+(H-pb)+'" stroke="#8A9A93" stroke-dasharray="4 4"/>';});
+  g+='<line x1="'+pl+'" x2="'+(Wd-pr)+'" y1="'+Y(o.hy)+'" y2="'+Y(o.hy)+'" stroke="#8A9A93" stroke-dasharray="4 4"/><text x="'+(Wd-pr-4)+'" y="'+(Y(o.hy)-4)+'" class="ws-ay" text-anchor="end">median '+wsRp(o.hy,true)+'</text>';
+  pts.forEach(p=>{g+='<circle cx="'+X(p.x).toFixed(1)+'" cy="'+Y(p.y).toFixed(1)+'" r="3.4" fill="'+p.c+'" fill-opacity=".75"><title>'+wsEsc(p.l)+' · AV '+p.x+' · '+wsRp(p.y)+'/bln</title></circle>';});
+  g+='<text x="'+((pl+Wd-pr)/2)+'" y="'+(H-4)+'" class="ws-ax" style="font-weight:600">AV total (item ada) · visit terakhir</text>';
+  const leg='<div class="ws-leg"><span><i style="background:#E8833A"></i>AV rendah, omzet di atas median</span><span><i style="background:#F2C94C"></i>AV tinggi, omzet rendah</span><span><i style="background:#4F8A6B"></i>selaras</span></div>';
+  return leg+'<svg viewBox="0 0 '+Wd+' '+H+'" class="ws-svg">'+g+'</svg>';
+}
+// dumbbell: rows [{l,a,b}] (a = AV rendah, b = AV tinggi)
+function wsSvgDumbbell(o){
+  const Wd=680,rh=30,pl=130,pr=60,pt=26,H=pt+o.rows.length*rh+10;
+  const mx=Math.max.apply(null,o.rows.map(r=>Math.max(r.a||0,r.b||0)).concat([1]))*1.1;
+  const X=v=>pl+(Wd-pl-pr)*v/mx;
+  let g='';
+  wsTicks(mx,4).forEach(v=>{g+='<line x1="'+X(v)+'" x2="'+X(v)+'" y1="'+(pt-8)+'" y2="'+(H-6)+'" class="ws-g"/><text x="'+X(v)+'" y="'+(pt-12)+'" class="ws-ax">'+wsRp(v,true)+'</text>';});
+  o.rows.forEach((r,i)=>{
+    const y=pt+i*rh+rh/2;
+    g+='<text x="'+(pl-10)+'" y="'+(y+4)+'" class="ws-dlb" text-anchor="end">'+wsEsc(r.l)+'</text>';
+    if(r.a!=null&&r.b!=null)g+='<line x1="'+X(r.a)+'" x2="'+X(r.b)+'" y1="'+y+'" y2="'+y+'" stroke="#CFD8D2" stroke-width="4" stroke-linecap="round"/>';
+    if(r.a!=null)g+='<circle cx="'+X(r.a)+'" cy="'+y+'" r="6" fill="#E8833A"><title>'+wsEsc(r.l)+' · AV rendah: '+wsRp(r.a)+'</title></circle><text x="'+X(r.a)+'" y="'+(y-10)+'" class="ws-dv" fill="#C0562A">'+wsRp(r.a,true)+'</text>';
+    if(r.b!=null)g+='<circle cx="'+X(r.b)+'" cy="'+y+'" r="6" fill="#235347"><title>'+wsEsc(r.l)+' · AV tinggi: '+wsRp(r.b)+'</title></circle><text x="'+X(r.b)+'" y="'+(y-10)+'" class="ws-dv" fill="#0B2B26">'+wsRp(r.b,true)+'</text>';
+  });
+  const leg='<div class="ws-leg"><span><i style="background:#E8833A"></i>AV &lt; 15</span><span><i style="background:#235347"></i>AV ≥ 30</span><em style="font-style:normal;color:var(--t3)">omzet rata-rata per toko per bulan</em></div>';
+  return leg+'<svg viewBox="0 0 '+Wd+' '+H+'" class="ws-svg">'+g+'</svg>';
+}
+// bar 100% bertumpuk (HTML): rows [{l,parts:[{v,c,t}]}]
+function wsStack100(rows,legend){
+  return '<div class="ws-leg">'+legend.map(x=>'<span><i style="background:'+x.c+'"></i>'+x.t+'</span>').join('')+'</div><div class="st100">'+rows.map(r=>{const tot=r.parts.reduce((a,p)=>a+p.v,0)||1;return '<div class="st-row"><span class="st-l">'+wsEsc(r.l)+(r.s?'<small>'+wsEsc(r.s)+'</small>':'')+'</span><span class="st-b">'+r.parts.map(p=>'<i style="width:'+(p.v/tot*100).toFixed(1)+'%;background:'+p.c+'" title="'+wsEsc(p.t)+': '+p.v+'">'+(p.v/tot>=0.09?Math.round(p.v/tot*100)+'%':'')+'</i>').join('')+'</span></div>';}).join('')+'</div>';
 }
