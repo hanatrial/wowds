@@ -934,6 +934,14 @@ async function fetchPhotoData(coll,docId){
    these two collections over REST with an explicit field mask that simply never
    includes photoData. The photos are then fetched one at a time, on demand. */
 const FS_PROJECT='displaywowsulawesi', FS_KEY='AIzaSyDO3IzpBcP9VT5cL7QT4RlK_a9jpGS0Yvo';
+const WOW_FIELDS=['id','timestamp','mds','area','store','storePasangan','tanggalVisit','avail','unavail','needsval','items','keterangan','picValidated','statusToko'];
+async function fetchWowPhotos(r){
+  try{
+    const url=`https://firestore.googleapis.com/v1/projects/${FS_PROJECT}/databases/(default)/documents/wow_logs/${encodeURIComponent(r._docId)}?key=${FS_KEY}&mask.fieldPaths=photoData&mask.fieldPaths=photoData2&mask.fieldPaths=photoData3`;
+    const j=await (await fetch(url)).json();const f=j.fields||{};
+    r.photoData=f.photoData?fsVal(f.photoData):null;r.photoData2=f.photoData2?fsVal(f.photoData2):null;r.photoData3=f.photoData3?fsVal(f.photoData3):null;
+  }catch(e){console.warn('foto wow gagal',e);r.photoData=null;}
+}
 const RKA_FIELDS=['id','timestamp','mds','area','store','avail','unavail','items'];
 const BELI_FIELDS=['id','timestamp','mds','area','store','nominal','totalRenceng','groupTotals','itemQty'];
 function fsVal(v){
@@ -1040,13 +1048,12 @@ function loadAll(){
     SPG_ALL.sort((a,b)=>b.timestamp-a.timestamp);
     render();
   }).catch(e=>console.error('spg_daily_logs FAILED',e.code,e.message));
-  if(has('sec-wow'))db.collection('wow_logs').limit(2000).get(SRV)
-    .catch(()=>db.collection('wow_logs').get())
-    .then(s=>{
-    WOW_ALL=[];s.forEach(d=>{const v=wowRenameItems(d.data());WOW_ALL.push({...v,_docId:d.id,timestamp:v.timestamp?v.timestamp.toDate():new Date()});});
+  // ringan: baca lewat REST tanpa kolom foto; foto diambil saat baris dibuka
+  if(has('sec-wow'))restList('wow_logs',WOW_FIELDS).then(list=>{
+    WOW_ALL=list.map(v=>({...wowRenameItems(v),photoData:true}));
     WOW_ALL.sort((a,b)=>b.timestamp-a.timestamp);
     render();
-  }).catch(e=>console.error('wow_logs FAILED',e.code,e.message));
+  }).catch(e=>console.error('wow_logs FAILED',e.message));
 }
 function loadKedaiDb(){
   if(!dbSulawesi)return;
@@ -1441,7 +1448,8 @@ function switchSubTab(main,sub){
     const igw=document.getElementById('spg-indogrosir-wrap');if(igw)igw.style.display=sub==='indogrosir'?'block':'none';
   }else if(main==='wow'){
     SUBTAB_WOW=sub;
-    ['report','unvisited'].forEach(s=>{const el=document.getElementById('stab-wow-'+s);if(el)el.classList.toggle('on',s===sub);});
+    ['report','unvisited','insight'].forEach(s=>{const el=document.getElementById('stab-wow-'+s);if(el)el.classList.toggle('on',s===sub);});
+    const iw=document.getElementById('wow-insight-wrap');if(iw)iw.style.display=sub==='insight'?'block':'none';
     const rw2=document.getElementById('wow-report-wrap');if(rw2)rw2.style.display=sub==='report'?'block':'none';
     const uw=document.getElementById('wow-unvisited-wrap');if(uw)uw.style.display=sub==='unvisited'?'block':'none';
   }else{
@@ -1517,7 +1525,8 @@ function render(){
     else if(SUBTAB_SPG==='indogrosir')renderSpgIndogrosir(spgF);
     else renderSpgRank(spgF);
   }else if(TAB==='wow'){
-    if(SUBTAB_WOW==='unvisited')renderWowUnvisited();
+    if(SUBTAB_WOW==='insight')renderWowInsight(wowF);
+    else if(SUBTAB_WOW==='unvisited')renderWowUnvisited();
     else renderWow(wowF);
   }
 }
@@ -3207,6 +3216,7 @@ function toggleWowDetail(tr,vid){
   }
   _expandedWowVid=vid;
   const r=WOW_ALL.find(x=>x.id===vid)||{};
+  if(r.photoData===true&&!r._phLoading){r._phLoading=true;fetchWowPhotos(r).then(()=>{r._phLoading=false;toggleWowDetail(tr,vid);});return;}
   const items=r.items||{};
   const groups={NS:[],HILO:[],TS:[],O:[]};
   Object.entries(items).sort(([a],[b])=>a.localeCompare(b)).forEach(([n,ada])=>{
@@ -4198,4 +4208,70 @@ async function tpDelete(id){
   if(!confirm('Hapus input ini?'))return;
   try{await db.collection('app_data').doc(id).delete();}catch(e){alert('Gagal menghapus: '+(e.message||e));}
   tpLoadList();
+}
+
+
+// ── INSIGHT Display WOW: isi AV, item, kabupaten (ringan: angka + bar CSS, tanpa grafik/foto) ──
+function wowInsEsc(x){return String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function wowInsBar(p,warn){return '<span class="ins-bar"><i style="width:'+Math.max(0,Math.min(100,p))+'%'+(warn?';background:#E8833A':'')+'"></i></span>';}
+function wowInsAv(items){
+  const o={NS:[0,0],HILO:[0,0],TS:[0,0]};
+  Object.entries(items||{}).forEach(([k,v])=>{const b=brandOf(k);if(!o[b]||(v!==true&&v!==false))return;o[b][1]++;if(v===true)o[b][0]++;});
+  return o;
+}
+function wowInsPct(a,b){return b?Math.round(a/b*100):null;}
+function wowInsTable(head,rows,empty){
+  if(!rows.length)return '<div class="ins-empty">'+(empty||'Belum ada data.')+'</div>';
+  return '<table class="ins-t"><thead><tr>'+head.map(x=>'<th>'+x+'</th>').join('')+'</tr></thead><tbody>'+rows.map(r=>'<tr>'+r.map(c=>'<td>'+c+'</td>').join('')+'</tr>').join('')+'</tbody></table>';
+}
+function renderWowInsight(rows){
+  const box=document.getElementById('wow-insight');if(!box)return;
+  rows=rows||[];
+  // agregat
+  const tot={NS:[0,0],HILO:[0,0],TS:[0,0]};
+  const itemSt={};const perPic={};const perKab={};const perToko=[];
+  rows.forEach(r=>{
+    const av=wowInsAv(r.items);
+    ['NS','HILO','TS'].forEach(b=>{tot[b][0]+=av[b][0];tot[b][1]+=av[b][1];});
+    Object.entries(r.items||{}).forEach(([k,v])=>{if(v!==true&&v!==false)return;const s=itemSt[k]||(itemSt[k]={ada:0,n:0});s.n++;if(v===true)s.ada++;});
+    const pic=r.mds||'—',kab=r.area||'(kabupaten kosong)';
+    [[perPic,pic],[perKab,kab]].forEach(([m,key])=>{const g=m[key]||(m[key]={v:0,NS:[0,0],HILO:[0,0]});g.v++;g.NS[0]+=av.NS[0];g.NS[1]+=av.NS[1];g.HILO[0]+=av.HILO[0];g.HILO[1]+=av.HILO[1];});
+    perToko.push({store:r.store,pic:r.mds,kab:r.area,ns:wowInsPct(av.NS[0],av.NS[1]),hilo:wowInsPct(av.HILO[0],av.HILO[1]),adaNS:av.NS[0],adaHILO:av.HILO[0]});
+  });
+  const P=(a)=>wowInsPct(a[0],a[1]);
+  const cell=p=>p==null?'—':'<b>'+p+'%</b> '+wowInsBar(p,p<40);
+  // 1. ringkasan
+  const kpi=(t,a)=>'<div class="ins-kpi"><span>'+t+'</span><b>'+(P(a)==null?'—':P(a)+'%')+'</b><small>'+a[0]+' dari '+a[1]+' pengecekan item</small></div>';
+  let html='<div class="ins-kpis">'+kpi('AV NS',tot.NS)+kpi('AV HILO',tot.HILO)+kpi('AV TS',tot.TS)+'</div>';
+  if(!rows.length){box.innerHTML=html+'<div class="ins-empty">Belum ada visit pada filter ini.</div>';return;}
+  // 2. item paling sering kosong / paling aman
+  const items=Object.entries(itemSt).filter(([,s])=>s.n>=3).map(([k,s])=>({k,p:Math.round(s.ada/s.n*100),ada:s.ada,n:s.n,b:brandOf(k)}));
+  const kosong=items.slice().sort((a,b)=>a.p-b.p||b.n-a.n);
+  const mkItem=list=>list.map(x=>[wowInsEsc(x.k),x.b,x.ada+'/'+x.n,cell(x.p)]);
+  const secKosong=['NS','HILO'].map(b=>'<div class="ins-card"><h4>Item paling sering kosong · '+b+'</h4>'+wowInsTable(['Item','','Ada','AV'],mkItem(kosong.filter(x=>x.b===b).slice(0,8)),'Belum cukup data (min. 3 toko per item).')+'</div>').join('');
+  // 3. per PIC
+  const pic=Object.entries(perPic).map(([k,g])=>({k,v:g.v,ns:P(g.NS),hilo:P(g.HILO)})).sort((a,b)=>(a.ns==null?101:a.ns)-(b.ns==null?101:b.ns));
+  const secPic='<div class="ins-card"><h4>AV per PIC (terendah dulu)</h4>'+wowInsTable(['PIC','Visit','AV NS','AV HILO'],pic.map(x=>[wowInsEsc(x.k),x.v,cell(x.ns),cell(x.hilo)]))+'</div>';
+  // 4. per kabupaten
+  const kab=Object.entries(perKab).map(([k,g])=>({k,v:g.v,ns:P(g.NS),hilo:P(g.HILO)})).sort((a,b)=>(a.ns==null?101:a.ns)-(b.ns==null?101:b.ns)).slice(0,12);
+  const secKab='<div class="ins-card"><h4>AV per kabupaten (12 terendah)</h4>'+wowInsTable(['Kabupaten','Visit','AV NS','AV HILO'],kab.map(x=>[wowInsEsc(x.k),x.v,cell(x.ns),cell(x.hilo)]))+'</div>';
+  // 5. toko dengan AV terendah (gabungan NS+HILO, ambil visit terbaru per toko)
+  const lastBy={};rows.slice().sort((a,b)=>a.timestamp-b.timestamp).forEach(r=>{lastBy[r.store]=r;});
+  const tk=Object.values(lastBy).map(r=>{const av=wowInsAv(r.items);const a=av.NS[0]+av.HILO[0],n=av.NS[1]+av.HILO[1];return {r,p:wowInsPct(a,n)};}).filter(x=>x.p!=null).sort((a,b)=>a.p-b.p).slice(0,10);
+  const secTk='<div class="ins-card"><h4>Toko dengan AV terendah (visit terakhir, NS+HILO)</h4>'+wowInsTable(['Toko','PIC','Kabupaten','AV'],tk.map(x=>[wowInsEsc(x.r.store),wowInsEsc(x.r.mds),wowInsEsc(x.r.area),cell(x.p)]))+'</div>';
+  // 6. item selalu ada / tidak pernah ada
+  const nol=items.filter(x=>x.p===0).sort((a,b)=>b.n-a.n);
+  const penuh=items.filter(x=>x.p===100).sort((a,b)=>b.n-a.n);
+  const secNol='<div class="ins-card"><h4>Item yang tidak pernah ada ('+nol.length+')</h4>'+(nol.length?'<div class="ins-chips">'+nol.slice(0,30).map(x=>'<span>'+wowInsEsc(x.k)+' <em>0/'+x.n+'</em></span>').join('')+'</div>':'<div class="ins-empty">Tidak ada.</div>')+'<h4 style="margin-top:14px">Item yang selalu ada ('+penuh.length+')</h4>'+(penuh.length?'<div class="ins-chips">'+penuh.slice(0,30).map(x=>'<span>'+wowInsEsc(x.k)+' <em>'+x.n+'/'+x.n+'</em></span>').join('')+'</div>':'<div class="ins-empty">Tidak ada.</div>')+'</div>';
+  // 7. kabupaten yang belum ada (database toko + visit)
+  let secKabKosong='';
+  if(typeof WOW_TOKO_MASTER!=='undefined'){
+    const kosongM=WOW_TOKO_MASTER.filter(t=>!t.kab);
+    const perP={};kosongM.forEach(t=>{(perP[t.pic]=perP[t.pic]||[]).push(t.name);});
+    const totP={};WOW_TOKO_MASTER.forEach(t=>{totP[t.pic]=(totP[t.pic]||0)+1;});
+    const tabel=Object.entries(perP).sort((a,b)=>b[1].length-a[1].length).map(([p,l])=>[wowInsEsc(p),l.length+' dari '+totP[p],'<details><summary>lihat toko</summary><div class="ins-list">'+l.slice(0,60).map(wowInsEsc).join('<br>')+(l.length>60?'<br>… +'+(l.length-60)+' lagi':'')+'</div></details>']);
+    const visitKosong=rows.filter(r=>!r.area).length;
+    secKabKosong='<div class="ins-card ins-wide"><h4>Kabupaten yang belum ada</h4><p class="ins-note">'+kosongM.length+' dari '+WOW_TOKO_MASTER.length+' toko di database belum punya kabupaten'+(visitKosong?'; '+visitKosong+' visit tercatat tanpa kabupaten':'')+'. Konfirmasi kabupaten saat input akan melengkapinya.</p>'+wowInsTable(['PIC','Toko tanpa kabupaten','Daftar'],tabel,'Semua toko sudah punya kabupaten.')+'</div>';
+  }
+  box.innerHTML=html+'<div class="ins-grid">'+secKosong+secPic+secKab+secTk+secNol+secKabKosong+'</div>';
 }

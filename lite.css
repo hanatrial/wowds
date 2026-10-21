@@ -118,3 +118,27 @@ body::before,body::after{display:none!important;}
 .tp-main{display:flex;gap:10px;align-items:center;}
 .tp-thumb{width:44px;height:44px;object-fit:cover;border-radius:6px;border:1px solid var(--border);flex-shrink:0;}
 @media(max-width:560px){.tp-fotos{grid-template-columns:1fr;}}
+
+/* insight */
+.ins{padding-top:4px;}
+.ins-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px;}
+.ins-kpi{border:1px solid var(--border);border-radius:12px;padding:12px 14px;background:#fff;display:flex;flex-direction:column;gap:2px;}
+.ins-kpi span{font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+.ins-kpi b{font-size:28px;color:var(--text);line-height:1.1;}
+.ins-kpi small{font-size:11px;color:var(--t3);}
+.ins-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.ins-card{border:1px solid var(--border);border-radius:12px;padding:14px 16px;background:#fff;min-width:0;overflow-x:auto;}
+.ins-wide{grid-column:1/-1;}
+.ins-card h4{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+.ins-t{width:100%;border-collapse:collapse;font-size:12px;}
+.ins-t th{text-align:left;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);padding:4px 6px;border-bottom:1px solid var(--border);}
+.ins-t td{padding:6px;border-bottom:1px solid var(--border2);color:var(--text);vertical-align:middle;}
+.ins-bar{display:inline-block;width:56px;height:6px;border-radius:3px;background:var(--border);vertical-align:middle;margin-left:6px;overflow:hidden;}
+.ins-bar i{display:block;height:100%;background:var(--green);}
+.ins-empty,.ins-note{font-size:12px;color:var(--t3);}
+.ins-note{margin-bottom:8px;}
+.ins-chips{display:flex;flex-wrap:wrap;gap:6px;}
+.ins-chips span{font-size:11px;border:1px solid var(--border);border-radius:999px;padding:3px 9px;color:var(--text);}
+.ins-chips em{font-style:normal;color:var(--t3);margin-left:4px;}
+.ins-list{font-size:11px;color:var(--t2);max-height:180px;overflow-y:auto;margin-top:6px;}
+@media(max-width:760px){.ins-grid{grid-template-columns:1fr;}.ins-kpis{grid-template-columns:1fr;}}
