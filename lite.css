@@ -308,3 +308,8 @@ body::before,body::after{display:none!important;}
 .wr-t input[type=checkbox]{width:16px;height:16px;}
 
 .ins-hm .hm-logo{height:22px;width:auto;vertical-align:middle;}
+
+.ins-col{display:flex;flex-direction:column;gap:14px;min-width:0;}
+.ins-pg{padding:8px 0;border-top:1px solid var(--border);}.ins-pg:first-of-type{border-top:0;}
+.ins-pgh{display:flex;align-items:baseline;gap:8px;margin-bottom:6px;font-size:12px;}.ins-pgh b{font-size:12px;color:var(--text);}.ins-pgh span{color:var(--t3);font-size:11px;}
+.ins-chips{display:flex;flex-wrap:wrap;gap:5px;}.ins-chips i{font-style:normal;font-size:11px;padding:3px 9px;border-radius:999px;background:#FBEFE5;color:#B5502A;border:1px solid #F2D2B8;}

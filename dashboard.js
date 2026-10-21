@@ -4484,8 +4484,13 @@ function renderWowInsight(rows){
     Object.entries(PK).forEach(([pic,l])=>l.forEach(k=>{const n=(tokoBy[k]||new Set()).size;if(!n)rowsK.push({pic,k,u:unk[pic]||0});}));
     rowsK.sort((a,b)=>a.pic.localeCompare(b.pic)||a.k.localeCompare(b.k));
     noDispN=rowsK.length;
-    secKabNoDisp='<div class="ins-card"><h4>Kabupaten yang belum ada display WOW</h4><div class="ins-big"><b class="w">'+rowsK.length+'</b><span>dari '+totKab+' kabupaten di database kabupaten belum punya satu pun toko display</span></div><p class="ins-note">Dihitung dari toko yang kabupatennya sudah terisi. Toko tanpa kabupaten belum bisa dihitung, jadi PIC yang banyak tokonya belum berkabupaten bisa jadi sebenarnya sudah punya display di kabupaten itu.</p>'
-      +wowInsTable(modePic?['Kabupaten','Toko PIC ini yang belum berkabupaten (bisa jadi ada di sini)']:['PIC','Kabupaten','Toko PIC ini yang belum berkabupaten (bisa jadi ada di sini)'],rowsK.map(x=>(modePic?[]:[wowInsEsc(x.pic)]).concat([wowInsEsc(x.k),x.u?'<details><summary style="color:'+(x.u>10?'#E8833A':'var(--t3)')+'">'+x.u+' toko'+(x.u>10?' · belum bisa dipastikan':'')+'</summary><div class="ins-list">'+(unkN[x.pic]||[]).slice(0,40).map(wowInsEsc).join('<br>')+((unkN[x.pic]||[]).length>40?'<br>… +'+((unkN[x.pic]||[]).length-40)+' lagi':'')+'</div></details>':'—'])),'Semua kabupaten sudah punya display.')+'</div>';
+    const grpK={};rowsK.forEach(x=>{(grpK[x.pic]=grpK[x.pic]||[]).push(x);});
+    const chipsK=Object.keys(grpK).sort((p,q)=>picList.indexOf(p)-picList.indexOf(q)).map(p=>{
+      const l=grpK[p],u=l[0].u;
+      return '<div class="ins-pg"><div class="ins-pgh">'+(modePic?'':'<b>'+wowInsEsc(p)+'</b>')+'<span>'+l.length+' kabupaten'+(u?' · '+u+' toko belum berkabupaten'+(u>10?' (belum bisa dipastikan)':''):'')+'</span></div><div class="ins-chips">'+l.map(x=>'<i>'+wowInsEsc(x.k)+'</i>').join('')+'</div></div>';
+    }).join('');
+    secKabNoDisp='<div class="ins-card"><h4>Kabupaten yang belum ada display WOW</h4><div class="ins-big"><b class="w">'+rowsK.length+'</b><span>dari '+totKab+' kabupaten di database kabupaten belum punya satu pun toko display</span></div><p class="ins-note">Dihitung dari toko yang kabupatennya sudah terisi. PIC yang banyak tokonya belum berkabupaten bisa jadi sebenarnya sudah punya display di kabupaten itu.</p>'
+      +(rowsK.length?chipsK:'<div class="ins-empty">Semua kabupaten sudah punya display.</div>')+'</div>';
     // semua status (termasuk Cancel); kabupaten wajib diisi
     const WMall=typeof WOW_TOKO_MASTER!=='undefined'?(modePic?WOW_TOKO_MASTER.filter(t=>t.pic===INS_PIC):WOW_TOKO_MASTER):[];
     const kosongM=WMall.filter(t=>!t.kab);
@@ -4887,7 +4892,7 @@ function renderWowSales(){
   WS_LISTS.cancel=canc.slice(0,300).map(x=>[x.r[1],mdsOf(x.r[0]),x.r[0],wsKabOf(x.r),x.v,lastTx(x.r)]);
   const tTop='<div class="ins-card ins-wide"><h4>10 toko omzet terbesar · '+Y1+'</h4>'+wowInsTable(['Toko','PIC','Kabupaten','Status','Omzet','Tren '+n+' bulan'],topL.map(x=>[wsEsc(x.r[0]),wsEsc(x.r[1]),wsEsc(wsKabOf(x.r)||'—'),wsEsc(x.r[3]),'<b>'+wsRp(x.v)+'</b>',wsSpark(x.r[7])]))+wsBtn('top','toko omzet terbesar')+'</div>';
   const tTurun='<div class="ins-card"><h4>Toko turun paling dalam vs periode sama '+Y0+'</h4>'+wowInsTable(['Toko','PIC','Selisih'],turun.slice(0,10).map(x=>[wsEsc(x.r[0]),wsEsc(x.r[1]),'<span class="ins-w">'+wsRp(x.d)+'</span> <small>'+wsPct((x.b/x.a-1)*100)+'</small>']),'Tidak ada toko yang turun.')+wsBtn('turun','toko turun')+'</div>';
-  const tMati='<div class="ins-card"><h4>Toko tanpa transaksi 3 bulan terakhir</h4><p class="ins-note">Pernah jual, tidak termasuk status Cancel. Diurut dari omzet historis terbesar.</p>'+wowInsTable(['Toko','PIC','Terakhir'],mati.slice(0,10).map(x=>[wsEsc(x.r[0]),wsEsc(x.r[1]),wsEsc(x.last||'—')]),'Tidak ada.')+wsBtn('mati','toko tanpa transaksi')+'</div>';
+  const tMati='<div class="ins-card'+(modePic?'':' ins-wide')+'"><h4>Toko tanpa transaksi 3 bulan terakhir</h4><p class="ins-note">Pernah jual, tidak termasuk status Cancel. Diurut dari omzet historis terbesar.</p>'+wowInsTable((modePic?[]:['PIC']).length?['Toko','PIC','Kabupaten','Terakhir transaksi','Omzet historis']:['Toko','Kabupaten','Terakhir','Omzet historis'],mati.slice(0,10).map(x=>(modePic?[wsEsc(x.r[0])]:[wsEsc(x.r[0]),wsEsc(x.r[1])]).concat([wsEsc(wsKabOf(x.r)||'—'),wsEsc(x.last||'—'),wsRp(x.tot,true)])),'Tidak ada.')+wsBtn('mati','toko tanpa transaksi')+'</div>';
   const tCanc='<div class="ins-card ins-wide"><h4>Toko Cancel yang masih ada omzet · '+Y1+'</h4><div class="ins-big"><b class="w">'+canc.length+'</b><span>toko berstatus Cancel masih bertransaksi, total '+wsRp(canc.reduce((a,x)=>a+x.v,0))+'</span></div>'+wowInsTable(['Toko','PIC','Kabupaten','Omzet'],canc.slice(0,8).map(x=>[wsEsc(x.r[0]),wsEsc(x.r[1]),wsEsc(wsKabOf(x.r)||'—'),wsRp(x.v)]),'Tidak ada.')+wsBtn('cancel','toko Cancel yang masih jualan')+'</div>';
 
   // heatmap growth rata-rata
@@ -4985,7 +4990,7 @@ function renderWowCombo(){
   const totOm=withAv.reduce((a,x)=>a+x.om,0)||1;
   const shareRows=[{l:'Jumlah toko',parts:bkDef.map((b,i)=>({v:withAv.filter(x=>b.t(x.av)).length,c:['#E8833A','#F2C94C','#235347'][i],t:b.n}))},{l:'Omzet',parts:bkDef.map((b,i)=>({v:withAv.filter(x=>b.t(x.av)).reduce((a,x)=>a+x.om,0),c:['#E8833A','#F2C94C','#235347'][i],t:b.n}))}];
   const share='<div class="ins-card"><h4>Porsi toko vs porsi omzet menurut AV</h4>'+wsStack100(shareRows,[{c:'#E8833A',t:'AV < 15'},{c:'#F2C94C',t:'15–29'},{c:'#235347',t:'≥ 30'}])+'<p class="ins-note" style="margin-top:8px">Toko AV ≥ 30 = '+Math.round(withAv.filter(x=>x.av>=30).length/withAv.length*100)+'% dari toko, menyumbang '+Math.round(withAv.filter(x=>x.av>=30).reduce((a,x)=>a+x.om,0)/totOm*100)+'% omzet.</p></div>';
-  box.innerHTML=modeBar+kpis+tk+'<div class="ins-grid">'+bubble+scatter+dumb+stack+share+avCard+perPic+c1+c2+'</div>';
+  box.innerHTML=modeBar+kpis+tk+'<div class="ins-grid">'+bubble+scatter+dumb+stack+'<div class="ins-col">'+share+avCard+'</div>'+perPic+c1+c2+'</div>';
 }
 
 
