@@ -1049,7 +1049,7 @@ function loadAll(){
     render();
   }).catch(e=>console.error('spg_daily_logs FAILED',e.code,e.message));
   // ringan: baca lewat REST tanpa kolom foto; foto diambil saat baris dibuka
-  if(has('sec-wow'))restList('wow_logs',WOW_FIELDS).then(list=>{
+  if(has('sec-wow')||has('sec-insight'))restList('wow_logs',WOW_FIELDS).then(list=>{
     WOW_ALL=list.map(v=>({...wowRenameItems(v),photoData:true}));
     WOW_ALL.sort((a,b)=>b.timestamp-a.timestamp);
     render();
@@ -1403,7 +1403,7 @@ const WOW_ITEM_RENAME={"HI LO DRINK THAI TEA PLS 8RX10SX15G":"HI LO DRINK THAI T
 function wowRenameItems(v){if(!v||!v.items)return v;const o={};Object.entries(v.items).forEach(([k,x])=>{o[WOW_ITEM_RENAME[k]||k]=x;});return {...v,items:o};}
 function switchTab(t){
   TAB=t;
-  ['rka','beli','stock','pjmds','formula','ned','spg','wow'].forEach(x=>{
+  ['rka','beli','stock','pjmds','formula','ned','spg','wow','insight'].forEach(x=>{
     const el=document.getElementById('ntab-'+x);
     if(el){el.classList.toggle('on',x===t);el.classList.toggle(x,true);}
   });
@@ -1415,6 +1415,7 @@ function switchTab(t){
   const sn=document.getElementById('sec-ned');if(sn)sn.style.display=t==='ned'?'block':'none';
   const sg=document.getElementById('sec-spg');if(sg)sg.style.display=t==='spg'?'block':'none';
   const sw=document.getElementById('sec-wow');if(sw)sw.style.display=t==='wow'?'block':'none';
+  const si=document.getElementById('sec-insight');if(si)si.style.display=t==='insight'?'block':'none';
   render();
 }
 function switchSubTab(main,sub){
@@ -1448,8 +1449,7 @@ function switchSubTab(main,sub){
     const igw=document.getElementById('spg-indogrosir-wrap');if(igw)igw.style.display=sub==='indogrosir'?'block':'none';
   }else if(main==='wow'){
     SUBTAB_WOW=sub;
-    ['report','unvisited','insight'].forEach(s=>{const el=document.getElementById('stab-wow-'+s);if(el)el.classList.toggle('on',s===sub);});
-    const iw=document.getElementById('wow-insight-wrap');if(iw)iw.style.display=sub==='insight'?'block':'none';
+    ['report','unvisited'].forEach(s=>{const el=document.getElementById('stab-wow-'+s);if(el)el.classList.toggle('on',s===sub);});
     const rw2=document.getElementById('wow-report-wrap');if(rw2)rw2.style.display=sub==='report'?'block':'none';
     const uw=document.getElementById('wow-unvisited-wrap');if(uw)uw.style.display=sub==='unvisited'?'block':'none';
   }else{
@@ -1525,9 +1525,10 @@ function render(){
     else if(SUBTAB_SPG==='indogrosir')renderSpgIndogrosir(spgF);
     else renderSpgRank(spgF);
   }else if(TAB==='wow'){
-    if(SUBTAB_WOW==='insight')renderWowInsight(wowF);
-    else if(SUBTAB_WOW==='unvisited')renderWowUnvisited();
+    if(SUBTAB_WOW==='unvisited')renderWowUnvisited();
     else renderWow(wowF);
+  }else if(TAB==='insight'){
+    renderWowInsight(wowF);
   }
 }
 
@@ -4349,6 +4350,20 @@ function renderWowInsight(rows){
   const hmFoot='<tr class="hm-tot"><th>'+(modePic?'Total PIC':'Sulawesi')+'</th>'+hmTot.map(v=>'<td>'+(v==null?'·':v+'%')+'</td>').join('')+'</tr>';
   const secHeat=hmKeys.length?'<div class="ins-card ins-wide"><h4>Heatmap item utama · '+(modePic?'per kabupaten':'per PIC')+'</h4><p class="ins-note">% visit yang item-nya ada (minimal 1 rasa dalam kelompok itu). NS Tea = semua rasa tea digabung, School = semua rasa HI LO School. Titik = data kurang dari 2 visit.</p><div class="ins-hm"><table><thead><tr><th></th><th colspan="'+nsN+'" class="hm-grp">Nutrisari</th><th colspan="'+hiN+'" class="hm-grp">HiLo</th></tr><tr><th>'+(modePic?'Kabupaten':'PIC')+'</th>'+HM_GROUPS.map(g=>'<th>'+g.n+'</th>').join('')+'</tr></thead><tbody>'+hmBody+hmFoot+'</tbody></table></div><div class="ins-legend"><span class="h0">&lt;5%</span><span class="h1">5-15%</span><span class="h2">16-30%</span><span class="h3">31-45%</span><span class="h4">&gt;45%</span></div></div>':'';
 
+  // toko perlu dievaluasi: AV total (NS+HILO+TS item ada) di visit terakhir < EVAL_MAX
+  const EVAL_MAX=15;
+  const evAll=Object.values(lastBy).map(r=>{const av=wowInsAv(r.items);return {r,ns:av.NS[0],hilo:av.HILO[0],ts:av.TS[0],t:av.NS[0]+av.HILO[0]+av.TS[0]};});
+  const evLow=evAll.filter(x=>x.t<EVAL_MAX).sort((a,b)=>a.t-b.t||String(a.r.store).localeCompare(String(b.r.store)));
+  const evTbl=l=>wowInsTable(modePic?['Toko','Kabupaten','NS','HILO','TS','Total','Visit terakhir']:['Toko','PIC','Kabupaten','NS','HILO','TS','Total','Visit terakhir'],l.map(x=>{const d=x.r.timestamp?x.r.timestamp.toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'}):'';return (modePic?[]:[wowInsEsc(x.r.mds)]).length?[wowInsEsc(x.r.store),wowInsEsc(x.r.mds),wowInsEsc(x.r.area),x.ns,x.hilo,x.ts,'<b class="ins-w">'+x.t+'</b>',d]:[wowInsEsc(x.r.store),wowInsEsc(x.r.area),x.ns,x.hilo,x.ts,'<b class="ins-w">'+x.t+'</b>',d];}),'Tidak ada toko dengan AV total di bawah '+EVAL_MAX+'.');
+  let secEval;
+  if(modePic){
+    secEval='<div class="ins-card ins-wide"><h4>Toko perlu dievaluasi · AV total &lt; '+EVAL_MAX+'</h4><div class="ins-big"><b class="w">'+evLow.length+'</b><span>dari '+evAll.length+' toko ('+(wowInsPct(evLow.length,evAll.length)==null?0:wowInsPct(evLow.length,evAll.length))+'%) di '+wowInsEsc(INS_PIC)+' punya AV total di bawah '+EVAL_MAX+' item (NS + HILO + TS, visit terakhir)</span></div>'+evTbl(evLow.slice(0,200))+(evLow.length>200?'<p class="ins-note">… +'+(evLow.length-200)+' toko lagi</p>':'')+'</div>';
+  }else{
+    const perP={};evAll.forEach(x=>{const p=x.r.mds||'—';if(!picList.includes(p))return;const g=perP[p]||(perP[p]={low:0,n:0});g.n++;if(x.t<EVAL_MAX)g.low++;});
+    const bars=Object.entries(perP).map(([p,g])=>({l:p,v:g.low,t:g.low+' <small>dari '+g.n+' toko ('+wowInsPct(g.low,g.n)+'%)</small>',warn:g.low/g.n>0.3,p:g.low/g.n})).sort((a,b)=>b.p-a.p);
+    secEval='<div class="ins-card ins-wide"><h4>Toko perlu dievaluasi · AV total &lt; '+EVAL_MAX+'</h4><div class="ins-big"><b class="w">'+evLow.length+'</b><span>dari '+evAll.length+' toko punya AV total di bawah '+EVAL_MAX+' item (NS + HILO + TS, visit terakhir). Pilih PIC di filter untuk melihat daftar tokonya.</span></div>'+wowInsBars(bars.map(x=>({l:x.l,v:x.v,t:x.t,warn:x.warn})))+'<details style="margin-top:10px"><summary>Lihat semua toko ('+evLow.length+')</summary><div style="overflow-x:auto;margin-top:8px">'+evTbl(evLow.slice(0,300))+'</div></details></div>';
+  }
+
   // toko AV terendah
   const tk=Object.values(lastBy).map(r=>{const av=wowInsAv(r.items);return {r,ns:av.NS[0],hilo:av.HILO[0],t:av.NS[0]+av.HILO[0]};}).sort((a,b)=>a.t-b.t).slice(0,15);
   const secTk='<div class="ins-card ins-wide"><h4>AV per toko · 15 terendah (visit terakhir)</h4>'+wowInsTable(['Toko','PIC','Kabupaten','AV NS','AV HILO','Total'],tk.map(x=>[wowInsEsc(x.r.store),wowInsEsc(x.r.mds),wowInsEsc(x.r.area),x.ns,x.hilo,'<b>'+x.t+'</b>']))+'</div>';
@@ -4392,11 +4407,11 @@ function renderWowInsight(rows){
   const tks=[];
   if(!modePic&&pic.length>1){const hi=pic[pic.length-1],lo=pic[0];tks.push('<b>AV NS per toko</b> tertinggi di '+wowInsEsc(hi.l)+' ('+wowInsAvg(hi.a*hi.v,hi.v)+'), terendah di '+wowInsEsc(lo.l)+' ('+wowInsAvg(lo.a*lo.v,lo.v)+').');}
   else tks.push('<b>Rata-rata per toko</b>: NS '+wowInsAvg(tot.NS[0],rows.length)+' item, HILO '+wowInsAvg(tot.HILO[0],rows.length)+' item ada.');
-  tks.push(tk.length?'<b>AV toko terendah</b> (visit terakhir): '+tk.slice(0,2).map(x=>wowInsEsc(x.r.store)+' ('+x.t+' item)').join(', ')+'.':'<b>AV toko</b>: belum ada data.');
+  tks.push('<b>'+evLow.length+' toko perlu dievaluasi</b> (AV total &lt; '+EVAL_MAX+')'+(evLow.length?', terendah: '+evLow.slice(0,2).map(x=>wowInsEsc(x.r.store)+' ('+x.t+')').join(', '):'')+'.');
   tks.push('<b>HILO Matcha</b> sudah ada di '+mt.ada.length+' dari '+mTot+' toko'+(mP!=null?' ('+mP+'%)':'')+'. <b>'+noDispN+' kabupaten</b> belum punya display.');
   const tk3='<div class="ins-tks">'+tks.map((t,i)=>'<div class="ins-tk"><em>0'+(i+1)+'</em><p>'+t+'</p></div>').join('')+'</div>';
 
-  box.innerHTML=modeBar+kpis+tk3+'<div class="ins-grid">'+secMatcha+secPic+secKab+secHeat+secTk+secNol+secKabNoDisp+secKabKosong+'</div>';
+  box.innerHTML=modeBar+kpis+tk3+'<div class="ins-grid">'+secMatcha+secPic+secKab+secHeat+secEval+secTk+secNol+secKabNoDisp+secKabKosong+'</div>';
 }
 
 
