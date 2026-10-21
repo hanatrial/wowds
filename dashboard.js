@@ -1286,8 +1286,8 @@ function filtered(data){
     const ts=r.timestamp;
     if(MF){const k=`${ts.getFullYear()}-${String(ts.getMonth()+1).padStart(2,'0')}`;if(k!==MF)return false;}
     else{if(ts<cutoff)return false;if(rangeEnd&&ts>rangeEnd)return false;}
-    if(fa&&!(r.area||'').toLowerCase().includes(fa))return false;
-    if(fm&&!(r.mds||'').toLowerCase().includes(fm))return false;
+    if(fa&&(r.area||'').toLowerCase()!==fa)return false;
+    if(fm&&(r.mds||'').toLowerCase()!==fm)return false;
     if(fs&&!(r.store||'').toLowerCase().includes(fs))return false;
     return true;
   });
@@ -3159,30 +3159,32 @@ function renderWowUnvisited(){
     if(r.storePasangan)visited.add(r.storePasangan.trim().toUpperCase());
   });
   const fa=(document.getElementById('f-area')?.value||'').trim().toLowerCase();
+  const fmp=(document.getElementById('f-mds')?.value||'').trim().toLowerCase();
   const unvisited=WOW_TOKO_MASTER.filter(t=>{
     const n1=t.name.trim().toUpperCase();
     const n2=t.pair?t.pair.trim().toUpperCase():null;
     if(visited.has(n1)||(n2&&visited.has(n2)))return false;
-    if(fa&&!(t.area||'').toLowerCase().includes(fa))return false;
+    if(fa&&(t.kab||'').toLowerCase()!==fa)return false;
+    if(fmp&&(t.pic||'').toLowerCase()!==fmp)return false;
     return true;
   });
   const q=(document.getElementById('wow-unvisited-search')?.value||'').trim().toLowerCase();
-  const filtered=q?unvisited.filter(t=>t.name.toLowerCase().includes(q)||(t.pair&&t.pair.toLowerCase().includes(q))||(t.area&&t.area.toLowerCase().includes(q))||wowMdsFullName(t).toLowerCase().includes(q)):unvisited;
+  const filtered=q?unvisited.filter(t=>t.name.toLowerCase().includes(q)||(t.pair&&t.pair.toLowerCase().includes(q))||(t.kab&&t.kab.toLowerCase().includes(q))||(t.pic&&t.pic.toLowerCase().includes(q))):unvisited;
   th.innerHTML=`<tr>
-    <th style="cursor:pointer" onclick="wuSortBy('area')">Area${wuAr('area')}</th>
+    <th style="cursor:pointer" onclick="wuSortBy('area')">Kabupaten${wuAr('area')}</th>
     <th style="cursor:pointer" onclick="wuSortBy('name')">Nama Toko${wuAr('name')}</th>
     <th>Toko Pasangan</th>
-    <th style="cursor:pointer" onclick="wuSortBy('mds')">MDS${wuAr('mds')}</th>
+    <th style="cursor:pointer" onclick="wuSortBy('mds')">PIC${wuAr('mds')}</th>
   </tr>`;
   filtered.sort((a,b)=>{
     let av,bv;
-    if(WU_SORT==='mds'){ av=wowMdsFullName(a); bv=wowMdsFullName(b); }
+    if(WU_SORT==='mds'){ av=a.pic||''; bv=b.pic||''; }
     else if(WU_SORT==='name'){ av=a.name||''; bv=b.name||''; }
-    else{ av=a.area||''; bv=b.area||''; }
+    else{ av=a.kab||''; bv=b.kab||''; }
     const cmp=av.localeCompare(bv)||a.name.localeCompare(b.name);
     return WU_DIR*cmp;
   });
-  tb.innerHTML=filtered.length?filtered.map(t=>`<tr><td class="td-dim">${t.area||'—'}</td><td class="td-main">${t.name}</td><td class="td-dim">${t.pair||'—'}</td><td class="td-dim">${wowMdsFullName(t)||'—'}</td></tr>`).join(''):'<tr><td colspan="4" style="text-align:center;color:var(--t3);padding:32px">Semua toko sudah pernah divisit / tidak ada yang cocok pencarian.</td></tr>';
+  tb.innerHTML=filtered.length?filtered.map(t=>`<tr><td class="td-dim">${t.kab||'—'}</td><td class="td-main">${t.name}</td><td class="td-dim">${t.pair||'—'}</td><td class="td-dim">${t.pic||'—'}</td></tr>`).join(''):'<tr><td colspan="4" style="text-align:center;color:var(--t3);padding:32px">Semua toko sudah pernah divisit / tidak ada yang cocok pencarian.</td></tr>';
   if(tf)tf.textContent=`${unvisited.length} dari ${WOW_TOKO_MASTER.length} toko belum pernah divalidasi WOW`+(q?` · ${filtered.length} cocok pencarian`:'');
 }
 function updateWowKeterangan(docId,val){
@@ -4213,8 +4215,14 @@ async function tpDelete(id){
 
 // ── INSIGHT Display WOW: AV, item, kabupaten. Visual ringan (bar horizontal, heatmap, takeaways) tanpa pustaka grafik/foto ──
 let INS_MODE='all',INS_PIC='';
-function wowInsMode(m){INS_MODE=m;render();}
-function wowInsPicSet(v){INS_PIC=v;render();}
+function wowInsSetFilter(v){const f=document.getElementById('f-mds');if(f){f.value=v;wowFilterKab();}}
+function wowInsMode(m){
+  INS_MODE=m;
+  if(m==='all')wowInsSetFilter('');
+  else{const ks=Object.keys(typeof WOW_PIC_KAB!=='undefined'?WOW_PIC_KAB:{}).sort();wowInsSetFilter(INS_PIC||ks[0]||'');}
+  render();
+}
+function wowInsPicSet(v){INS_PIC=v;wowInsSetFilter(v);render();}
 function wowInsEsc(x){return String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 function wowInsShort(k){
   let t=String(k||'').toUpperCase().replace(/^(NS|TS|HI ?LO)( DRINK| SCHOOL| TEEN| ACTIVE| GOLD| PLATINUM)? /,'');
@@ -4250,8 +4258,9 @@ function renderWowInsight(rows){
   const box=document.getElementById('wow-insight');if(!box)return;
   rows=rows||[];
   const picList=typeof WOW_PIC_KAB!=='undefined'?Object.keys(WOW_PIC_KAB).sort():[];
+  const gf=(document.getElementById('f-mds')||{}).value||'';
+  if(gf){INS_MODE='pic';INS_PIC=gf;}else INS_MODE='all';
   const modePic=INS_MODE==='pic';
-  if(modePic&&!INS_PIC)INS_PIC=picList[0]||'';
   const rowsAll=rows;
   if(modePic)rows=rows.filter(r=>r.mds===INS_PIC);
   const WM=typeof WOW_TOKO_MASTER!=='undefined'?(modePic?WOW_TOKO_MASTER.filter(t=>t.pic===INS_PIC):WOW_TOKO_MASTER):[];
@@ -4359,10 +4368,31 @@ function renderWowInsight(rows){
   const tks=[];
   if(!modePic&&pic.length>1){const hi=pic[pic.length-1],lo=pic[0];tks.push('<b>AV NS per toko</b> tertinggi di '+wowInsEsc(hi.l)+' ('+wowInsAvg(hi.a*hi.v,hi.v)+'), terendah di '+wowInsEsc(lo.l)+' ('+wowInsAvg(lo.a*lo.v,lo.v)+').');}
   else tks.push('<b>Rata-rata per toko</b>: NS '+wowInsAvg(tot.NS[0],rows.length)+' item, HILO '+wowInsAvg(tot.HILO[0],rows.length)+' item ada.');
-  const k1=kosong.filter(x=>x.b==='NS').slice(0,2).map(x=>wowInsShort(x.k)+' ('+x.p+'%)'),k2=kosong.filter(x=>x.b==='HILO').slice(0,2).map(x=>wowInsShort(x.k)+' ('+x.p+'%)');
-  tks.push('<b>Paling sering kosong</b> — NS: '+wowInsEsc(k1.join(', ')||'—')+'; HILO: '+wowInsEsc(k2.join(', ')||'—')+'.');
+  tks.push(tk.length?'<b>AV toko terendah</b> (visit terakhir): '+tk.slice(0,2).map(x=>wowInsEsc(x.r.store)+' ('+x.t+' item)').join(', ')+'.':'<b>AV toko</b>: belum ada data.');
   tks.push('<b>HILO Matcha</b> sudah ada di '+mt.ada.length+' dari '+mTot+' toko'+(mP!=null?' ('+mP+'%)':'')+'. <b>'+noDispN+' kabupaten</b> belum punya display.');
   const tk3='<div class="ins-tks">'+tks.map((t,i)=>'<div class="ins-tk"><em>0'+(i+1)+'</em><p>'+t+'</p></div>').join('')+'</div>';
 
-  box.innerHTML=modeBar+kpis+tk3+'<div class="ins-grid">'+secMatcha+secPic+secKab+secHeat+'<div class="ins-card"><h4>Item paling sering kosong · Nutrisari</h4>'+barItem('NS')+'</div><div class="ins-card"><h4>Item paling sering kosong · HiLo</h4>'+barItem('HILO')+'</div>'+secTk+secNol+secKabNoDisp+secKabKosong+'</div>';
+  box.innerHTML=modeBar+kpis+tk3+'<div class="ins-grid">'+secMatcha+secPic+secKab+secHeat+secTk+secNol+secKabNoDisp+secKabKosong+'</div>';
 }
+
+
+// ── Filter PIC / Kabupaten (dropdown, kabupaten mengikuti PIC) ──
+function wowFilterFill(){
+  const sp=document.getElementById('f-mds'),sk=document.getElementById('f-area');
+  if(!sp||!sk||typeof WOW_PIC_KAB==='undefined')return;
+  const pics=Object.keys(WOW_PIC_KAB).sort();
+  const cur=sp.value;
+  sp.innerHTML='<option value="">Semua PIC</option>'+pics.map(p=>'<option'+(p===cur?' selected':'')+'>'+p+'</option>').join('');
+  wowFilterKab();
+}
+function wowFilterKab(){
+  const sp=document.getElementById('f-mds'),sk=document.getElementById('f-area');
+  if(!sp||!sk||typeof WOW_PIC_KAB==='undefined')return;
+  const cur=sk.value;
+  const list=sp.value?(WOW_PIC_KAB[sp.value]||[]):[...new Set(Object.values(WOW_PIC_KAB).flat())];
+  list.sort((a,b)=>a.localeCompare(b));
+  sk.innerHTML='<option value="">Semua Kabupaten</option>'+list.map(k=>'<option'+(k===cur?' selected':'')+'>'+k+'</option>').join('');
+  if(!list.includes(cur))sk.value='';
+}
+function wowFilterPic(){wowFilterKab();render();}
+wowFilterFill();

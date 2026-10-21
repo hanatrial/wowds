@@ -13,8 +13,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
-<link rel="stylesheet" href="dashboard.css?v=16">
-<link rel="stylesheet" href="lite.css?v=16">
+<link rel="stylesheet" href="dashboard.css?v=17">
+<link rel="stylesheet" href="lite.css?v=17">
 </head>
 <body>
 <div id="pin-screen">
@@ -76,13 +76,10 @@
         <option value="12">Desember</option>
       </select>
       <div class="fsep"></div>
-      <select class="fi" id="f-area" style="width:110px" onchange="render()">
-        <option value="">Semua Area</option>
-        <option>Bau Bau</option><option>Bone</option><option>Bulukumba</option><option>Gorontalo</option><option>Kendari</option><option>Luwuk</option><option>Makassar</option><option>Mamuju</option><option>Manado</option><option>Palopo</option><option>Palu</option><option>Pare-Pare</option><option>Poso</option>
-      </select>
-      <input class="fi" id="f-mds" placeholder="PIC…" style="width:100px" oninput="render()">
-      <input class="fi" id="f-store" placeholder="Toko…" style="width:110px" oninput="render()">
-      <input class="fi" id="f-item" placeholder="Item Beli…" style="width:130px" list="item-beli-list" oninput="render()">
+      <select class="fi" id="f-mds" style="width:120px" onchange="wowFilterPic()"><option value="">Semua PIC</option></select>
+      <select class="fi" id="f-area" style="width:150px" onchange="render()"><option value="">Semua Kabupaten</option></select>
+      <input class="fi" id="f-store" placeholder="Toko…" style="width:130px" oninput="render()">
+      <input class="fi" id="f-item" style="display:none" oninput="render()">
       <datalist id="item-beli-list"></datalist>
       <span class="freset" onclick="clearFilters()">✕ Reset</span>
     </div></div>
@@ -155,7 +152,7 @@
 <label>Nama Outlet 2 <i>(opsional)</i><input id="tp-nama2" autocomplete="off"></label>
 <label>Status<select id="tp-status"><option value="">— Pilih —</option><option>New</option><option>Cancel</option><option>Existing</option></select></label>
 </div><div class="tp-fotos"><label class="tp-foto"><span>Foto Pajangan 1 <i>(wajib)</i></span><input type="file" accept="image/*" id="tp-foto0" onchange="tpFoto(0)"><img id="tp-prev0" class="tp-prev hidden" alt=""></label><label class="tp-foto"><span>Foto Pajangan 2 <i>(opsional)</i></span><input type="file" accept="image/*" id="tp-foto1" onchange="tpFoto(1)"><img id="tp-prev1" class="tp-prev hidden" alt=""></label><label class="tp-foto"><span>Foto Pajangan 3 <i>(opsional)</i></span><input type="file" accept="image/*" id="tp-foto2" onchange="tpFoto(2)"><img id="tp-prev2" class="tp-prev hidden" alt=""></label></div><div class="tp-msg" id="tp-msg"></div><button class="tp-save" onclick="saveToko()">Simpan</button><div class="tp-list-h">Input terakhir</div><div id="tp-list" class="tp-list">Memuat…</div></div></div></div>
-<script src="wow_toko_master.js?v=16"></script>
-<script src="dashboard.js?v=16"></script>
+<script src="wow_toko_master.js?v=17"></script>
+<script src="dashboard.js?v=17"></script>
 </body>
 </html>
