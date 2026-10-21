@@ -23949,7 +23949,7 @@ async function loadWowAddedStores(){
     });
   }catch(e){console.warn('toko tambahan gagal dimuat',e);}
 }
-function openWow(){ showScreen('s-wow'); Promise.all([loadWowCustomStores(),loadWowVisitedStores(),loadWowAddedStores()]).then(()=>{ wowFillStore(); });
+function openWow(){ showScreen('s-wow'); Promise.all([loadWowCustomStores(),loadWowAddedStores()]).then(()=>{ wowFillStore(); });
   loadWowVisitLast(); initWow(); }
 function wowGetItems(){
   const ns=SPG_INDOGROSIR_GROUPS[0].items.map(n=>({name:n,section:'NS'}));
@@ -24046,25 +24046,37 @@ function wowKabUI(mode,kab){
   else{q.textContent='Kabupaten';dn.innerHTML='✓ Kabupaten: <b>'+kab+'</b> <a href="#" onclick="wowKabEdit();return false">ubah</a>';dn.classList.remove('hidden');}
 }
 let WOW_VISIT_LAST=new Map();
+const WV_CK='wowds_visitidx_v1';
 async function loadWowVisitLast(){
   try{
-    const base='https://firestore.googleapis.com/v1/projects/'+FIREBASE_CONFIG.projectId+'/databases/(default)/documents/wow_logs';
-    const mask='mask.fieldPaths=store&mask.fieldPaths=storePasangan&mask.fieldPaths=timestamp&mask.fieldPaths=avail';
-    const m=new Map();let tok='';
-    for(let i=0;i<50;i++){
-      const r=await fetch(base+'?key='+FIREBASE_CONFIG.apiKey+'&pageSize=300&'+mask+(tok?'&pageToken='+encodeURIComponent(tok):''));
+    const base='https://firestore.googleapis.com/v1/projects/'+FIREBASE_CONFIG.projectId+'/databases/(default)/documents';
+    const fields=['store','storePasangan','timestamp','avail'];
+    let c=null;try{c=JSON.parse(localStorage.getItem(WV_CK)||'null');}catch(e){}
+    const now=Date.now();
+    const fresh=!!(c&&c.v===1&&c.m&&(now-c.t0)<12*3600e3);
+    const m=new Map(fresh?c.m:[]);let max=fresh?c.max:0;
+    const add=(f)=>{
+      const av=f.avail&&f.avail.integerValue!=null?+f.avail.integerValue:0;
+      const t=f.timestamp&&f.timestamp.timestampValue?Date.parse(f.timestamp.timestampValue):0;
+      if(t>max)max=t;
+      if(!(av>0))return; // AV=0 dianggap belum divisit (sama dengan dashboard)
+      [f.store,f.storePasangan].forEach(x=>{if(x&&x.stringValue){const k=x.stringValue.trim().toUpperCase();if(!m.has(k)||t>m.get(k))m.set(k,t);}});
+    };
+    if(fresh){
+      const r=await fetch(base+':runQuery?key='+FIREBASE_CONFIG.apiKey,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({structuredQuery:{from:[{collectionId:'wow_logs'}],select:{fields:fields.map(f=>({fieldPath:f}))},where:{fieldFilter:{field:{fieldPath:'timestamp'},op:'GREATER_THAN_OR_EQUAL',value:{timestampValue:new Date(c.max-120000).toISOString()}}}}})});
       if(!r.ok)throw new Error('REST '+r.status);
-      const j=await r.json();
-      (j.documents||[]).forEach(d=>{
-        const f=d.fields||{};
-        const av=f.avail&&f.avail.integerValue!=null?+f.avail.integerValue:0;
-        if(!(av>0))return; // AV=0 dianggap belum divisit (sama dengan dashboard)
-        const t=f.timestamp&&f.timestamp.timestampValue?Date.parse(f.timestamp.timestampValue):0;
-        [f.store,f.storePasangan].forEach(x=>{if(x&&x.stringValue){const k=x.stringValue.trim().toUpperCase();if(!m.has(k)||t>m.get(k))m.set(k,t);}});
-      });
-      tok=j.nextPageToken||'';if(!tok)break;
+      (await r.json()).forEach(x=>{if(x.document)add(x.document.fields||{});});
+    }else{
+      const mask=fields.map(f=>'mask.fieldPaths='+f).join('&');let tok='';
+      for(let i=0;i<50;i++){
+        const r=await fetch(base+'/wow_logs?key='+FIREBASE_CONFIG.apiKey+'&pageSize=300&'+mask+(tok?'&pageToken='+encodeURIComponent(tok):''));
+        if(!r.ok)throw new Error('REST '+r.status);
+        const j=await r.json();(j.documents||[]).forEach(d=>add(d.fields||{}));
+        tok=j.nextPageToken||'';if(!tok)break;
+      }
     }
     WOW_VISIT_LAST=m;
+    try{localStorage.setItem(WV_CK,JSON.stringify({v:1,t0:fresh?c.t0:now,max,m:[...m.entries()]}));}catch(e){}
     if(WOW.step===1)wowRenderLists();
   }catch(e){console.warn('daftar visit gagal dimuat',e);}
 }

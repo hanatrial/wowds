@@ -935,6 +935,35 @@ async function fetchPhotoData(coll,docId){
    includes photoData. The photos are then fetched one at a time, on demand. */
 const FS_PROJECT='displaywowsulawesi', FS_KEY='AIzaSyDO3IzpBcP9VT5cL7QT4RlK_a9jpGS0Yvo';
 const WOW_FIELDS=['id','timestamp','mds','area','store','storePasangan','tanggalVisit','avail','unavail','needsval','items','keterangan','picValidated','statusToko','mdsAsli'];
+/* Cache kunjungan di localStorage: kunci khusus (satu origin dipakai semua repo hanatrial.github.io).
+   Cache segar (< 6 jam) -> hanya ambil dokumen baru; selain itu baca penuh. Nama item dikompres lewat kamus. */
+const WOW_CK='wowds_logs_cache_v1';
+function wowCacheRead(){try{return JSON.parse(localStorage.getItem(WOW_CK)||'null');}catch(e){return null;}}
+function wowCacheEnc(docs,dict){
+  const ix=new Map(dict.map((n,i)=>[n,i]));
+  return docs.map(d=>{const o={...d};o.items=Object.fromEntries(Object.entries(d.items||{}).map(([k,v])=>{if(!ix.has(k)){ix.set(k,dict.length);dict.push(k);}return [ix.get(k),v];}));return o;});
+}
+function wowCacheDec(docs,dict){return docs.map(d=>({...d,items:Object.fromEntries(Object.entries(d.items||{}).map(([k,v])=>[dict[+k],v]))}));}
+async function wowLoadLogs(){
+  const c=wowCacheRead(),now=Date.now();
+  const fresh=!!(c&&c.v===1&&c.docs&&(now-c.t0)<6*3600e3);
+  let docs;
+  if(fresh){
+    docs=wowCacheDec(c.docs,c.dict);
+    const nw=await restQuerySince('wow_logs',WOW_FIELDS,new Date(c.max-120000));
+    const m=new Map(docs.map(x=>[x._docId,x]));
+    nw.forEach(x=>{x.timestamp=x.timestamp.getTime();m.set(x._docId,x);});
+    docs=[...m.values()];
+  }else{
+    docs=(await restList('wow_logs',WOW_FIELDS)).map(x=>({...x,timestamp:x.timestamp.getTime()}));
+  }
+  const max=docs.reduce((a,x)=>Math.max(a,x.timestamp||0),0);
+  try{const dict=fresh?c.dict.slice():[];localStorage.setItem(WOW_CK,JSON.stringify({v:1,t0:fresh?c.t0:now,max,dict,docs:wowCacheEnc(docs,dict)}));}catch(e){console.warn('cache penuh / tidak tersedia',e);}
+  return docs.map(x=>({...x,timestamp:new Date(x.timestamp)}));
+}
+function wowCachePatch(docId,patch){
+  try{const c=wowCacheRead();if(!c||!c.docs)return;const x=c.docs.find(v=>v._docId===docId);if(!x)return;Object.assign(x,patch);localStorage.setItem(WOW_CK,JSON.stringify(c));}catch(e){}
+}
 async function fetchWowPhotos(r){
   try{
     const url=`https://firestore.googleapis.com/v1/projects/${FS_PROJECT}/databases/(default)/documents/wow_logs/${encodeURIComponent(r._docId)}?key=${FS_KEY}&mask.fieldPaths=photoData&mask.fieldPaths=photoData2&mask.fieldPaths=photoData3`;
@@ -1049,7 +1078,7 @@ function loadAll(){
     render();
   }).catch(e=>console.error('spg_daily_logs FAILED',e.code,e.message));
   // ringan: baca lewat REST tanpa kolom foto; foto diambil saat baris dibuka
-  if(has('sec-wow')||has('sec-insight'))restList('wow_logs',WOW_FIELDS).then(list=>{
+  if(has('sec-wow')||has('sec-insight'))wowLoadLogs().then(list=>{
     WOW_ALL=list.map(v=>({...wowRenameItems(v),photoData:true}));
     WOW_ALL.sort((a,b)=>b.timestamp-a.timestamp);
     render();
@@ -1403,7 +1432,7 @@ const WOW_ITEM_RENAME={"HI LO DRINK THAI TEA PLS 8RX10SX15G":"HI LO DRINK THAI T
 function wowRenameItems(v){if(!v||!v.items)return v;const o={};Object.entries(v.items).forEach(([k,x])=>{o[WOW_ITEM_RENAME[k]||k]=x;});return {...v,items:o};}
 function switchTab(t){
   TAB=t;
-  ['rka','beli','stock','pjmds','formula','ned','spg','wow','insight','sales'].forEach(x=>{
+  ['rka','beli','stock','pjmds','formula','ned','spg','wow','insight','sales','combo'].forEach(x=>{
     const el=document.getElementById('ntab-'+x);
     if(el){el.classList.toggle('on',x===t);el.classList.toggle(x,true);}
   });
@@ -1417,6 +1446,7 @@ function switchTab(t){
   const sw=document.getElementById('sec-wow');if(sw)sw.style.display=t==='wow'?'block':'none';
   const si=document.getElementById('sec-insight');if(si)si.style.display=t==='insight'?'block':'none';
   const ssl=document.getElementById('sec-sales');if(ssl)ssl.style.display=t==='sales'?'block':'none';
+  const scb=document.getElementById('sec-combo');if(scb)scb.style.display=t==='combo'?'block':'none';
   render();
 }
 function switchSubTab(main,sub){
@@ -1532,6 +1562,8 @@ function render(){
     renderWowInsight(wowF);
   }else if(TAB==='sales'){
     renderWowSales();
+  }else if(TAB==='combo'){
+    renderWowCombo();
   }
 }
 
@@ -3202,6 +3234,7 @@ function updateWowKeterangan(docId,val){
   if(!docId)return;
   const r=WOW_ALL.find(x=>x._docId===docId);
   if(r)r.keterangan=val||null;
+  wowCachePatch(docId,{keterangan:val||null});
   db.collection('wow_logs').doc(docId).update({keterangan:val||null}).catch(e=>console.error('keterangan update failed',e.code,e.message));
 }
 let _wowS2=null;
@@ -3222,6 +3255,7 @@ function updateWowStatus(docId,val){
   if(!docId)return;
   const r=WOW_ALL.find(x=>x._docId===docId);
   if(r)r.statusToko=val||null;
+  wowCachePatch(docId,{statusToko:val||null});
   db.collection('wow_logs').doc(docId).update({statusToko:val||null}).catch(e=>console.error('status update failed',e.code,e.message));
 }
 function toggleWowValidasi(docId,val){
@@ -3229,6 +3263,7 @@ function toggleWowValidasi(docId,val){
   const r=WOW_ALL.find(x=>x._docId===docId);
   const next=r&&r.picValidated===val?null:val;
   if(r)r.picValidated=next;
+  wowCachePatch(docId,{picValidated:next});
   render();
   db.collection('wow_logs').doc(docId).update({picValidated:next}).catch(e=>console.error('picValidated update failed',e.code,e.message));
 }
@@ -4589,19 +4624,19 @@ function wsAgg(rows,n){
 }
 const wsSum=(a,i0,i1)=>{let s=0;for(let i=i0;i<i1;i++)s+=a[i]||0;return s;};
 // rata-rata bulanan: omzet, Line/EA NS, Line/EA HILO (rata-rata rasio per bulan; bulan tanpa EA dilewati)
-function wsMeans(e,idx){
+function wsMeans(e,idx,toko){
   const avg=(f)=>{const v=idx.map(f).filter(x=>x!=null);return v.length?v.reduce((a,x)=>a+x,0)/v.length:null;};
-  return {om:avg(i=>e.sv[i]),ns:avg(i=>e.ea[i]?e.ns[i]/e.ea[i]:null),hi:avg(i=>e.ea[i]?e.hilo[i]/e.ea[i]:null)};
+  return {om:avg(i=>e.sv[i]),ns:toko?avg(i=>e.ns[i]/toko):null,hi:toko?avg(i=>e.hilo[i]/toko):null};
 }
-function wsGrowthAvg(e,idxCur,idxPrev){
-  const c=wsMeans(e,idxCur),p=wsMeans(e,idxPrev);
+function wsGrowthAvg(e,idxCur,idxPrev,toko){
+  const c=wsMeans(e,idxCur,toko),p=wsMeans(e,idxPrev,toko);
   const g=(a,b)=>a!=null&&b?(a/b-1)*100:null;
   return {c,p,g:{om:g(c.om,p.om),ns:g(c.ns,p.ns),hi:g(c.hi,p.hi)}};
 }
 function wsExport(kind){
   const l=WS_LISTS[kind]||[];if(!l.length){alert('Tidak ada data untuk diexport.');return;}
   ensureXlsx().then(()=>{
-    const head={top:['Nama PIC','Nama MDS','Nama Toko','Kabupaten','Status','Omzet periode','Omzet rata-rata/bulan'],turun:['Nama PIC','Nama MDS','Nama Toko','Kabupaten','Status','Omzet tahun lalu','Omzet sekarang','Selisih','Perubahan %'],mati:['Nama PIC','Nama MDS','Nama Toko','Kabupaten','Status','Omzet terakhir ada','Bulan terakhir transaksi'],cancel:['Nama PIC','Nama MDS','Nama Toko','Kabupaten','Omzet periode','Bulan terakhir transaksi']}[kind];
+    const head={top:['Nama PIC','Nama MDS','Nama Toko','Kabupaten','Status','Omzet periode','Omzet rata-rata/bulan'],turun:['Nama PIC','Nama MDS','Nama Toko','Kabupaten','Status','Omzet tahun lalu','Omzet sekarang','Selisih','Perubahan %'],mati:['Nama PIC','Nama MDS','Nama Toko','Kabupaten','Status','Omzet terakhir ada','Bulan terakhir transaksi'],cancel:['Nama PIC','Nama MDS','Nama Toko','Kabupaten','Omzet periode','Bulan terakhir transaksi'],avrendah:['Nama PIC','Nama MDS','Nama Toko','Kabupaten','Status','AV total','Omzet rata-rata/bulan'],avtinggi:['Nama PIC','Nama MDS','Nama Toko','Kabupaten','Status','AV total','Omzet rata-rata/bulan']}[kind];
     const ws=XLSX.utils.aoa_to_sheet([head].concat(l));ws['!cols']=head.map((x,i)=>({wch:i===2?52:i===3?22:16}));
     const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,kind);
     XLSX.writeFile(wb,'penjualan_'+kind+'_'+new Date().toISOString().slice(0,10)+'.xlsx');
@@ -4637,7 +4672,7 @@ function renderWowSales(){
   const avg0=idxY0.length?tot0/idxY0.length:0,avg1=idxY1.length?tot1/idxY1.length:0,avg0s=sameY0.length?tot0s/sameY0.length:0;
   const dAvg=avg0?(avg1/avg0-1)*100:null,yoy=dAvg; // growth average (tahun lalu 12 bulan) vs rata-rata tahun berjalan (bulan berjalan)
   const last=n-1,prevYear=M.indexOf(Y0+M[last].slice(4));
-  const lineEa=(i,k)=>A.ea[i]?(k==='h'?A.hilo[i]:k==='n'?A.ns[i]:A.hilo[i]+A.ns[i])/A.ea[i]:null;
+  const lineEa=(i,k)=>rows.length?(k==='h'?A.hilo[i]:k==='n'?A.ns[i]:A.hilo[i]+A.ns[i])/rows.length:null; // lineea-toko
   const leLast=lineEa(last),lePrev=prevYear>=0?lineEa(prevYear):null;
   const leMean=idx=>{const v=idx.map(i=>lineEa(i)).filter(x=>x!=null);return v.length?v.reduce((q,x)=>q+x,0)/v.length:null;};
   const leAvg1=leMean(idxY1),leAvg0=leMean(idxY0);
@@ -4647,7 +4682,7 @@ function renderWowSales(){
     +kpi('Rata-rata omzet / bulan '+Y0,wsRp(avg0),idxY0.length+' bulan · total '+wsRp(tot0))
     +kpi('Rata-rata omzet / bulan '+Y1,wsRp(avg1),idxY1.length+' bulan (sampai '+lblM[last]+') · '+wsPct(dAvg)+' vs rata-rata '+Y0,dAvg!=null&&dAvg<0?'ws-neg':'')
     +'<div class="ins-kpi ws-growth'+(yoy!=null&&yoy<0?' neg':'')+'"><span>Growth rata-rata omzet '+Y1+'</span><b>'+wsPct(yoy)+'</b><small>rata-rata/bulan '+Y1+' ('+idxY1.length+' bln) vs '+Y0+' ('+idxY0.length+' bln)</small></div>'
-    +kpi('Line/EA rata-rata '+Y1,wsNum(leAvg1,2),wsPct(leAvg0?(leAvg1/leAvg0-1)*100:null)+' vs rata-rata '+Y0+' ('+wsNum(leAvg0,2)+') · '+lblM[last]+': '+wsNum(leLast,2)+' ('+A.ea[last]+' toko)')
+    +kpi('Line/EA rata-rata '+Y1,wsNum(leAvg1,2),wsPct(leAvg0?(leAvg1/leAvg0-1)*100:null)+' vs rata-rata '+Y0+' ('+wsNum(leAvg0,2)+') · total line ÷ bulan ÷ '+rows.length+' toko · '+lblM[last]+': '+wsNum(leLast,2))
     +'</div>';
 
   // takeaways
@@ -4693,7 +4728,7 @@ function renderWowSales(){
   }
   // per kabupaten
   const perKab={};rows.forEach(r=>{const k=wsKabOf(r)||'(kabupaten kosong)';(perKab[k]=perKab[k]||[]).push(r);});
-  const kabArr=Object.entries(perKab).map(([k,rs])=>{const e=wsAgg(rs,n);const sv1=idxY1.reduce((s,i)=>s+e.sv[i],0),sv0=sameY0.reduce((s,i)=>s+e.sv[i],0);const l3=[n-3,n-2,n-1];const pa=l3.reduce((s,i)=>s+e.hilo[i]+e.ns[i],0),ea=l3.reduce((s,i)=>s+e.ea[i],0);return {k,toko:rs.length,sv1,sv0,g:sv0?(sv1/sv0-1)*100:null,le:ea?pa/ea:null,e};});
+  const kabArr=Object.entries(perKab).map(([k,rs])=>{const e=wsAgg(rs,n);const sv1=idxY1.reduce((s,i)=>s+e.sv[i],0),sv0=sameY0.reduce((s,i)=>s+e.sv[i],0);const l3=[n-3,n-2,n-1];const pa=l3.reduce((s,i)=>s+e.hilo[i]+e.ns[i],0);return {k,toko:rs.length,sv1,sv0,g:sv0?(sv1/sv0-1)*100:null,le:rs.length?pa/3/rs.length:null,e};});
   const kabTop=kabArr.slice().sort((a,b)=>b.sv1-a.sv1).slice(0,12);
   const secKab='<div class="ins-card"><h4>Omzet '+Y1+' per kabupaten · 12 teratas</h4>'+wowInsBars(kabTop.map(x=>({l:x.k,v:x.sv1,s:x.toko+' toko',t:wsRp(x.sv1,true)+' <small>'+wsPct(x.g)+'</small>',warn:x.g!=null&&x.g<0})))+'</div>';
   const leKab=kabArr.filter(x=>x.le!=null&&x.toko>=3).sort((a,b)=>a.le-b.le);
@@ -4701,9 +4736,9 @@ function renderWowSales(){
   // Line/EA per PIC
   let leP='';
   if(!modePic){
-    const arr=picArr.map(x=>{const e=wsAgg(x.rows,n);const l3=[n-3,n-2,n-1];const ea=l3.reduce((s,i)=>s+e.ea[i],0);return {k:x.k,h:ea?l3.reduce((s,i)=>s+e.hilo[i],0)/ea:0,nn:ea?l3.reduce((s,i)=>s+e.ns[i],0)/ea:0};}).sort((a,b)=>(a.h+a.nn)-(b.h+b.nn));
+    const arr=picArr.map(x=>{const e=wsAgg(x.rows,n);const l3=[n-3,n-2,n-1];const tk=x.rows.length||1;return {k:x.k,h:l3.reduce((s,i)=>s+e.hilo[i],0)/3/tk,nn:l3.reduce((s,i)=>s+e.ns[i],0)/3/tk};}).sort((a,b)=>(a.h+a.nn)-(b.h+b.nn));
     const mx3=Math.max.apply(null,arr.map(x=>Math.max(x.h,x.nn)).concat([1]));
-    leP='<div class="ins-card"><h4>Line/EA per PIC · 3 bulan terakhir</h4><div class="bc"><div class="bc-key"><span class="k1"></span>NS <span class="k2"></span>HILO</div>'+arr.map(x=>'<div class="bc-row bc-dual"><span class="bc-l">'+wsEsc(x.k)+'</span><span class="bc-d"><span class="bc-t"><i style="width:'+Math.max(2,Math.round(x.nn/mx3*80))+'%"></i><b>'+wsNum(x.nn,2)+'</b></span><span class="bc-t"><i class="h" style="width:'+Math.max(2,Math.round(x.h/mx3*80))+'%"></i><b>'+wsNum(x.h,2)+'</b></span></span></div>').join('')+'</div></div>';
+    leP='<div class="ins-card"><h4>Line/EA per PIC · rata-rata 3 bulan terakhir</h4><div class="bc"><div class="bc-key"><span class="k1"></span>NS <span class="k2"></span>HILO</div>'+arr.map(x=>'<div class="bc-row bc-dual"><span class="bc-l">'+wsEsc(x.k)+'</span><span class="bc-d"><span class="bc-t"><i style="width:'+Math.max(2,Math.round(x.nn/mx3*80))+'%"></i><b>'+wsNum(x.nn,2)+'</b></span><span class="bc-t"><i class="h" style="width:'+Math.max(2,Math.round(x.h/mx3*80))+'%"></i><b>'+wsNum(x.h,2)+'</b></span></span></div>').join('')+'</div></div>';
   }
   // ── heatmap YoY (PIC x bulan) / (kabupaten x bulan) ──
   const hmGroups=modePic?kabArr.filter(x=>x.toko>=1).sort((a,b)=>b.sv1-a.sv1).slice(0,15).map(x=>({k:x.k,e:x.e})):picArr.map(x=>({k:x.k,e:wsAgg(x.rows,n)})).sort((a,b)=>picList.indexOf(a.k)-picList.indexOf(b.k));
@@ -4749,15 +4784,78 @@ function renderWowSales(){
   if(modePic){const have=new Set(gRows.map(x=>x.k));(WOW_PIC_KAB[INS_PIC]||[]).forEach(k=>{if(!have.has(k))gRows.push({k,e:null,toko:0});});}
   const gCell=(g,c,p,fmtv)=>'<td class="'+wsYoyCls(g)+'" title="'+fmtv(p)+' → '+fmtv(c)+'"><b>'+(g==null?'·':(g>0?'+':'')+Math.round(g)+'%')+'</b><small>'+(c==null?'':fmtv(c))+'</small></td>';
   const fOm=v=>v==null?'—':wsRp(v,true),fLe=v=>v==null?'—':wsNum(v,2);
-  const gBody=gRows.map(x=>{if(!x.e)return '<tr><th>'+wsEsc(x.k)+'<small class="hm-belum">belum dikerjakan · belum ada toko</small></th><td class="hx">·</td><td class="hx">·</td><td class="hx">·</td></tr>';const r=wsGrowthAvg(x.e,idxY1,idxY0);return '<tr><th>'+wsEsc(x.k)+'<small>'+x.toko+' toko</small></th>'+gCell(r.g.om,r.c.om,r.p.om,fOm)+gCell(r.g.ns,r.c.ns,r.p.ns,fLe)+gCell(r.g.hi,r.c.hi,r.p.hi,fLe)+'</tr>';}).join('');
-  const gTot=wsGrowthAvg(A,idxY1,idxY0);
+  const gBody=gRows.map(x=>{if(!x.e)return '<tr><th>'+wsEsc(x.k)+'<small class="hm-belum">belum dikerjakan · belum ada toko</small></th><td class="hx">·</td><td class="hx">·</td><td class="hx">·</td></tr>';const r=wsGrowthAvg(x.e,idxY1,idxY0,x.toko);return '<tr><th>'+wsEsc(x.k)+'<small>'+x.toko+' toko</small></th>'+gCell(r.g.om,r.c.om,r.p.om,fOm)+gCell(r.g.ns,r.c.ns,r.p.ns,fLe)+gCell(r.g.hi,r.c.hi,r.p.hi,fLe)+'</tr>';}).join('');
+  const gTot=wsGrowthAvg(A,idxY1,idxY0,rows.length);
   const gFoot='<tr class="hm-tot"><th>'+(modePic?'Total '+wsEsc(INS_PIC):'Sulawesi')+'<small>'+rows.length+' toko</small></th>'+gCell(gTot.g.om,gTot.c.om,gTot.p.om,fOm)+gCell(gTot.g.ns,gTot.c.ns,gTot.p.ns,fLe)+gCell(gTot.g.hi,gTot.c.hi,gTot.p.hi,fLe)+'</tr>';
-  const hmG='<div class="ins-card ins-wide"><h4>Heatmap growth rata-rata · '+(modePic?'per kabupaten':'per PIC')+'</h4><p class="ins-note">Growth average: rata-rata bulanan '+Y1+' ('+lblM[idxY1[0]]+'–'+lblM[idxY1[idxY1.length-1]]+', dibagi '+idxY1.length+' bulan) dibanding rata-rata bulanan '+Y0+' ('+lblM[idxY0[0]]+'–'+lblM[idxY0[idxY0.length-1]]+', dibagi '+idxY0.length+' bulan). Angka kecil = rata-rata '+Y1+'. Line/EA = PA ÷ toko bertransaksi.</p><div class="ins-hm"><table class="ws-hmg"><thead><tr><th>'+(modePic?'Kabupaten':'PIC')+'</th><th>Omzet</th><th>Line/EA NS</th><th>Line/EA HILO</th></tr></thead><tbody>'+gBody+gFoot+'</tbody></table></div><div class="ins-legend"><span class="h0">minus (&lt;0%)</span><span class="h2">0 s/d +10%</span><span class="h3">+10 s/d +30%</span><span class="h4">&gt;+30%</span></div></div>';
+  const hmG='<div class="ins-card ins-wide"><h4>Heatmap growth rata-rata · '+(modePic?'per kabupaten':'per PIC')+'</h4><p class="ins-note">Growth average: rata-rata bulanan '+Y1+' ('+lblM[idxY1[0]]+'–'+lblM[idxY1[idxY1.length-1]]+', dibagi '+idxY1.length+' bulan) dibanding rata-rata bulanan '+Y0+' ('+lblM[idxY0[0]]+'–'+lblM[idxY0[idxY0.length-1]]+', dibagi '+idxY0.length+' bulan). Angka kecil = rata-rata '+Y1+'. Line/EA = total line (PA) ÷ jumlah bulan ÷ jumlah toko.</p><div class="ins-hm"><table class="ws-hmg"><thead><tr><th>'+(modePic?'Kabupaten':'PIC')+'</th><th>Omzet</th><th>Line/EA NS</th><th>Line/EA HILO</th></tr></thead><tbody>'+gBody+gFoot+'</tbody></table></div><div class="ins-legend"><span class="h0">minus (&lt;0%)</span><span class="h2">0 s/d +10%</span><span class="h3">+10 s/d +30%</span><span class="h4">&gt;+30%</span></div></div>';
   const card=(t,body,wide)=>'<div class="ins-card'+(wide?' ins-wide':'')+'"><h4>'+t+'</h4>'+body+'</div>';
   box.innerHTML=modeBar+kpis+tkHtml+'<div class="ins-grid">'
     +card('Tren omzet bulanan · '+Y0+' vs '+Y1,trenOmzet,true)
-    +card('Tren Line/EA (PA ÷ toko bertransaksi)',leLine,true)
     +hmG
-    +leP+leKabCard+avCard+tMati
+    +leP+leKabCard+tMati
     +'</div>';
+}
+
+
+// ═══ INSIGHT GABUNGAN (AV × omzet) ═══
+function renderWowCombo(){
+  const box=document.getElementById('wow-combo');if(!box)return;
+  if(typeof WOW_SALES==='undefined'){wsEnsure(renderWowCombo);return;}
+  const M=WOW_SALES.m,n=M.length,yrs=M.map(m=>m.slice(0,4)),Y1=yrs[n-1];
+  const idxY1=[];M.forEach((m,i)=>{if(m.slice(0,4)===Y1)idxY1.push(i);});
+  const picList=Object.keys(typeof WOW_PIC_KAB!=='undefined'?WOW_PIC_KAB:{}).sort();
+  const gf=(document.getElementById('f-mds')||{}).value||'',gk=(document.getElementById('f-area')||{}).value||'',gs=((document.getElementById('f-store')||{}).value||'').trim().toLowerCase();
+  if(gf){INS_MODE='pic';INS_PIC=gf;}else INS_MODE='all';
+  const modePic=INS_MODE==='pic';
+  const modeBar='<div class="ins-mode"><button class="'+(modePic?'':'on')+'" onclick="wowInsMode(\'all\')">Sulawesi keseluruhan</button><button class="'+(modePic?'on':'')+'" onclick="wowInsMode(\'pic\')">Per PIC</button>'+(modePic?'<select onchange="wowInsPicSet(this.value)">'+picList.map(p=>'<option'+(p===INS_PIC?' selected':'')+'>'+wsEsc(p)+'</option>').join('')+'</select>':'')+'<span class="ws-note">AV dari visit terakhir tiap toko · omzet rata-rata per bulan '+Y1+' · toko Cancel tidak dihitung.</span></div>';
+  // toko (penjualan) tanpa Cancel
+  let rows=WOW_SALES.r.filter(r=>r[1]&&!/^(aa|ccsad)$/i.test(r[0])&&r[3]!=='Cancel');
+  if(modePic)rows=rows.filter(r=>r[1]===INS_PIC);
+  if(gk)rows=rows.filter(r=>wsKabOf(r)===gk);
+  if(gs)rows=rows.filter(r=>String(r[0]).toLowerCase().includes(gs)||String(r[4]).toLowerCase().includes(gs));
+  // AV total visit terakhir
+  const avBy=new Map();
+  if(typeof WOW_ALL!=='undefined'){const lastV={};WOW_ALL.slice().sort((a,b)=>a.timestamp-b.timestamp).forEach(r=>{lastV[String(r.store).trim().toUpperCase()]=r;});Object.entries(lastV).forEach(([k,r])=>{const av=wowInsAv(r.items);avBy.set(k,{t:av.NS[0]+av.HILO[0]+av.TS[0],mds:r.mdsAsli||''});});}
+  const avOf=r=>{const a=avBy.get(String(r[0]).trim().toUpperCase())||(r[4]?avBy.get(String(r[4]).trim().toUpperCase()):null);return a;};
+  const L=idxY1.length||1;
+  const items=rows.map(r=>{const a=avOf(r);const om=idxY1.reduce((s,i)=>s+r[7][i],0)/L;return {r,av:a?a.t:null,mds:a?a.mds:'',om};});
+  const withAv=items.filter(x=>x.av!=null);
+  if(!withAv.length){box.innerHTML=modeBar+'<div class="ins-empty">Belum ada toko dengan data AV dan penjualan pada filter ini.</div>';return;}
+  const bkDef=[{n:'AV < 15',t:x=>x<15},{n:'AV 15–29',t:x=>x>=15&&x<30},{n:'AV ≥ 30',t:x=>x>=30}];
+  const bk=bkDef.map(b=>{const l=withAv.filter(x=>b.t(x.av));const e=wsAgg(l.map(x=>x.r),n);const l3=[n-3,n-2,n-1];return {n:b.n,l,toko:l.length,om:l.length?l.reduce((s,x)=>s+x.om,0)/l.length:0,le:l.length?l3.reduce((s,i)=>s+e.hilo[i]+e.ns[i],0)/3/l.length:null,aktif:l.filter(x=>x.om>0).length};});
+  const noAv=items.filter(x=>x.av==null);
+  const low=bk[0],high=bk[2];
+  const ratio=low.om>0?high.om/low.om:null;
+  const kpi=(t,v,sm)=>'<div class="ins-kpi"><span>'+t+'</span><b>'+v+'</b><small>'+sm+'</small></div>';
+  const kpis='<div class="ins-kpis ws-k4">'
+    +kpi('Toko dengan data AV',withAv.length,'dari '+rows.length+' toko (sisanya belum divisit)')
+    +kpi('Omzet/toko/bln · AV < 15',wsRp(low.om,true),low.toko+' toko · '+low.aktif+' bertransaksi')
+    +kpi('Omzet/toko/bln · AV ≥ 30',wsRp(high.om,true),high.toko+' toko · '+high.aktif+' bertransaksi')
+    +'<div class="ins-kpi ws-growth'+(ratio!=null&&ratio<1?' neg':'')+'"><span>AV tinggi vs rendah</span><b>'+(ratio==null?'—':wsNum(ratio,1)+'×')+'</b><small>omzet toko AV ≥ 30 dibanding AV < 15</small></div>'
+    +'</div>';
+  const avCard='<div class="ins-card ins-wide"><h4>Display (AV) vs omzet</h4><p class="ins-note">Rata-rata omzet per toko per bulan '+Y1+', menurut AV total visit terakhir (NS+HILO+TS item ada).</p>'+wowInsBars(bk.concat([{n:'Belum divisit (tanpa data AV)',toko:noAv.length,om:noAv.length?noAv.reduce((s,x)=>s+x.om,0)/noAv.length:0,le:null}]).filter(b=>b.toko).map(b=>({l:b.n,s:b.toko+' toko',v:b.om,t:wsRp(b.om,true)+(b.le!=null?' <small>Line/EA '+wsNum(b.le,2)+'</small>':''),warn:b.n==='AV < 15'})),Math.max.apply(null,bk.map(b=>b.om).concat([1])))+'</div>';
+  // per PIC (Sulawesi): omzet/toko/bulan menurut bucket AV
+  let perPic='';
+  if(!modePic){
+    const byPic={};withAv.forEach(x=>{(byPic[x.r[1]]=byPic[x.r[1]]||[]).push(x);});
+    const cell=(l,t)=>{const z=l.filter(x=>t(x.av));return z.length?'<b>'+wsRp(z.reduce((s,x)=>s+x.om,0)/z.length,true)+'</b> <small>'+z.length+' toko</small>':'<span class="wu-nil">·</span>';};
+    perPic='<div class="ins-card ins-wide"><h4>Omzet/toko/bulan per PIC menurut AV</h4>'+wowInsTable(['PIC','AV < 15','AV 15–29','AV ≥ 30'],Object.keys(byPic).sort((a,b)=>picList.indexOf(a)-picList.indexOf(b)).map(p=>[wsEsc(p),cell(byPic[p],bkDef[0].t),cell(byPic[p],bkDef[1].t),cell(byPic[p],bkDef[2].t)]))+'</div>';
+  }
+  // daftar: AV rendah tapi omzet tinggi / AV tinggi tapi omzet rendah
+  const row=x=>[x.r[1],x.mds,x.r[0],wsKabOf(x.r),x.r[3],x.av,Math.round(x.om)];
+  const medAll=(()=>{const v=withAv.map(x=>x.om).sort((a,b)=>a-b);return v.length?v[Math.floor(v.length/2)]:0;})();
+  const lowHigh=withAv.filter(x=>x.av<15&&x.om>medAll).sort((a,b)=>b.om-a.om);
+  const highLow=withAv.filter(x=>x.av>=30&&x.om<=medAll).sort((a,b)=>a.om-b.om||b.av-a.av);
+  WS_LISTS.avrendah=lowHigh.slice(0,300).map(row);WS_LISTS.avtinggi=highLow.slice(0,300).map(row);
+  const tbl=(l)=>wowInsTable(['Toko','PIC','AV','Omzet/bln'],l.slice(0,10).map(x=>[wsEsc(x.r[0]),wsEsc(x.r[1]),'<b>'+x.av+'</b>',wsRp(x.om,true)]),'Tidak ada.');
+  const c1='<div class="ins-card"><h4>AV rendah, omzet di atas median</h4><p class="ins-note">AV &lt; 15 padahal omzet per bulan di atas median ('+wsRp(medAll,true)+'). Display belum menopang toko yang sebenarnya laku — prioritas perbaikan.</p>'+tbl(lowHigh)+wsBtn('avrendah','AV rendah, omzet tinggi')+'</div>';
+  const c2='<div class="ins-card"><h4>AV tinggi, omzet rendah</h4><p class="ins-note">AV ≥ 30 tetapi omzet per bulan sama atau di bawah median. Display sudah lengkap, penjualannya belum jalan — cek eksekusi atau potensi toko.</p>'+tbl(highLow)+wsBtn('avtinggi','AV tinggi, omzet rendah')+'</div>';
+  // takeaways
+  const tks=[
+    'Toko <b>AV ≥ 30</b> rata-rata beromzet '+wsRp(high.om,true)+' per bulan, '+(ratio==null?'—':wsNum(ratio,1)+'×')+' toko <b>AV &lt; 15</b> ('+wsRp(low.om,true)+').',
+    '<b>'+lowHigh.length+' toko</b> ber-AV rendah tetapi omzetnya di atas median; ini peluang perbaikan display dengan dampak paling cepat.',
+    '<b>'+highLow.length+' toko</b> sudah ber-AV tinggi tetapi omzet rendah; fokus ke eksekusi penjualan, bukan kelengkapan.'
+  ];
+  const tk='<div class="ins-tks">'+tks.map((t,i)=>'<div class="ins-tk"><em>0'+(i+1)+'</em><p>'+t+'</p></div>').join('')+'</div>';
+  box.innerHTML=modeBar+kpis+tk+'<div class="ins-grid">'+avCard+perPic+c1+c2+'</div>';
 }
