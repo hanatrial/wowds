@@ -4388,7 +4388,7 @@ function renderWowInsight(rows){
   WOW_MATCHA_TDK=mt.tdk;
   const mTot=mt.ada.length+mt.tdk.length;const mP=wowInsPct(mt.ada.length,mTot);
   const matchaPic=Object.entries(mPic).filter(([k])=>picList.includes(k)).map(([k,g])=>({k,ada:g.ada,n:g.ada+g.tdk,p:wowInsPct(g.ada,g.ada+g.tdk)})).sort((a,b)=>a.p-b.p);
-  const secMatcha='<div class="ins-card ins-wide"><h4>HILO Matcha · sudah ada atau belum</h4>'
+  const secMatcha='<div class="ins-card"><h4>HILO Matcha · sudah ada atau belum</h4>'
     +(mTot?'<div class="ins-big"><b>'+mt.ada.length+'</b><span>dari '+mTot+' toko sudah ada <em>('+mP+'%)</em></span><b class="w">'+mt.tdk.length+'</b><span>toko belum ada</span></div>'
       +'<p class="ins-note">Berdasarkan visit terakhir tiap toko'+(mt.blm?' · '+mt.blm+' toko visit terakhirnya belum mencatat item ini':'')+'.</p>'
       +(modePic?'':wowInsBars(matchaPic.map(x=>({l:x.k,v:x.p,t:x.p+'% <small>'+x.ada+'/'+x.n+'</small>',warn:x.p<50})),100))
@@ -4451,7 +4451,7 @@ function renderWowInsight(rows){
   }else{
     const perP={};evAll.forEach(x=>{const p=x.r.mds||'—';if(!picList.includes(p))return;const g=perP[p]||(perP[p]={low:0,n:0});g.n++;if(x.t<EVAL_MAX)g.low++;});
     const bars=Object.entries(perP).map(([p,g])=>({l:p,v:g.low,t:g.low+' <small>dari '+g.n+' toko ('+wowInsPct(g.low,g.n)+'%)</small>',warn:g.low/g.n>0.3,p:g.low/g.n})).sort((a,b)=>b.p-a.p);
-    secEval='<div class="ins-card ins-wide"><h4>Toko perlu dievaluasi · AV total &lt; '+EVAL_MAX+'</h4><div class="ins-big"><b class="w">'+evLow.length+'</b><span>dari '+evAll.length+' toko punya AV total di bawah '+EVAL_MAX+' item (NS + HILO + TS, visit terakhir). Pilih PIC di filter untuk melihat daftar tokonya.</span></div>'+wowInsBars(bars.map(x=>({l:x.l,v:x.v,t:x.t,warn:x.warn})))+'<button class="ins-exp" onclick="exportEvalToko()">⬇ Export Excel · toko perlu dievaluasi ('+evLow.length+')</button></div>';
+    secEval='<div class="ins-card"><h4>Toko perlu dievaluasi · AV total &lt; '+EVAL_MAX+'</h4><div class="ins-big"><b class="w">'+evLow.length+'</b><span>dari '+evAll.length+' toko punya AV total di bawah '+EVAL_MAX+' item (NS + HILO + TS, visit terakhir). Pilih PIC di filter untuk melihat daftar tokonya.</span></div>'+wowInsBars(bars.map(x=>({l:x.l,v:x.v,t:x.t,warn:x.warn})))+'<button class="ins-exp" onclick="exportEvalToko()">⬇ Export Excel · toko perlu dievaluasi ('+evLow.length+')</button></div>';
   }
 
   // toko AV terendah
@@ -4484,7 +4484,7 @@ function renderWowInsight(rows){
     Object.entries(PK).forEach(([pic,l])=>l.forEach(k=>{const n=(tokoBy[k]||new Set()).size;if(!n)rowsK.push({pic,k,u:unk[pic]||0});}));
     rowsK.sort((a,b)=>a.pic.localeCompare(b.pic)||a.k.localeCompare(b.k));
     noDispN=rowsK.length;
-    secKabNoDisp='<div class="ins-card ins-wide"><h4>Kabupaten yang belum ada display WOW</h4><div class="ins-big"><b class="w">'+rowsK.length+'</b><span>dari '+totKab+' kabupaten di database kabupaten belum punya satu pun toko display</span></div><p class="ins-note">Dihitung dari toko yang kabupatennya sudah terisi. Toko tanpa kabupaten belum bisa dihitung, jadi PIC yang banyak tokonya belum berkabupaten bisa jadi sebenarnya sudah punya display di kabupaten itu.</p>'
+    secKabNoDisp='<div class="ins-card"><h4>Kabupaten yang belum ada display WOW</h4><div class="ins-big"><b class="w">'+rowsK.length+'</b><span>dari '+totKab+' kabupaten di database kabupaten belum punya satu pun toko display</span></div><p class="ins-note">Dihitung dari toko yang kabupatennya sudah terisi. Toko tanpa kabupaten belum bisa dihitung, jadi PIC yang banyak tokonya belum berkabupaten bisa jadi sebenarnya sudah punya display di kabupaten itu.</p>'
       +wowInsTable(modePic?['Kabupaten','Toko PIC ini yang belum berkabupaten (bisa jadi ada di sini)']:['PIC','Kabupaten','Toko PIC ini yang belum berkabupaten (bisa jadi ada di sini)'],rowsK.map(x=>(modePic?[]:[wowInsEsc(x.pic)]).concat([wowInsEsc(x.k),x.u?'<details><summary style="color:'+(x.u>10?'#E8833A':'var(--t3)')+'">'+x.u+' toko'+(x.u>10?' · belum bisa dipastikan':'')+'</summary><div class="ins-list">'+(unkN[x.pic]||[]).slice(0,40).map(wowInsEsc).join('<br>')+((unkN[x.pic]||[]).length>40?'<br>… +'+((unkN[x.pic]||[]).length-40)+' lagi':'')+'</div></details>':'—'])),'Semua kabupaten sudah punya display.')+'</div>';
     // semua status (termasuk Cancel); kabupaten wajib diisi
     const WMall=typeof WOW_TOKO_MASTER!=='undefined'?(modePic?WOW_TOKO_MASTER.filter(t=>t.pic===INS_PIC):WOW_TOKO_MASTER):[];
@@ -4494,7 +4494,7 @@ function renderWowInsight(rows){
     const cnt=(l,st)=>l.filter(t=>(t.st||'')===st).length;
     const tabel=Object.entries(perP).sort((a,b)=>b[1].length-a[1].length).map(([p,l])=>[wowInsEsc(p),'<b>'+l.length+'</b> dari '+totP[p],cnt(l,'Existing'),cnt(l,'New'),cnt(l,'Cancel'),'<details><summary>lihat toko</summary><div class="ins-list">'+l.slice(0,80).map(t=>wowInsEsc(t.name)+' <em style="color:var(--t3)">· '+wowInsEsc(t.st||'—')+'</em>').join('<br>')+(l.length>80?'<br>… +'+(l.length-80)+' lagi':'')+'</div></details>']);
     WS_LISTS.kabkosong=kosongM.map(t=>[t.pic,'',t.name,t.st||'','']);
-    secKabKosong='<div class="ins-card ins-wide"><h4>Toko yang belum punya kabupaten · wajib diisi</h4><p class="ins-note"><b>'+kosongM.length+'</b> dari '+WMall.length+' toko di database belum punya kabupaten (semua status: Existing '+cnt(kosongM,'Existing')+', New '+cnt(kosongM,'New')+', Cancel '+cnt(kosongM,'Cancel')+'). Kabupaten wajib diisi untuk setiap toko; konfirmasi kabupaten saat input akan melengkapinya.</p>'+wowInsTable(['PIC','Tanpa kabupaten','Existing','New','Cancel','Daftar'],tabel,'Semua toko sudah punya kabupaten.')+(kosongM.length?'<button class="ins-exp" onclick="wsExport(\'kabkosong\')">⬇ Export Excel · toko tanpa kabupaten ('+kosongM.length+')</button>':'')+'</div>';
+    secKabKosong='<div class="ins-card"><h4>Toko yang belum punya kabupaten · wajib diisi</h4><p class="ins-note"><b>'+kosongM.length+'</b> dari '+WMall.length+' toko di database belum punya kabupaten (semua status: Existing '+cnt(kosongM,'Existing')+', New '+cnt(kosongM,'New')+', Cancel '+cnt(kosongM,'Cancel')+'). Kabupaten wajib diisi untuk setiap toko; konfirmasi kabupaten saat input akan melengkapinya.</p>'+wowInsTable(['PIC','Tanpa kabupaten','Existing','New','Cancel','Daftar'],tabel,'Semua toko sudah punya kabupaten.')+(kosongM.length?'<button class="ins-exp" onclick="wsExport(\'kabkosong\')">⬇ Export Excel · toko tanpa kabupaten ('+kosongM.length+')</button>':'')+'</div>';
   }
 
   // takeaways otomatis
@@ -4945,7 +4945,7 @@ function renderWowCombo(){
     +kpi('Omzet/toko/bln · AV ≥ 30',wsRp(high.om,true),high.toko+' toko · '+high.aktif+' bertransaksi')
     +'<div class="ins-kpi ws-growth'+(ratio!=null&&ratio<1?' neg':'')+'"><span>AV tinggi vs rendah</span><b>'+(ratio==null?'—':wsNum(ratio,1)+'×')+'</b><small>omzet toko AV ≥ 30 dibanding AV < 15</small></div>'
     +'</div>';
-  const avCard='<div class="ins-card ins-wide"><h4>Display (AV) vs omzet</h4><p class="ins-note">Rata-rata omzet per toko per bulan '+Y1+', menurut AV total visit terakhir (NS+HILO+TS item ada).</p>'+wowInsBars(bk.concat([{n:'Belum divisit (tanpa data AV)',toko:noAv.length,om:noAv.length?noAv.reduce((s,x)=>s+x.om,0)/noAv.length:0,le:null}]).filter(b=>b.toko).map(b=>({l:b.n,s:b.toko+' toko',v:b.om,t:wsRp(b.om,true)+(b.le!=null?' <small>Line/EA '+wsNum(b.le,2)+'</small>':''),warn:b.n==='AV < 15'})),Math.max.apply(null,bk.map(b=>b.om).concat([1])))+'</div>';
+  const avCard='<div class="ins-card"><h4>Display (AV) vs omzet</h4><p class="ins-note">Rata-rata omzet per toko per bulan '+Y1+', menurut AV total visit terakhir (NS+HILO+TS item ada).</p>'+wowInsBars(bk.concat([{n:'Belum divisit (tanpa data AV)',toko:noAv.length,om:noAv.length?noAv.reduce((s,x)=>s+x.om,0)/noAv.length:0,le:null}]).filter(b=>b.toko).map(b=>({l:b.n,s:b.toko+' toko',v:b.om,t:wsRp(b.om,true)+(b.le!=null?' <small>Line/EA '+wsNum(b.le,2)+'</small>':''),warn:b.n==='AV < 15'})),Math.max.apply(null,bk.map(b=>b.om).concat([1])))+'</div>';
   // per PIC (Sulawesi): omzet/toko/bulan menurut bucket AV
   let perPic='';
   if(!modePic){
