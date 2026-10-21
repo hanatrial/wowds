@@ -197,3 +197,11 @@ body::before,body::after{display:none!important;}
 
 .ins-exp{margin-top:12px;border:1px solid var(--primary);background:#fff;color:var(--primary);border-radius:10px;padding:9px 14px;font:inherit;font-size:12px;font-weight:600;cursor:pointer;}
 .ins-exp:hover{background:var(--primary);color:#fff;}
+
+/* heatmap relatif terhadap rata-rata Sulawesi */
+.ins-hm td.h0{background:#F2B79B;color:var(--text);}
+.ins-hm td.h1{background:#F7E3A6;color:var(--text);}
+.ins-hm td.h2{background:#EEF3EF;color:var(--text);}
+.ins-hm td.h3{background:#A9CDB5;color:var(--text);}
+.ins-hm td.h4{background:#4F8A6B;color:#fff!important;}
+.ins-legend .h0{background:#F2B79B;}.ins-legend .h1{background:#F7E3A6;}.ins-legend .h2{background:#EEF3EF;}.ins-legend .h3{background:#A9CDB5;}.ins-legend .h4{background:#4F8A6B;color:#fff;}
