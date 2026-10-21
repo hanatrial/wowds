@@ -306,6 +306,3 @@ body::before,body::after{display:none!important;}
 .wr-phc img{height:150px;width:auto;border-radius:8px;border:1px solid var(--border);margin:0 8px 8px 0;cursor:zoom-in;vertical-align:top;}
 .wr-phc img.big{height:auto;max-width:100%;cursor:zoom-out;}
 .wr-t input[type=checkbox]{width:16px;height:16px;}
-
-.ins-adv{margin-top:12px;padding:10px 12px;border-left:3px solid var(--accent);background:var(--bg2,#F4F7F3);border-radius:0 8px 8px 0;font-size:12.5px;line-height:1.55;color:var(--text);}
-.ins-adv p{margin:0 0 6px;}.ins-adv p:last-child{margin:0;}.ins-adv b{color:var(--accent);}
