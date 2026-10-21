@@ -433,7 +433,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -443,7 +443,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "n": "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -453,7 +453,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     }
@@ -755,7 +755,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -765,17 +765,17 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "n": "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "b": "HI LO",
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK THAI TEA PLS 8RX10SX15G",
+      "n": "HI LO DRINK THAI TEA PLS 12RX10SX15G",
       "b": "HI LO",
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK WHITE CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK WHITE CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -785,7 +785,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     }
@@ -1117,7 +1117,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -1127,7 +1127,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "n": "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -1137,7 +1137,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     }
@@ -1474,7 +1474,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -1484,17 +1484,17 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "n": "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "b": "HI LO",
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK THAI TEA PLS 8RX10SX15G",
+      "n": "HI LO DRINK THAI TEA PLS 12RX10SX15G",
       "b": "HI LO",
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK WHITE CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK WHITE CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -1504,7 +1504,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     }
@@ -1796,7 +1796,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -1806,17 +1806,17 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "n": "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "b": "HI LO",
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK THAI TEA PLS 8RX10SX15G",
+      "n": "HI LO DRINK THAI TEA PLS 12RX10SX15G",
       "b": "HI LO",
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK WHITE CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK WHITE CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -1826,7 +1826,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     }
@@ -2173,7 +2173,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -2183,12 +2183,12 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "n": "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "b": "HI LO",
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK THAI TEA PLS 8RX10SX15G",
+      "n": "HI LO DRINK THAI TEA PLS 12RX10SX15G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -2198,7 +2198,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     }
@@ -2475,7 +2475,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -2485,12 +2485,12 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "n": "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "b": "HI LO",
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK THAI TEA PLS 8RX10SX15G",
+      "n": "HI LO DRINK THAI TEA PLS 12RX10SX15G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -2500,7 +2500,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     }
@@ -2822,7 +2822,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -2832,17 +2832,17 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "n": "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "b": "HI LO",
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK THAI TEA PLS 8RX10SX15G",
+      "n": "HI LO DRINK THAI TEA PLS 12RX10SX15G",
       "b": "HI LO",
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK WHITE CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK WHITE CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -2852,7 +2852,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     }
@@ -3124,7 +3124,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -3134,12 +3134,12 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "n": "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "b": "HI LO",
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK THAI TEA PLS 8RX10SX15G",
+      "n": "HI LO DRINK THAI TEA PLS 12RX10SX15G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -3149,7 +3149,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     }
@@ -3491,7 +3491,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -3501,7 +3501,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "n": "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -3511,7 +3511,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     }
@@ -3773,7 +3773,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -3783,7 +3783,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "n": "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -3793,7 +3793,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     }
@@ -4090,7 +4090,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -4100,7 +4100,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "n": "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -4110,7 +4110,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     }
@@ -4467,7 +4467,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -4477,12 +4477,12 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "n": "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "b": "HI LO",
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK THAI TEA PLS 8RX10SX15G",
+      "n": "HI LO DRINK THAI TEA PLS 12RX10SX15G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -4492,7 +4492,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     }
@@ -4784,7 +4784,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -4794,7 +4794,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "n": "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -4804,7 +4804,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     }
@@ -5111,7 +5111,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -5121,7 +5121,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "n": "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -5131,7 +5131,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     }
@@ -5413,7 +5413,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -5423,12 +5423,12 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "n": "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "b": "HI LO",
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK THAI TEA PLS 8RX10SX15G",
+      "n": "HI LO DRINK THAI TEA PLS 12RX10SX15G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -5438,7 +5438,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     }
@@ -5690,7 +5690,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -5700,7 +5700,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "n": "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -5710,7 +5710,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     }
@@ -6007,7 +6007,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -6017,7 +6017,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "n": "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -6027,7 +6027,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     }
@@ -6284,7 +6284,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -6294,7 +6294,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "n": "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -6304,7 +6304,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     }
@@ -6556,7 +6556,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -6566,7 +6566,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "n": "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -6576,7 +6576,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     }
@@ -6953,7 +6953,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -6963,7 +6963,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "n": "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -6973,7 +6973,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     }
@@ -7270,7 +7270,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -7280,12 +7280,12 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "n": "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "b": "HI LO",
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK WHITE CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK WHITE CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -7295,7 +7295,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     }
@@ -7949,7 +7949,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -7959,7 +7959,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "n": "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -7969,7 +7969,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     }
@@ -8231,7 +8231,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -8241,12 +8241,12 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "n": "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "b": "HI LO",
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK WHITE CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK WHITE CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -8256,7 +8256,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     }
@@ -8543,7 +8543,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -8553,7 +8553,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "n": "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -8563,7 +8563,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     }
@@ -8820,7 +8820,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -8830,12 +8830,12 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "n": "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "b": "HI LO",
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK THAI TEA PLS 8RX10SX15G",
+      "n": "HI LO DRINK THAI TEA PLS 12RX10SX15G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -8845,7 +8845,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     }
@@ -9182,7 +9182,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -9192,12 +9192,12 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "n": "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "b": "HI LO",
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK WHITE CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK WHITE CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -9207,7 +9207,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     }
@@ -9524,7 +9524,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -9534,7 +9534,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "n": "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -9544,7 +9544,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     }
@@ -9891,7 +9891,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -9901,12 +9901,12 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "n": "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "b": "HI LO",
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK WHITE CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK WHITE CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -9916,7 +9916,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     }
@@ -10258,7 +10258,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -10268,17 +10268,17 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "n": "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "b": "HI LO",
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK THAI TEA PLS 8RX10SX15G",
+      "n": "HI LO DRINK THAI TEA PLS 12RX10SX15G",
       "b": "HI LO",
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK WHITE CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK WHITE CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -10288,7 +10288,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     }
@@ -10615,7 +10615,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -10625,12 +10625,12 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "n": "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "b": "HI LO",
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK THAI TEA PLS 8RX10SX15G",
+      "n": "HI LO DRINK THAI TEA PLS 12RX10SX15G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -10640,7 +10640,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     }
@@ -10992,7 +10992,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -11002,7 +11002,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "n": "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -11012,7 +11012,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     }
@@ -11354,7 +11354,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -11364,7 +11364,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "n": "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -11374,7 +11374,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     }
@@ -11711,7 +11711,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -11721,12 +11721,12 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "n": "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "b": "HI LO",
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK WHITE CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK WHITE CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -11736,7 +11736,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     }
@@ -12098,7 +12098,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -12108,7 +12108,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "n": "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -12118,7 +12118,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     }
@@ -12465,7 +12465,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -12475,12 +12475,12 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "n": "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "b": "HI LO",
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK THAI TEA PLS 8RX10SX15G",
+      "n": "HI LO DRINK THAI TEA PLS 12RX10SX15G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -12490,7 +12490,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     }
@@ -12857,7 +12857,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -12867,7 +12867,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "n": "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -12877,7 +12877,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     }
@@ -13179,7 +13179,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -13189,7 +13189,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "n": "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -13199,7 +13199,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     }
@@ -13451,7 +13451,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -13461,7 +13461,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "n": "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -13471,7 +13471,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     }
@@ -13783,7 +13783,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -13793,7 +13793,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "n": "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -13803,7 +13803,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     }
@@ -14120,7 +14120,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -14130,12 +14130,12 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "n": "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "b": "HI LO",
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK WHITE CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK WHITE CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -14145,7 +14145,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     }
@@ -14462,7 +14462,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -14472,12 +14472,12 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "n": "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "b": "HI LO",
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK THAI TEA PLS 8RX10SX15G",
+      "n": "HI LO DRINK THAI TEA PLS 12RX10SX15G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -14487,7 +14487,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     }
@@ -14809,7 +14809,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -14819,17 +14819,17 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "n": "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "b": "HI LO",
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK THAI TEA PLS 8RX10SX15G",
+      "n": "HI LO DRINK THAI TEA PLS 12RX10SX15G",
       "b": "HI LO",
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK WHITE CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK WHITE CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -14839,7 +14839,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     }
@@ -15141,7 +15141,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -15151,17 +15151,17 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "n": "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "b": "HI LO",
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK THAI TEA PLS 8RX10SX15G",
+      "n": "HI LO DRINK THAI TEA PLS 12RX10SX15G",
       "b": "HI LO",
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK WHITE CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK WHITE CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -15171,7 +15171,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     }
@@ -15503,7 +15503,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -15513,12 +15513,12 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "n": "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "b": "HI LO",
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK THAI TEA PLS 8RX10SX15G",
+      "n": "HI LO DRINK THAI TEA PLS 12RX10SX15G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -15528,7 +15528,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     }
@@ -15840,7 +15840,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -15850,12 +15850,12 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "n": "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "b": "HI LO",
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK THAI TEA PLS 8RX10SX15G",
+      "n": "HI LO DRINK THAI TEA PLS 12RX10SX15G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -15865,7 +15865,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     }
@@ -16182,7 +16182,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -16192,17 +16192,17 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "n": "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "b": "HI LO",
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK THAI TEA PLS 8RX10SX15G",
+      "n": "HI LO DRINK THAI TEA PLS 12RX10SX15G",
       "b": "HI LO",
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK WHITE CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK WHITE CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -16212,7 +16212,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     }
@@ -16529,7 +16529,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -16539,7 +16539,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "n": "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -16549,7 +16549,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     }
@@ -16821,7 +16821,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -16831,7 +16831,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "n": "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -16841,7 +16841,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     }
@@ -17103,7 +17103,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -17113,7 +17113,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "n": "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -17123,7 +17123,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     }
@@ -17380,7 +17380,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -17390,7 +17390,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "n": "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -17400,7 +17400,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     }
@@ -17667,7 +17667,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -17677,7 +17677,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "n": "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -17687,7 +17687,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     }
@@ -17984,7 +17984,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -17994,12 +17994,12 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "n": "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "b": "HI LO",
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK THAI TEA PLS 8RX10SX15G",
+      "n": "HI LO DRINK THAI TEA PLS 12RX10SX15G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -18009,7 +18009,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     }
@@ -18286,7 +18286,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -18296,7 +18296,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "n": "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -18306,7 +18306,7 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     }
@@ -22813,12 +22813,12 @@ const ITEMS_BY_STORE = {
       "c": "NON POLOS"
     },
     {
-      "n": "HI LO DRINK AVOCADO CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK AVOCADO CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCO HAZELNUT PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCO HAZELNUT PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -22828,12 +22828,12 @@ const ITEMS_BY_STORE = {
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK ES KETAN HITAM PLS 8RX10SX14G",
+      "n": "HI LO DRINK ES KETAN HITAM PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -22853,17 +22853,17 @@ const ITEMS_BY_STORE = {
       "c": "NON POLOS"
     },
     {
-      "n": "HI LO DRINK SWISS CHOCOLATE PLS 8RX10SX28G",
+      "n": "HI LO DRINK SWISS CHOCOLATE PLS 12RX10SX28G",
       "b": "HI LO",
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK THAI TEA PLS 8RX10SX15G",
+      "n": "HI LO DRINK THAI TEA PLS 12RX10SX15G",
       "b": "HI LO",
       "c": "POLOS"
     },
     {
-      "n": "HI LO DRINK WHITE CHOCOLATE PLS 15RX10SX14G",
+      "n": "HI LO DRINK WHITE CHOCOLATE PLS 12RX10SX14G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -22913,7 +22913,7 @@ const ITEMS_BY_STORE = {
       "c": "NON POLOS"
     },
     {
-      "n": "HI LO SCHOOL STRAWBERRY PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU STROBERI PLS 12RX10SX24G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -22923,7 +22923,7 @@ const ITEMS_BY_STORE = {
       "c": "NON POLOS"
     },
     {
-      "n": "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
+      "n": "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
       "b": "HI LO",
       "c": "POLOS"
     },
@@ -23309,7 +23309,7 @@ const ITEMS_BY_STORE = {
     }
   ]
 };
-const IDEAL_ITEMS_LIST=["HI LO PLATINUM SWISS CHOCOLATE 12DX12SX34G","HI LO SCHOOL VANILLA 12DX250G","HI LO TEEN CHOCOLATE 12DX500G","HI LO SCHOOL CHOCOLATE 12DX500G","HI LO TEEN VANILLA CARAMEL 12DX500G","HI LO TEEN CHOCOLATE 12DX250G","HI LO SCHOOL CHOCOLATE 12DX250G","HI LO DRINK RTD CHOCOFIT 24TPKX200ML","HI LO SCHOOL RTD COKELAT 24TPKX200ML","HI LO TEEN HIPROTEIN ORIGINAL 12DX10SX33G","HI LO TEEN RTD COKELAT 24TPKX200ML","HI LO ACTIVE GRANOLA BERRY BERRY HONEY 12PX150G","L-MEN PROTEIN 2GO RTD CHOCOLATE 24TPKX200ML","L-MEN PROTEIN 2GO RTD CAPPUCCINO 24TPKX190ML","NS RTD JAMBU BIJI 24TPKX200ML","NS RTD JERUK MADU 24TPKX200ML","NS RTD SQUEEZED ORANGE 24TPKX200ML","TS BERAS PORANG INSTAN SACHET 12DX10SX40G","TS CANOLA OIL 12BTLX946ML","TS SWT DIABTX 12DX100SX1.8G","TS CORN OIL 12BTLX946ML","TS SWT CLASSIC 12DX100SX2.5G","TS BERAS MERAH ORGANIK 12PCHX1000G","TS SWT CLASSIC 24DX50SX2.5G","TS SOY SAUCE 24BTLX200ML","TS HONEY 12BTLX350ML","TS COOKIES HOKKAIDO CHEESE 12DX5SX20G","TS CHOCOLATE SPREAD 12BTLX300G","TS SUNFLOWER OIL 12BTLX946ML","TS SWT DIABTX 24DX50SX1.8G","TS PEANUT ALMOND BUTTER 12BTLX300G","TS SWT STEVIA 24DX50SX1.8G","TS RTD OAT DRINK VANILLICIOUS 24TPKX190ML","TS SWT CLASSIC 24DX25SX2.5G","TS RTD ALMOND DRINK CHOCOLICIOUS 24TPKX190ML","TS SWT DIABTX 12DX25SX1.8G","TS RTD COLLAGEN SHOT PEACH BLOSSOM 24TPKX190ML","TS SYRUP COCOPANDAN 12BTLX750ML","TS DIABTX MILK VANILLA MALT 12DX150G","HI LO SCHOOL COKELAT SUSU PLS 12RX10SX30G","HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G","HI LO DRINK CHOCO MALT PLS 8RX10SX14G","HI LO DRINK SWISS CHOCOLATE PLS 8RX10SX28G","HI LO DRINK CHOCOLATE PLS 15RX10SX14G","HI LO DRINK CREAMY MARIE PLS 15RX10SX14G","HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G","NS AMERICAN SWEET ORANGE PLS 18PX40SX14G","NS JERUK PERAS PLS 18PX40SX14G","NS LEMON TEA PLS 4PX40SX11G","NS BLACKCURRANT TEA PLS 4PX40SX11G","NS SWEET MANGO PLS 4PX40SX11G","NS ANGGUR PLS 4PX40SX11G","NS JERUK NIPIS PLS 4PX40SX11G","NS JERUK (EX) MANIS PLS 4PX40SX11G","NS MILKY ORANGE PLS 4PX40SX11G"];
+const IDEAL_ITEMS_LIST=["HI LO PLATINUM SWISS CHOCOLATE 12DX12SX34G","HI LO SCHOOL VANILLA 12DX250G","HI LO TEEN CHOCOLATE 12DX500G","HI LO SCHOOL CHOCOLATE 12DX500G","HI LO TEEN VANILLA CARAMEL 12DX500G","HI LO TEEN CHOCOLATE 12DX250G","HI LO SCHOOL CHOCOLATE 12DX250G","HI LO DRINK RTD CHOCOFIT 24TPKX200ML","HI LO SCHOOL RTD COKELAT 24TPKX200ML","HI LO TEEN HIPROTEIN ORIGINAL 12DX10SX33G","HI LO TEEN RTD COKELAT 24TPKX200ML","HI LO ACTIVE GRANOLA BERRY BERRY HONEY 12PX150G","L-MEN PROTEIN 2GO RTD CHOCOLATE 24TPKX200ML","L-MEN PROTEIN 2GO RTD CAPPUCCINO 24TPKX190ML","NS RTD JAMBU BIJI 24TPKX200ML","NS RTD JERUK MADU 24TPKX200ML","NS RTD SQUEEZED ORANGE 24TPKX200ML","TS BERAS PORANG INSTAN SACHET 12DX10SX40G","TS CANOLA OIL 12BTLX946ML","TS SWT DIABTX 12DX100SX1.8G","TS CORN OIL 12BTLX946ML","TS SWT CLASSIC 12DX100SX2.5G","TS BERAS MERAH ORGANIK 12PCHX1000G","TS SWT CLASSIC 24DX50SX2.5G","TS SOY SAUCE 24BTLX200ML","TS HONEY 12BTLX350ML","TS COOKIES HOKKAIDO CHEESE 12DX5SX20G","TS CHOCOLATE SPREAD 12BTLX300G","TS SUNFLOWER OIL 12BTLX946ML","TS SWT DIABTX 24DX50SX1.8G","TS PEANUT ALMOND BUTTER 12BTLX300G","TS SWT STEVIA 24DX50SX1.8G","TS RTD OAT DRINK VANILLICIOUS 24TPKX190ML","TS SWT CLASSIC 24DX25SX2.5G","TS RTD ALMOND DRINK CHOCOLICIOUS 24TPKX190ML","TS SWT DIABTX 12DX25SX1.8G","TS RTD COLLAGEN SHOT PEACH BLOSSOM 24TPKX190ML","TS SYRUP COCOPANDAN 12BTLX750ML","TS DIABTX MILK VANILLA MALT 12DX150G","HI LO SCHOOL COKELAT SUSU PLS 12RX10SX30G","HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G","HI LO DRINK CHOCO MALT PLS 8RX10SX14G","HI LO DRINK SWISS CHOCOLATE PLS 12RX10SX28G","HI LO DRINK CHOCOLATE PLS 12RX10SX14G","HI LO DRINK CREAMY MARIE PLS 15RX10SX14G","HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G","NS AMERICAN SWEET ORANGE PLS 18PX40SX14G","NS JERUK PERAS PLS 18PX40SX14G","NS LEMON TEA PLS 4PX40SX11G","NS BLACKCURRANT TEA PLS 4PX40SX11G","NS SWEET MANGO PLS 4PX40SX11G","NS ANGGUR PLS 4PX40SX11G","NS JERUK NIPIS PLS 4PX40SX11G","NS JERUK (EX) MANIS PLS 4PX40SX11G","NS MILKY ORANGE PLS 4PX40SX11G"];
 let _SGO=null;
 function getStoreItems(){
   const s=ITEMS_BY_STORE[R.store];
@@ -23495,20 +23495,20 @@ const BELI_PRODUCTS = [
   {
     "group": "HILO",
     "items": [
-      "HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G",
+      "HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G",
       "HI LO DRINK CREAMY MARIE PLS 15RX10SX14G",
-      "HILO CHOCOLATE PLS 15RX10SX14G",
-      "HILO THAI TEA PLS 8RX10SX15G",
-      "HILO WHITE CHOCOLATE PLS 15RX10SX14G",
+      "HI LO DRINK CHOCOLATE PLS 12RX10SX14G",
+      "HI LO DRINK THAI TEA PLS 12RX10SX15G",
+      "HI LO DRINK WHITE CHOCOLATE PLS 12RX10SX14G",
       "HI LO DRINK CHOCO MALT 8RX10SX14G",
-      "HILO SWISS CHOCOLATE PLS 8RX10SX28G",
-      "HI LO DRINK CHOCOLATE TARO PLS 15RX10SX14G",
-      "HI LO DRINK TEH TARIK PLS 8RX10SX15G",
-      "HILO AVOCADO CHOCOLATE PLS 15RX10SX14G",
-      "HILO CHOCO HAZELNUT PLS 15RX10SX14G",
-      "HILO CHOCOLATE BANANA PLS 15RX10SX14G",
-      "HILO CHOCOLATE TARO PLS 15RX10SX14G",
-      "HILO ES KETAN HITAM PLS 8RX10SX14G"
+      "HI LO DRINK SWISS CHOCOLATE PLS 12RX10SX28G",
+      "HI LO DRINK CHOCOLATE TARO PLS 12RX10SX14G",
+      "HI LO DRINK TEH TARIK PLS 12RX10SX15G",
+      "HI LO DRINK AVOCADO CHOCOLATE PLS 12RX10SX14G",
+      "HI LO DRINK CHOCO HAZELNUT PLS 12RX10SX14G",
+      "HI LO DRINK CHOCOLATE BANANA PLS 12RX10SX14G",
+      "HI LO DRINK CHOCOLATE TARO PLS 12RX10SX14G",
+      "HI LO DRINK ES KETAN HITAM PLS 12RX10SX14G"
     ],
     "priority": 7
   },
@@ -23516,8 +23516,8 @@ const BELI_PRODUCTS = [
     "group": "HILOPLS",
     "items": [
       "HI LO SCHOOL COKELAT SUSU PLS 12RX10SX30G",
-      "HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G",
-      "HI LO SCHOOL STRAWBERRY PLS 12RX10SX27G"
+      "HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G",
+      "HI LO SCHOOL SUSU STROBERI PLS 12RX10SX24G"
     ],
     "priority": 3
   },
@@ -23572,9 +23572,9 @@ const BELI_PRODUCTS = [
   }
 ];
 const BELI_FLAT = BELI_PRODUCTS.flatMap(g=>g.items);
-const STOCK_PRODUCTS = [{"group":"HILO BOX","price":0,"items":["HI LO SCHOOL CHOCOLATE 12DX250G","HI LO SCHOOL CHOCOLATE 12DX500G","HI LO SCHOOL CHOCOLATE 6DX750G","HI LO SCHOOL VANILLA 12DX250G","HI LO SCHOOL VANILLA VEGIBERI 12DX500G","HI LO SCHOOL VANILLA VEGIBERI 6DX750G","HI LO SCHOOL HONEY 12DX250G","HI LO SCHOOL HONEY 12DX500G","HI LO SCHOOL STRAWBERRY CHEESECAKE 12DX500G","HI LO SCHOOL BUBBLE GUM 12DX500G","HI LO SCHOOL COTTON CANDY 12DX500G","HI LO SCHOOL ORIGINAL 12DX12SX25G","HI LO SCHOOL SUSU COKELAT 8GUSX10SX35G","HI LO SCHOOL SUSU VANILLA 8GUSX10SX35G","HI LO TEEN CHOCOLATE 12DX250G","HI LO TEEN CHOCOLATE 12DX500G","HI LO TEEN CHOCOLATE 6DX750G","HI LO TEEN VANILLA CARAMEL 12DX250G","HI LO TEEN VANILLA CARAMEL 12DX500G","HI LO TEEN VANILLA CARAMEL 6DX750G","HI LO TEEN KOREAN BANANA 12DX250G","HI LO TEEN POPCORN CARAMEL 12DX500G","HI LO TEEN HIPROTEIN ORIGINAL 12DX10SX33G","HI LO TEEN HIPROTEIN MELON 12DX400G","HI LO ACTIVE CHOCOLATE 12DX250G","HI LO ACTIVE CHOCOLATE 12DX500G","HI LO ACTIVE CHOCOLATE 6DX750G","HI LO ACTIVE VANILLA 12DX200G","HI LO ACTIVE VANILLA 12DX500G","HI LO ACTIVE HIPROTEIN BERRY FITSHAKE 12DX8SX33.5G","HI LO ACTIVE CLEAR PROTEIN PEACH 12PX8SX30G","HI LO ACTIVE POWERMELON 12DX7SX32G","HI LO ACTIVE BELGIAN CHOCOLATE 8GUSX10SX30G","HI LO ACTIVE BELGIAN CHOCOLATE 14GUSX4SX30G","HI LO PLATINUM ORIGINAL 12DX12SX30G","HI LO PLATINUM SWISS CHOCOLATE 12DX12SX34G","HI LO PLATINUM +HMB VANILLA 12DX8SX42G","HI LO PLATINUM +HMB CHOCO MOCHA 12DX8SX40G","HI LO GOLD ORIGINAL 12DX200G","HI LO GOLD ORIGINAL 12DX500G","HI LO GOLD ORIGINAL 6DX750G","HI LO GOLD CHOCOLATE 12DX250G","HI LO GOLD CHOCOLATE 12DX500G","HI LO GOLD CHOCOLATE 6DX750G","HI LO GOLD VANILLA 12DX200G","HI LO GOLD VANILLA 12DX500G","HI LO DRINK CHOCO HAZELNUT 8GUSX10SX14G"]},{"group":"TS NFDM","price":0,"items":["TS NFDM ORIGINAL 6DX1000G","TS NFDM FIBER PRO 6DX500G","TS NFDM CHOCOLATE 12DX500G","TS NFDM COFFEE 12DX500G"]},{"group":"TS DIABTX MILK","price":0,"items":["TS DIABTX MILK VANILLA MALT 12DX150G","TS DIABTX MILK VANILLA MALT 12DX500G"]},{"group":"TS LOW FAT MILK","price":0,"items":["TS LOW FAT MILK VANILLA 12DX180G","TS LOW FAT MILK VANILLA 12DX500G","TS LOW FAT MILK KOREAN STRAWBERRY 12DX500G"]},{"group":"LMEN BOX","price":0,"items":["L-MEN GAINMASS CHOCOLATE 12DX225G","L-MEN GAINMASS CHOCOLATE 6DX500G","L-MEN GAINMASS BANANA 12DX225G","L-MEN ADVANCE CAPPUCINO 12DX250G","L-MEN ADVANCE GOLD VANILLA 6DX500G","L-MEN ADVANCE CHOCO VANILLA 6DX500G","L-MEN DAILY CHOCOLATE 12DX250G","L-MEN PLANTPROTEIN OGURA 12DX216G","L-MEN ISOPOWER STARGIZING 6DX30SX7.8G","L-MEN LOSE WEIGHT CHOCOLATE CEREAL 6DX12SX25G","L-MEN PLATINUM BASIC UNFLAVOURED 6PCHX800G","L-MEN PLATINUM CHOCO LATTE 6DX6SX38.5G"]},{"group":"TS SWT","price":0,"items":["TS SWT CLASSIC IND 12PX125SX2.5G","TS SWT CLASSIC 12DX100SX2.5G","TS SWT CLASSIC 24DX50SX2.5G","TS SWT CLASSIC 24DX25SX2.5G","TS SWT CLASSIC REF 12DX250G","TS SWT CLASSIC REF 12DX500G","TS SWT CLASSIC REF 24DX100G","TS SWT DIABTX 12DX100SX1.8G","TS SWT DIABTX 24DX50SX1.8G","TS SWT DIABTX 12DX25SX1.8G","TS SWT DIABTX PLS 10PX80SX1.8G","TS SWT STEVIA 24DX50SX1.8G","TS SWT STEVIA 12DX100SX1.8G","TS SWT GULA AREN 24DX50SX2G","TS SWT LEMON 12DX25SX2.5G","TS SWT I SWEET 12DX25SX1.5G","TS SWT GULA BUAH 24DX50SX2.5G","TS DIABETAMIL SWT 24DX50SX1G","TS DIABETAMIL SWT PLS 10PX80SX1G"]},{"group":"RTD","price":0,"items":["HI LO SCHOOL RTD COKELAT 24TPKX200ML","HI LO SCHOOL RTD VEGIBERI 24TPKX200ML","HI LO TEEN RTD COKELAT 24TPKX200ML","HI LO TEEN RTD COFFEE TIRAMISU 24TPKX200ML","HI LO DRINK RTD CHOCOFIT 24TPKX200ML","HI LO DRINK RTD MILKY BROWN SUGAR 24TPKX200ML","HI LO DRINK RTD CHOCOLATE TARO 24TPKX200ML","HI LO DRINK RTD PROTEIN BERRYFIT 24TPKX190ML","L-MEN PROTEIN 2GO RTD CHOCOLATE 24TPKX200ML","L-MEN PROTEIN 2GO RTD CAPPUCCINO 24TPKX190ML","L-MEN PROTEIN 2GO RTD OGURA 24TPKX190ML","NS RTD JAMBU BIJI 24TPKX200ML","NS RTD JERUK MADU 24TPKX200ML","NS RTD SQUEEZED ORANGE 24TPKX200ML","TS RTD OAT DRINK VANILLICIOUS 24TPKX190ML","TS RTD OAT DRINK CANTALOUPE MELON 24TPKX190ML","TS RTD ALMOND DRINK CHOCOLICIOUS 24TPKX190ML","TS RTD ALMOND DRINK BANANA DELIGHT 24TPKX190ML","TS RTD COLLAGEN SHOT PEACH BLOSSOM 24TPKX190ML"]},{"group":"TS SPREAD JAM","price":0,"items":["TS CHOCOLATE SPREAD 12BTLX300G","TS ROYAL MATCHA SPREAD 12BTLX300G","TS PEANUT ALMOND BUTTER 12BTLX300G","TS BALI ARTISAN SEA SALT 12BTLX300G","TS STRAWBERRY JAM 12BTLX375G"]},{"group":"TS COOKIES","price":0,"items":["TS COOKIES HOKKAIDO CHEESE 12DX5SX20G","TS COOKIES CHOCOLATE 12DX10SX20G","TS COOKIES KOREAN GARLIC BUTTER 12DX5SX20G","TS COOKIES KLEPON 12DX5SX20G","TS COOKIES KOREAN GOGUMA 12DX5SX20G","TS WAFER KOREAN STRAWBERRY CHEESE 12DX5SX20G"]},{"group":"TS COFFEE","price":0,"items":["TS CAFE LATTE 12DX10SX14G","TS WHITE COFFEE 12DX4SX15G","TS AVOCADO COFFEE 12DX4SX14G","TS MINT COCOA 12DX4SX15G","TS SWEET ORANGE 12DX10SX6G","TS DRIP COFFEE SEVILLE ORANGE 12DX4SX12G","TS SOY LATTE 12DX10SX15G"]},{"group":"TS GULA HONEY","price":0,"items":["TS HONEY 12BTLX350ML","TS GULA JAWA 12BTLX350ML","TS KENTAL MANIS 24BTLX150ML","TS SANTAN 24DX5SX20G"]},{"group":"TS COLLAGEN","price":0,"items":["TS COLLAGEN DRINK STRAWBERRY 12KLRX200G","TS COLLAGEN DRINK STRAWBERRY STICK 12DX6SX12G","TS 7 FRUITS FIBER DAILY 12DX12SX15G"]},{"group":"LMEN BAR SNACK","price":0,"items":["L-MEN PLATINUM NOODLE SEMUR DAGING 18BAGX56.5G","L-MEN PROTEIN BAR CHOCOLATE 6SBX12SX22G","L-MEN PROTEIN BAR STRONGBERY 6SBX12SX20G","L-MEN PROTEIN CRUNCH BBQ BEEF 20BAGX20G","HI LO ACTIVE GRANOLA BERRY BERRY HONEY 12PX150G"]},{"group":"TS BERAS","price":0,"items":["TS BERAS PORANG INSTAN 12PCHX1000G","TS BERAS PORANG INSTAN SACHET 12DX10SX40G","TS BERAS PORANG INSTAN GOLDEN UBE 12DX7SX40G","TS BERAS PORANG INSTAN NASI GORENG 12DX7SX38.5G","TS BERAS MERAH ORGANIK 12PCHX1000G","TS SHIRATAKI NOODLES 40OX71G"]},{"group":"TS OILS","price":0,"items":["TS CANOLA OIL 12BTLX946ML","TS CORN OIL 12BTLX946ML","TS CORN OIL REF 16PCHX1000ML","TS EXTRA VIRGIN OLIVE OIL 12BTLX500ML","TS EXTRA LIGHT OLIVE OIL 12BTLX500ML","TS SUNFLOWER OIL 12BTLX946ML","TS SOY SAUCE 24BTLX200ML","TS SALTY SOY SAUCE 24BTLX200ML","TS SAUS TIRAM 24BTLX200ML","TS MAYO ROASTED SESAME 24BTLX200ML","TS BUMBU KALDU AYAM JAMUR 24PX100G","TS SYRUP COCOPANDAN 12BTLX750ML","TS SYRUP LYCHEE 12BTLX750ML","TS SYRUP ORANGE 12BTLX750ML"]},{"group":"NS","price":11250,"items":["NS AMERICAN SWEET ORANGE PLS 18PX40SX14G","NS JERUK PERAS PLS 18PX40SX14G","NS FLORIDA ORANGE PLS 18PX40SX11G","NS LEMON TEA PLS 4PX40SX11G","NS LYCHEE TEA PLS 4PX40SX11G","NS ORANGE TEA PLS 4PX40SX11G","NS APPLE TEA PLS 4PX40SX11G","NS BLACKCURRANT TEA PLS 4PX40SX11G","NS PEACH TEA PLS 4PX40SX11G","NS SWEET MANGO PLS 4PX40SX11G","NS MARKISA PLS 4PX40SX11G","NS ANGGUR PLS 4PX40SX11G","NS ANGGUR HIJAU PLS 4PX40SX11G","NS JERUK (EX) MANIS PLS 4PX40SX11G","NS MILKY ORANGE PLS 4PX40SX11G","NS MILKY PEACH PLS 4PX40SX11G","NS APEL JERUK PLS 4PX40SX11G","NS BLEWAH PLS 4PX40SX11G","NS COCOPANDAN PLS 4PX40SX11G","NS ES CINCAU PLS 4PX40SX11G","NS ES RUJAK PLS 4PX40SX11G","NS ISOTONIK REFRESHING CITRUS PLS 4PX40SX11G","NS JERUK JEJU PLS 4PX40SX11G","NS JERUK MANADO PLS 4PX40SX11G","NS JERUK MAROKO PLS 4PX40SX11G","NS JERUK NIPIS PLS 4PX40SX11G","NS KELAPA MUDA PLS 4PX40SX11G","NS LECI PLS 4PX40SX11G","NS LESS SUGAR BELIMBING PLS 4PX40SX6G","NS LESS SUGAR JERUK BALI PLS 4PX40SX6G","NS LESS SUGAR JERUK PONTIANAK PLS 4PX40SX6G","NS LESS SUGAR JERUK SONKIT PLS 4PX40SX6G","NS MADU JERUK PLS 4PX40SX11G","NS MADU LEMON PLS 4PX40SX11G","NS MANGGA GANDARIA PLS 4PX40SX11G","NS MELON PLS 4PX40SX11G","NS NANAS PLS 4PX40SX11G","NS SEMANGKA PLS 4PX40SX11G","NS SIRSAK PLS 4PX40SX11G","NS STRAWBERRY PLS 4PX40SX11G","NS SWEET GUAVA PLS 4PX40SX11G","NS YUZU ORANGE PLS 4PX40SX11G","NS JERUK MANIS REF 12DX250G","NS JERUK MANIS REF 12DX500G","NS JERUK PERAS REF 12BAGX500G","NS PREMIUM JUS MANGGA PLS 12RX10SX15G","NS PREMIUM JUS MANGGA REF PLS 12BAGX420G","NS LYCHEE TEA REF PLS 12BAGX400G","NS AMERICAN SWEET ORANGE FC 72OX10SX14G","NS FLORIDA ORANGE FC 72OX10SX11G","NS BRAZILIAN SWEET ORANGE FC 72OX10SX11G","NS JERUK JEJU FC 72OX10SX11G","NS JERUK NIPIS 72OX10SX11G","NS JERUK PERAS 72GUSX5SX14G","NS JERUK PERAS FC 72OX10SX14G","NS LOKALATE KOPI ALPUKAT PLS 12RX10SX15G","NS LOKALATE KOPI GULA AREN PLS 12RX10SX15G","NS LOKALATE KOPI SHOWBERRY 24DX4SX15G","NS W'DANK BAJIGUR 24DX4SX15G","NS W'DANK BAJIGUR PLS 12RX10SX15G","NS W'DANK BANDREK PLS 12RX10SX15G","NS W'DANK JAHE KAYU MANIS 24DX4SX15G","NS W'DANK SEREH JAHE NIPIS PLS 12RX10SX11G"]},{"group":"HILO DRINK PLS","price":16000,"items":["HI LO 3IN1 SUSU COKLAT BELGIA PLS 12RX10SX25G","HI LO DRINK CHOCO MALT PLS 8RX10SX14G","HI LO DRINK SWISS CHOCOLATE PLS 8RX10SX28G","HI LO DRINK CHOCO HAZELNUT PLS 15RX10SX14G","HI LO DRINK THAI TEA PLS 8RX10SX15G","HI LO DRINK TEH TARIK PLS 8RX10SX15G","HI LO DRINK CHOCOLATE PLS 15RX10SX14G","HI LO DRINK CREAMY MARIE PLS 15RX10SX14G","HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G","HI LO DRINK AVOCADO CHOCOLATE PLS 15RX10SX14G","HI LO DRINK CHOCOLATE BANANA PLS 15RX10SX14G","HI LO DRINK CHOCOLATE TARO PLS 15RX10SX14G","HI LO DRINK WHITE CHOCOLATE PLS 15RX10SX14G","HI LO DRINK ES KETAN HITAM PLS 8RX10SX14G"]},{"group":"HILO SCHOOL PLS","price":31500,"items":["HI LO SCHOOL COKELAT SUSU PLS 12RX10SX30G","HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G","HI LO SCHOOL STRAWBERRY PLS 12RX10SX27G"]}];
+const STOCK_PRODUCTS = [{"group":"HILO BOX","price":0,"items":["HI LO SCHOOL CHOCOLATE 12DX250G","HI LO SCHOOL CHOCOLATE 12DX500G","HI LO SCHOOL CHOCOLATE 6DX750G","HI LO SCHOOL VANILLA 12DX250G","HI LO SCHOOL VANILLA VEGIBERI 12DX500G","HI LO SCHOOL VANILLA VEGIBERI 6DX750G","HI LO SCHOOL HONEY 12DX250G","HI LO SCHOOL HONEY 12DX500G","HI LO SCHOOL STRAWBERRY CHEESECAKE 12DX500G","HI LO SCHOOL BUBBLE GUM 12DX500G","HI LO SCHOOL COTTON CANDY 12DX500G","HI LO SCHOOL ORIGINAL 12DX12SX25G","HI LO SCHOOL SUSU COKELAT 8GUSX10SX35G","HI LO SCHOOL SUSU VANILLA 8GUSX10SX35G","HI LO TEEN CHOCOLATE 12DX250G","HI LO TEEN CHOCOLATE 12DX500G","HI LO TEEN CHOCOLATE 6DX750G","HI LO TEEN VANILLA CARAMEL 12DX250G","HI LO TEEN VANILLA CARAMEL 12DX500G","HI LO TEEN VANILLA CARAMEL 6DX750G","HI LO TEEN KOREAN BANANA 12DX250G","HI LO TEEN POPCORN CARAMEL 12DX500G","HI LO TEEN HIPROTEIN ORIGINAL 12DX10SX33G","HI LO TEEN HIPROTEIN MELON 12DX400G","HI LO ACTIVE CHOCOLATE 12DX250G","HI LO ACTIVE CHOCOLATE 12DX500G","HI LO ACTIVE CHOCOLATE 6DX750G","HI LO ACTIVE VANILLA 12DX200G","HI LO ACTIVE VANILLA 12DX500G","HI LO ACTIVE HIPROTEIN BERRY FITSHAKE 12DX8SX33.5G","HI LO ACTIVE CLEAR PROTEIN PEACH 12PX8SX30G","HI LO ACTIVE POWERMELON 12DX7SX32G","HI LO ACTIVE BELGIAN CHOCOLATE 8GUSX10SX30G","HI LO ACTIVE BELGIAN CHOCOLATE 14GUSX4SX30G","HI LO PLATINUM ORIGINAL 12DX12SX30G","HI LO PLATINUM SWISS CHOCOLATE 12DX12SX34G","HI LO PLATINUM +HMB VANILLA 12DX8SX42G","HI LO PLATINUM +HMB CHOCO MOCHA 12DX8SX40G","HI LO GOLD ORIGINAL 12DX200G","HI LO GOLD ORIGINAL 12DX500G","HI LO GOLD ORIGINAL 6DX750G","HI LO GOLD CHOCOLATE 12DX250G","HI LO GOLD CHOCOLATE 12DX500G","HI LO GOLD CHOCOLATE 6DX750G","HI LO GOLD VANILLA 12DX200G","HI LO GOLD VANILLA 12DX500G","HI LO DRINK CHOCO HAZELNUT 8GUSX10SX14G"]},{"group":"TS NFDM","price":0,"items":["TS NFDM ORIGINAL 6DX1000G","TS NFDM FIBER PRO 6DX500G","TS NFDM CHOCOLATE 12DX500G","TS NFDM COFFEE 12DX500G"]},{"group":"TS DIABTX MILK","price":0,"items":["TS DIABTX MILK VANILLA MALT 12DX150G","TS DIABTX MILK VANILLA MALT 12DX500G"]},{"group":"TS LOW FAT MILK","price":0,"items":["TS LOW FAT MILK VANILLA 12DX180G","TS LOW FAT MILK VANILLA 12DX500G","TS LOW FAT MILK KOREAN STRAWBERRY 12DX500G"]},{"group":"LMEN BOX","price":0,"items":["L-MEN GAINMASS CHOCOLATE 12DX225G","L-MEN GAINMASS CHOCOLATE 6DX500G","L-MEN GAINMASS BANANA 12DX225G","L-MEN ADVANCE CAPPUCINO 12DX250G","L-MEN ADVANCE GOLD VANILLA 6DX500G","L-MEN ADVANCE CHOCO VANILLA 6DX500G","L-MEN DAILY CHOCOLATE 12DX250G","L-MEN PLANTPROTEIN OGURA 12DX216G","L-MEN ISOPOWER STARGIZING 6DX30SX7.8G","L-MEN LOSE WEIGHT CHOCOLATE CEREAL 6DX12SX25G","L-MEN PLATINUM BASIC UNFLAVOURED 6PCHX800G","L-MEN PLATINUM CHOCO LATTE 6DX6SX38.5G"]},{"group":"TS SWT","price":0,"items":["TS SWT CLASSIC IND 12PX125SX2.5G","TS SWT CLASSIC 12DX100SX2.5G","TS SWT CLASSIC 24DX50SX2.5G","TS SWT CLASSIC 24DX25SX2.5G","TS SWT CLASSIC REF 12DX250G","TS SWT CLASSIC REF 12DX500G","TS SWT CLASSIC REF 24DX100G","TS SWT DIABTX 12DX100SX1.8G","TS SWT DIABTX 24DX50SX1.8G","TS SWT DIABTX 12DX25SX1.8G","TS SWT DIABTX PLS 10PX80SX1.8G","TS SWT STEVIA 24DX50SX1.8G","TS SWT STEVIA 12DX100SX1.8G","TS SWT GULA AREN 24DX50SX2G","TS SWT LEMON 12DX25SX2.5G","TS SWT I SWEET 12DX25SX1.5G","TS SWT GULA BUAH 24DX50SX2.5G","TS DIABETAMIL SWT 24DX50SX1G","TS DIABETAMIL SWT PLS 10PX80SX1G"]},{"group":"RTD","price":0,"items":["HI LO SCHOOL RTD COKELAT 24TPKX200ML","HI LO SCHOOL RTD VEGIBERI 24TPKX200ML","HI LO TEEN RTD COKELAT 24TPKX200ML","HI LO TEEN RTD COFFEE TIRAMISU 24TPKX200ML","HI LO DRINK RTD CHOCOFIT 24TPKX200ML","HI LO DRINK RTD MILKY BROWN SUGAR 24TPKX200ML","HI LO DRINK RTD CHOCOLATE TARO 24TPKX200ML","HI LO DRINK RTD PROTEIN BERRYFIT 24TPKX190ML","L-MEN PROTEIN 2GO RTD CHOCOLATE 24TPKX200ML","L-MEN PROTEIN 2GO RTD CAPPUCCINO 24TPKX190ML","L-MEN PROTEIN 2GO RTD OGURA 24TPKX190ML","NS RTD JAMBU BIJI 24TPKX200ML","NS RTD JERUK MADU 24TPKX200ML","NS RTD SQUEEZED ORANGE 24TPKX200ML","TS RTD OAT DRINK VANILLICIOUS 24TPKX190ML","TS RTD OAT DRINK CANTALOUPE MELON 24TPKX190ML","TS RTD ALMOND DRINK CHOCOLICIOUS 24TPKX190ML","TS RTD ALMOND DRINK BANANA DELIGHT 24TPKX190ML","TS RTD COLLAGEN SHOT PEACH BLOSSOM 24TPKX190ML"]},{"group":"TS SPREAD JAM","price":0,"items":["TS CHOCOLATE SPREAD 12BTLX300G","TS ROYAL MATCHA SPREAD 12BTLX300G","TS PEANUT ALMOND BUTTER 12BTLX300G","TS BALI ARTISAN SEA SALT 12BTLX300G","TS STRAWBERRY JAM 12BTLX375G"]},{"group":"TS COOKIES","price":0,"items":["TS COOKIES HOKKAIDO CHEESE 12DX5SX20G","TS COOKIES CHOCOLATE 12DX10SX20G","TS COOKIES KOREAN GARLIC BUTTER 12DX5SX20G","TS COOKIES KLEPON 12DX5SX20G","TS COOKIES KOREAN GOGUMA 12DX5SX20G","TS WAFER KOREAN STRAWBERRY CHEESE 12DX5SX20G"]},{"group":"TS COFFEE","price":0,"items":["TS CAFE LATTE 12DX10SX14G","TS WHITE COFFEE 12DX4SX15G","TS AVOCADO COFFEE 12DX4SX14G","TS MINT COCOA 12DX4SX15G","TS SWEET ORANGE 12DX10SX6G","TS DRIP COFFEE SEVILLE ORANGE 12DX4SX12G","TS SOY LATTE 12DX10SX15G"]},{"group":"TS GULA HONEY","price":0,"items":["TS HONEY 12BTLX350ML","TS GULA JAWA 12BTLX350ML","TS KENTAL MANIS 24BTLX150ML","TS SANTAN 24DX5SX20G"]},{"group":"TS COLLAGEN","price":0,"items":["TS COLLAGEN DRINK STRAWBERRY 12KLRX200G","TS COLLAGEN DRINK STRAWBERRY STICK 12DX6SX12G","TS 7 FRUITS FIBER DAILY 12DX12SX15G"]},{"group":"LMEN BAR SNACK","price":0,"items":["L-MEN PLATINUM NOODLE SEMUR DAGING 18BAGX56.5G","L-MEN PROTEIN BAR CHOCOLATE 6SBX12SX22G","L-MEN PROTEIN BAR STRONGBERY 6SBX12SX20G","L-MEN PROTEIN CRUNCH BBQ BEEF 20BAGX20G","HI LO ACTIVE GRANOLA BERRY BERRY HONEY 12PX150G"]},{"group":"TS BERAS","price":0,"items":["TS BERAS PORANG INSTAN 12PCHX1000G","TS BERAS PORANG INSTAN SACHET 12DX10SX40G","TS BERAS PORANG INSTAN GOLDEN UBE 12DX7SX40G","TS BERAS PORANG INSTAN NASI GORENG 12DX7SX38.5G","TS BERAS MERAH ORGANIK 12PCHX1000G","TS SHIRATAKI NOODLES 40OX71G"]},{"group":"TS OILS","price":0,"items":["TS CANOLA OIL 12BTLX946ML","TS CORN OIL 12BTLX946ML","TS CORN OIL REF 16PCHX1000ML","TS EXTRA VIRGIN OLIVE OIL 12BTLX500ML","TS EXTRA LIGHT OLIVE OIL 12BTLX500ML","TS SUNFLOWER OIL 12BTLX946ML","TS SOY SAUCE 24BTLX200ML","TS SALTY SOY SAUCE 24BTLX200ML","TS SAUS TIRAM 24BTLX200ML","TS MAYO ROASTED SESAME 24BTLX200ML","TS BUMBU KALDU AYAM JAMUR 24PX100G","TS SYRUP COCOPANDAN 12BTLX750ML","TS SYRUP LYCHEE 12BTLX750ML","TS SYRUP ORANGE 12BTLX750ML"]},{"group":"NS","price":11250,"items":["NS AMERICAN SWEET ORANGE PLS 18PX40SX14G","NS JERUK PERAS PLS 18PX40SX14G","NS FLORIDA ORANGE PLS 18PX40SX11G","NS LEMON TEA PLS 4PX40SX11G","NS LYCHEE TEA PLS 4PX40SX11G","NS ORANGE TEA PLS 4PX40SX11G","NS APPLE TEA PLS 4PX40SX11G","NS BLACKCURRANT TEA PLS 4PX40SX11G","NS PEACH TEA PLS 4PX40SX11G","NS SWEET MANGO PLS 4PX40SX11G","NS MARKISA PLS 4PX40SX11G","NS ANGGUR PLS 4PX40SX11G","NS ANGGUR HIJAU PLS 4PX40SX11G","NS JERUK (EX) MANIS PLS 4PX40SX11G","NS MILKY ORANGE PLS 4PX40SX11G","NS MILKY PEACH PLS 4PX40SX11G","NS APEL JERUK PLS 4PX40SX11G","NS BLEWAH PLS 4PX40SX11G","NS COCOPANDAN PLS 4PX40SX11G","NS ES CINCAU PLS 4PX40SX11G","NS ES RUJAK PLS 4PX40SX11G","NS ISOTONIK REFRESHING CITRUS PLS 4PX40SX11G","NS JERUK JEJU PLS 4PX40SX11G","NS JERUK MANADO PLS 4PX40SX11G","NS JERUK MAROKO PLS 4PX40SX11G","NS JERUK NIPIS PLS 4PX40SX11G","NS KELAPA MUDA PLS 4PX40SX11G","NS LECI PLS 4PX40SX11G","NS LESS SUGAR BELIMBING PLS 4PX40SX6G","NS LESS SUGAR JERUK BALI PLS 4PX40SX6G","NS LESS SUGAR JERUK PONTIANAK PLS 4PX40SX6G","NS LESS SUGAR JERUK SONKIT PLS 4PX40SX6G","NS MADU JERUK PLS 4PX40SX11G","NS MADU LEMON PLS 4PX40SX11G","NS MANGGA GANDARIA PLS 4PX40SX11G","NS MELON PLS 4PX40SX11G","NS NANAS PLS 4PX40SX11G","NS SEMANGKA PLS 4PX40SX11G","NS SIRSAK PLS 4PX40SX11G","NS STRAWBERRY PLS 4PX40SX11G","NS SWEET GUAVA PLS 4PX40SX11G","NS YUZU ORANGE PLS 4PX40SX11G","NS JERUK MANIS REF 12DX250G","NS JERUK MANIS REF 12DX500G","NS JERUK PERAS REF 12BAGX500G","NS PREMIUM JUS MANGGA PLS 12RX10SX15G","NS PREMIUM JUS MANGGA REF PLS 12BAGX420G","NS LYCHEE TEA REF PLS 12BAGX400G","NS AMERICAN SWEET ORANGE FC 72OX10SX14G","NS FLORIDA ORANGE FC 72OX10SX11G","NS BRAZILIAN SWEET ORANGE FC 72OX10SX11G","NS JERUK JEJU FC 72OX10SX11G","NS JERUK NIPIS 72OX10SX11G","NS JERUK PERAS 72GUSX5SX14G","NS JERUK PERAS FC 72OX10SX14G","NS LOKALATE KOPI ALPUKAT PLS 12RX10SX15G","NS LOKALATE KOPI GULA AREN PLS 12RX10SX15G","NS LOKALATE KOPI SHOWBERRY 24DX4SX15G","NS W'DANK BAJIGUR 24DX4SX15G","NS W'DANK BAJIGUR PLS 12RX10SX15G","NS W'DANK BANDREK PLS 12RX10SX15G","NS W'DANK JAHE KAYU MANIS 24DX4SX15G","NS W'DANK SEREH JAHE NIPIS PLS 12RX10SX11G"]},{"group":"HILO DRINK PLS","price":16000,"items":["HI LO 3IN1 SUSU COKLAT BELGIA PLS 12RX10SX25G","HI LO DRINK CHOCO MALT PLS 8RX10SX14G","HI LO DRINK SWISS CHOCOLATE PLS 12RX10SX28G","HI LO DRINK CHOCO HAZELNUT PLS 12RX10SX14G","HI LO DRINK THAI TEA PLS 12RX10SX15G","HI LO DRINK TEH TARIK PLS 12RX10SX15G","HI LO DRINK CHOCOLATE PLS 12RX10SX14G","HI LO DRINK CREAMY MARIE PLS 15RX10SX14G","HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G","HI LO DRINK AVOCADO CHOCOLATE PLS 12RX10SX14G","HI LO DRINK CHOCOLATE BANANA PLS 12RX10SX14G","HI LO DRINK CHOCOLATE TARO PLS 12RX10SX14G","HI LO DRINK WHITE CHOCOLATE PLS 12RX10SX14G","HI LO DRINK ES KETAN HITAM PLS 12RX10SX14G"]},{"group":"HILO SCHOOL PLS","price":31500,"items":["HI LO SCHOOL COKELAT SUSU PLS 12RX10SX30G","HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G","HI LO SCHOOL SUSU STROBERI PLS 12RX10SX24G"]}];
 const STOCK_PRICE = {"HILO BOX":0,"TS NFDM":0,"TS DIABTX MILK":0,"TS LOW FAT MILK":0,"LMEN BOX":0,"TS SWT":0,"RTD":0,"TS SPREAD JAM":0,"TS COOKIES":0,"TS COFFEE":0,"TS GULA HONEY":0,"TS COLLAGEN":0,"LMEN BAR SNACK":0,"TS BERAS":0,"TS OILS":0,"NS":11250,"HILO DRINK PLS":16000,"HILO SCHOOL PLS":31500};
-const ITEM_PRICE = {"TS EXTRA LIGHT OLIVE OIL 12BTLX500ML":{"ctn":1500000,"ratio":12,"pcs":125000},"TS BERAS PORANG INSTAN 12PCHX1000G":{"ctn":2112000,"ratio":12,"pcs":176000},"TS BERAS PORANG INSTAN SACHET 12DX10SX40G":{"ctn":780000,"ratio":12,"pcs":65000},"TS EXTRA VIRGIN OLIVE OIL 12BTLX500ML":{"ctn":1656000,"ratio":12,"pcs":138000},"TS BERAS PORANG INSTAN GOLDEN UBE 12DX7SX40G":{"ctn":780000,"ratio":12,"pcs":65000},"TS CANOLA OIL 12BTLX946ML":{"ctn":840000,"ratio":12,"pcs":70000},"TS SWT CLASSIC IND 12PX125SX2.5G":{"ctn":900000,"ratio":12,"pcs":75000},"HI LO PLATINUM ORIGINAL 12DX12SX30G":{"ctn":1272000,"ratio":12,"pcs":106000},"TS SWT DIABTX 12DX100SX1.8G":{"ctn":936000,"ratio":12,"pcs":78000},"HI LO PLATINUM SWISS CHOCOLATE 12DX12SX34G":{"ctn":1080000,"ratio":12,"pcs":90000},"TS CORN OIL 12BTLX946ML":{"ctn":1080000,"ratio":12,"pcs":90000},"TS CORN OIL REF 16PCHX1000ML":{"ctn":1520000,"ratio":16,"pcs":95000},"TS SWT CLASSIC 12DX100SX2.5G":{"ctn":912000,"ratio":12,"pcs":76000},"TS BERAS MERAH ORGANIK 12PCHX1000G":{"ctn":528000,"ratio":12,"pcs":44000},"TS SWT CLASSIC 24DX50SX2.5G":{"ctn":960000,"ratio":24,"pcs":40000},"TS SOY SAUCE 24BTLX200ML":{"ctn":636000,"ratio":24,"pcs":26500},"TS HONEY 12BTLX350ML":{"ctn":744000,"ratio":12,"pcs":62000},"TS COOKIES HOKKAIDO CHEESE 12DX5SX20G":{"ctn":276000,"ratio":12,"pcs":23000},"TS CHOCOLATE SPREAD 12BTLX300G":{"ctn":1056000,"ratio":12,"pcs":88000},"HI LO PLATINUM +HMB VANILLA 12DX8SX42G":{"ctn":1500000,"ratio":12,"pcs":125000},"TS SUNFLOWER OIL 12BTLX946ML":{"ctn":912000,"ratio":12,"pcs":76000},"HI LO SCHOOL VANILLA 12DX250G":{"ctn":480000,"ratio":12,"pcs":40000},"TS SWT DIABTX 24DX50SX1.8G":{"ctn":1008000,"ratio":24,"pcs":42000},"TS NFDM FIBER PRO 6DX500G":{"ctn":624000,"ratio":6,"pcs":104000},"HI LO TEEN CHOCOLATE 12DX500G":{"ctn":960000,"ratio":12,"pcs":80000},"TS PEANUT ALMOND BUTTER 12BTLX300G":{"ctn":816000,"ratio":12,"pcs":68000},"TS STRAWBERRY JAM 12BTLX375G":{"ctn":816000,"ratio":12,"pcs":68000},"TS SWT STEVIA 24DX50SX1.8G":{"ctn":1416000,"ratio":24,"pcs":59000},"HI LO TEEN CHOCOLATE 6DX750G":{"ctn":696000,"ratio":6,"pcs":116000},"HI LO SCHOOL CHOCOLATE 12DX500G":{"ctn":924000,"ratio":12,"pcs":77000},"HI LO GOLD ORIGINAL 6DX750G":{"ctn":702000,"ratio":6,"pcs":117000},"HI LO SCHOOL CHOCOLATE 6DX750G":{"ctn":684000,"ratio":6,"pcs":114000},"L-MEN PLATINUM BASIC UNFLAVOURED 6PCHX800G":{"ctn":1980000,"ratio":6,"pcs":330000},"TS GULA JAWA 12BTLX350ML":{"ctn":708000,"ratio":12,"pcs":59000},"TS COLLAGEN DRINK STRAWBERRY 12KLRX200G":{"ctn":1980000,"ratio":12,"pcs":165000},"NS AMERICAN SWEET ORANGE PLS 18PX40SX14G":{"ctn":810000,"ratio":72,"pcs":11250},"TS KENTAL MANIS 24BTLX150ML":{"ctn":744000,"ratio":24,"pcs":31000},"HI LO SCHOOL COKELAT SUSU PLS 12RX10SX30G":{"ctn":378000,"ratio":12,"pcs":31500},"TS NFDM ORIGINAL 6DX1000G":{"ctn":1104000,"ratio":6,"pcs":184000},"TS NFDM COFFEE 12DX500G":{"ctn":1248000,"ratio":12,"pcs":104000},"HI LO TEEN VANILLA CARAMEL 6DX750G":{"ctn":696000,"ratio":6,"pcs":116000},"NS JERUK PERAS PLS 18PX40SX14G":{"ctn":810000,"ratio":72,"pcs":11250},"HI LO TEEN VANILLA CARAMEL 12DX500G":{"ctn":960000,"ratio":12,"pcs":80000},"TS LOW FAT MILK VANILLA 12DX500G":{"ctn":936000,"ratio":12,"pcs":78000},"TS RTD OAT DRINK VANILLICIOUS 24TPKX190ML":{"ctn":180000,"ratio":24,"pcs":7500},"TS 7 FRUITS FIBER DAILY 12DX12SX15G":{"ctn":1224000,"ratio":12,"pcs":102000},"HI LO SCHOOL VANILLA SUSU PLS 12RX10SX27G":{"ctn":378000,"ratio":12,"pcs":31500},"L-MEN PROTEIN 2GO RTD CHOCOLATE 24TPKX200ML":{"ctn":276000,"ratio":24,"pcs":11500},"TS DIABETAMIL SWT 24DX50SX1G":{"ctn":552000,"ratio":24,"pcs":23000},"NS LEMON TEA PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"TS ROYAL MATCHA SPREAD 12BTLX300G":{"ctn":1080000,"ratio":12,"pcs":90000},"HI LO SCHOOL STRAWBERRY CHEESECAKE 12DX500G":{"ctn":924000,"ratio":12,"pcs":77000},"TS COOKIES CHOCOLATE 12DX10SX20G":{"ctn":540000,"ratio":12,"pcs":45000},"HI LO SCHOOL HONEY 12DX500G":{"ctn":924000,"ratio":12,"pcs":77000},"TS SWT CLASSIC 24DX25SX2.5G":{"ctn":528000,"ratio":24,"pcs":22000},"HI LO PLATINUM +HMB CHOCO MOCHA 12DX8SX40G":{"ctn":1500000,"ratio":12,"pcs":125000},"L-MEN PLATINUM CHOCO LATTE 6DX6SX38.5G":{"ctn":720000,"ratio":6,"pcs":120000},"TS CAFE LATTE 12DX10SX14G":{"ctn":336000,"ratio":12,"pcs":28000},"HI LO SCHOOL SUSU VANILLA 8GUSX10SX35G":{"ctn":384000,"ratio":8,"pcs":48000},"TS RTD ALMOND DRINK CHOCOLICIOUS 24TPKX190ML":{"ctn":199200,"ratio":24,"pcs":8300},"HI LO ACTIVE CHOCOLATE 6DX750G":{"ctn":630000,"ratio":6,"pcs":105000},"TS NFDM CHOCOLATE 12DX500G":{"ctn":1248000,"ratio":12,"pcs":104000},"TS SWT DIABTX 12DX25SX1.8G":{"ctn":276000,"ratio":12,"pcs":23000},"TS DIABTX MILK VANILLA MALT 12DX500G":{"ctn":1236000,"ratio":12,"pcs":103000},"NS MARKISA PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"NS LYCHEE TEA PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"L-MEN LOSE WEIGHT CHOCOLATE CEREAL 6DX12SX25G":{"ctn":792000,"ratio":6,"pcs":132000},"NS BLACKCURRANT TEA PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"HI LO ACTIVE CHOCOLATE 12DX500G":{"ctn":900000,"ratio":12,"pcs":75000},"TS BUMBU KALDU AYAM JAMUR 24PX100G":{"ctn":552000,"ratio":24,"pcs":23000},"NS SWEET MANGO PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"HI LO ACTIVE HIPROTEIN BERRY FITSHAKE 12DX8SX33.5G":{"ctn":1440000,"ratio":12,"pcs":120000},"L-MEN ADVANCE GOLD VANILLA 6DX500G":{"ctn":1080000,"ratio":6,"pcs":180000},"TS WHITE COFFEE 12DX4SX15G":{"ctn":216000,"ratio":12,"pcs":18000},"NS JERUK MANIS REF 12DX500G":{"ctn":420000,"ratio":12,"pcs":35000},"L-MEN PROTEIN BAR CHOCOLATE 6SBX12SX22G":{"ctn":690000,"ratio":72,"pcs":9583},"HI LO SCHOOL VANILLA VEGIBERI 6DX750G":{"ctn":684000,"ratio":6,"pcs":114000},"TS SANTAN 24DX5SX20G":{"ctn":456000,"ratio":24,"pcs":19000},"NS JERUK (EX) MANIS PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"L-MEN PROTEIN 2GO RTD CAPPUCCINO 24TPKX190ML":{"ctn":276000,"ratio":24,"pcs":11500},"HI LO GOLD CHOCOLATE 12DX500G":{"ctn":960000,"ratio":12,"pcs":80000},"TS COOKIES KOREAN GARLIC BUTTER 12DX5SX20G":{"ctn":276000,"ratio":12,"pcs":23000},"HI LO SCHOOL VANILLA VEGIBERI 12DX500G":{"ctn":924000,"ratio":12,"pcs":77000},"TS WAFER KOREAN STRAWBERRY CHEESE 12DX5SX20G":{"ctn":264000,"ratio":12,"pcs":22000},"L-MEN GAINMASS CHOCOLATE 6DX500G":{"ctn":912000,"ratio":6,"pcs":152000},"L-MEN GAINMASS CHOCOLATE 12DX225G":{"ctn":900000,"ratio":12,"pcs":75000},"TS RTD COLLAGEN SHOT PEACH BLOSSOM 24TPKX190ML":{"ctn":180000,"ratio":24,"pcs":7500},"TS SYRUP COCOPANDAN 12BTLX750ML":{"ctn":360000,"ratio":12,"pcs":30000},"NS ANGGUR PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"HI LO ACTIVE VANILLA 12DX500G":{"ctn":900000,"ratio":12,"pcs":75000},"TS SYRUP LYCHEE 12BTLX750ML":{"ctn":360000,"ratio":12,"pcs":30000},"NS PREMIUM JUS MANGGA PLS 12RX10SX15G":{"ctn":192000,"ratio":12,"pcs":16000},"TS AVOCADO COFFEE 12DX4SX14G":{"ctn":192000,"ratio":12,"pcs":16000},"TS SWT CLASSIC REF 24DX100G":{"ctn":672000,"ratio":24,"pcs":28000},"TS COOKIES KLEPON 12DX5SX20G":{"ctn":276000,"ratio":12,"pcs":23000},"TS COOKIES KOREAN GOGUMA 12DX5SX20G":{"ctn":276000,"ratio":12,"pcs":23000},"NS W'DANK SEREH JAHE NIPIS PLS 12RX10SX11G":{"ctn":192000,"ratio":12,"pcs":16000},"HI LO SCHOOL SUSU COKELAT 8GUSX10SX35G":{"ctn":384000,"ratio":8,"pcs":48000},"HI LO TEEN CHOCOLATE 12DX250G":{"ctn":504000,"ratio":12,"pcs":42000},"HI LO TEEN VANILLA CARAMEL 12DX250G":{"ctn":504000,"ratio":12,"pcs":42000},"HI LO ACTIVE CLEAR PROTEIN PEACH 12PX8SX30G":{"ctn":1500000,"ratio":12,"pcs":125000},"TS SWT GULA AREN 24DX50SX2G":{"ctn":972000,"ratio":24,"pcs":40500},"NS PEACH TEA PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"NS JERUK MANIS REF 12DX250G":{"ctn":240000,"ratio":12,"pcs":20000},"TS COLLAGEN DRINK STRAWBERRY STICK 12DX6SX12G":{"ctn":720000,"ratio":12,"pcs":60000},"TS SAUS TIRAM 24BTLX200ML":{"ctn":720000,"ratio":24,"pcs":30000},"HI LO SCHOOL CHOCOLATE 12DX250G":{"ctn":468000,"ratio":12,"pcs":39000},"TS SYRUP ORANGE 12BTLX750ML":{"ctn":360000,"ratio":12,"pcs":30000},"TS LOW FAT MILK KOREAN STRAWBERRY 12DX500G":{"ctn":936000,"ratio":12,"pcs":78000},"L-MEN PROTEIN BAR STRONGBERY 6SBX12SX20G":{"ctn":690000,"ratio":72,"pcs":9583},"HI LO DRINK RTD CHOCOFIT 24TPKX200ML":{"ctn":264000,"ratio":24,"pcs":11000},"NS RTD JAMBU BIJI 24TPKX200ML":{"ctn":141600,"ratio":24,"pcs":5900},"HI LO DRINK CHOCO MALT PLS 8RX10SX14G":{"ctn":128000,"ratio":8,"pcs":16000},"NS JERUK PERAS REF 12BAGX500G":{"ctn":420000,"ratio":12,"pcs":35000},"HI LO ACTIVE VANILLA 12DX200G":{"ctn":408000,"ratio":12,"pcs":34000},"TS SWT CLASSIC REF 12DX500G":{"ctn":1212000,"ratio":12,"pcs":101000},"TS RTD ALMOND DRINK BANANA DELIGHT 24TPKX190ML":{"ctn":199200,"ratio":24,"pcs":8300},"TS SALTY SOY SAUCE 24BTLX200ML":{"ctn":588000,"ratio":24,"pcs":24500},"HI LO SCHOOL BUBBLE GUM 12DX500G":{"ctn":924000,"ratio":12,"pcs":77000},"HI LO 3IN1 SUSU COKLAT BELGIA PLS 12RX10SX25G":{"ctn":378000,"ratio":12,"pcs":31500},"HI LO SCHOOL STRAWBERRY PLS 12RX10SX27G":{"ctn":378000,"ratio":12,"pcs":31500},"HI LO SCHOOL RTD COKELAT 24TPKX200ML":{"ctn":163200,"ratio":24,"pcs":6800},"NS RTD JERUK MADU 24TPKX200ML":{"ctn":141600,"ratio":24,"pcs":5900},"NS APPLE TEA PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"NS ORANGE TEA PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"NS JERUK NIPIS PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"TS LOW FAT MILK VANILLA 12DX180G":{"ctn":420000,"ratio":12,"pcs":35000},"TS DIABTX MILK VANILLA MALT 12DX150G":{"ctn":414000,"ratio":12,"pcs":34500},"HI LO DRINK SWISS CHOCOLATE PLS 8RX10SX28G":{"ctn":152000,"ratio":8,"pcs":19000},"TS MINT COCOA 12DX4SX15G":{"ctn":204000,"ratio":12,"pcs":17000},"NS LOKALATE KOPI GULA AREN PLS 12RX10SX15G":{"ctn":192000,"ratio":12,"pcs":16000},"HI LO TEEN HIPROTEIN MELON 12DX400G":{"ctn":960000,"ratio":12,"pcs":80000},"HI LO TEEN HIPROTEIN ORIGINAL 12DX10SX33G":{"ctn":960000,"ratio":12,"pcs":80000},"L-MEN ADVANCE CHOCO VANILLA 6DX500G":{"ctn":960000,"ratio":6,"pcs":160000},"HI LO GOLD ORIGINAL 12DX500G":{"ctn":936000,"ratio":12,"pcs":78000},"HI LO ACTIVE POWERMELON 12DX7SX32G":{"ctn":936000,"ratio":12,"pcs":78000},"HI LO SCHOOL COTTON CANDY 12DX500G":{"ctn":924000,"ratio":12,"pcs":77000},"NS SEMANGKA PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"TS BALI ARTISAN SEA SALT 12BTLX300G":{"ctn":600000,"ratio":12,"pcs":50000},"L-MEN PROTEIN 2GO RTD OGURA 24TPKX190ML":{"ctn":288000,"ratio":24,"pcs":12000},"NS W'DANK JAHE KAYU MANIS 24DX4SX15G":{"ctn":288000,"ratio":24,"pcs":12000},"NS RTD SQUEEZED ORANGE 24TPKX200ML":{"ctn":141600,"ratio":24,"pcs":5900},"HI LO ACTIVE BELGIAN CHOCOLATE 8GUSX10SX30G":{"ctn":424000,"ratio":8,"pcs":53000},"NS FLORIDA ORANGE PLS 18PX40SX11G":{"ctn":810000,"ratio":72,"pcs":11250},"NS MILKY ORANGE PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"NS LESS SUGAR JERUK PONTIANAK PLS 4PX40SX6G":{"ctn":180000,"ratio":16,"pcs":11250},"NS MELON PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"TS RTD OAT DRINK CANTALOUPE MELON 24TPKX190ML":{"ctn":180000,"ratio":24,"pcs":7500},"HI LO DRINK CHOCO HAZELNUT PLS 15RX10SX14G":{"ctn":240000,"ratio":15,"pcs":16000},"L-MEN DAILY CHOCOLATE 12DX250G":{"ctn":708000,"ratio":12,"pcs":59000},"HI LO GOLD CHOCOLATE 6DX750G":{"ctn":702000,"ratio":6,"pcs":117000},"TS SWEET ORANGE 12DX10SX6G":{"ctn":234000,"ratio":12,"pcs":19500},"TS SWT CLASSIC REF 12DX250G":{"ctn":696000,"ratio":12,"pcs":58000},"TS DRIP COFFEE SEVILLE ORANGE 12DX4SX12G":{"ctn":660000,"ratio":12,"pcs":55000},"HI LO TEEN RTD COKELAT 24TPKX200ML":{"ctn":163200,"ratio":24,"pcs":6800},"L-MEN ISOPOWER STARGIZING 6DX30SX7.8G":{"ctn":618000,"ratio":6,"pcs":103000},"L-MEN ADVANCE CAPPUCINO 12DX250G":{"ctn":1056000,"ratio":12,"pcs":88000},"HI LO ACTIVE GRANOLA BERRY BERRY HONEY 12PX150G":{"ctn":600000,"ratio":12,"pcs":50000},"NS LOKALATE KOPI ALPUKAT PLS 12RX10SX15G":{"ctn":192000,"ratio":12,"pcs":16000},"HI LO ACTIVE BELGIAN CHOCOLATE 14GUSX4SX30G":{"ctn":315000,"ratio":14,"pcs":22500},"TS SWT LEMON 12DX25SX2.5G":{"ctn":288000,"ratio":12,"pcs":24000},"NS LECI PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"NS MADU LEMON PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"NS JERUK MAROKO PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"HI LO DRINK THAI TEA PLS 8RX10SX15G":{"ctn":128000,"ratio":8,"pcs":16000},"HI LO GOLD CHOCOLATE 12DX250G":{"ctn":504000,"ratio":12,"pcs":42000},"HI LO TEEN KOREAN BANANA 12DX250G":{"ctn":504000,"ratio":12,"pcs":42000},"HI LO TEEN RTD COFFEE TIRAMISU 24TPKX200ML":{"ctn":163200,"ratio":24,"pcs":6800},"HI LO DRINK CHOCOLATE PLS 15RX10SX14G":{"ctn":240000,"ratio":15,"pcs":16000},"HI LO DRINK CREAMY MARIE PLS 15RX10SX14G":{"ctn":240000,"ratio":15,"pcs":16000},"NS AMERICAN SWEET ORANGE FC 72OX10SX14G":{"ctn":936000,"ratio":72,"pcs":13000},"NS FLORIDA ORANGE FC 72OX10SX11G":{"ctn":936000,"ratio":72,"pcs":13000},"NS JERUK NIPIS 72OX10SX11G":{"ctn":936000,"ratio":72,"pcs":13000},"HI LO ACTIVE CHOCOLATE 12DX250G":{"ctn":456000,"ratio":12,"pcs":38000},"HI LO GOLD VANILLA 12DX500G":{"ctn":936000,"ratio":12,"pcs":78000},"HI LO GOLD VANILLA 12DX200G":{"ctn":444000,"ratio":12,"pcs":37000},"NS W'DANK BAJIGUR 24DX4SX15G":{"ctn":288000,"ratio":24,"pcs":12000},"NS KELAPA MUDA PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"NS LESS SUGAR JERUK SONKIT PLS 4PX40SX6G":{"ctn":180000,"ratio":16,"pcs":11250},"NS NANAS PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"NS SIRSAK PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"NS SWEET GUAVA PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"NS ANGGUR HIJAU PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"HI LO DRINK RTD MILKY BROWN SUGAR 24TPKX200ML":{"ctn":163200,"ratio":24,"pcs":6800},"NS JERUK JEJU FC 72OX10SX11G":{"ctn":1152000,"ratio":72,"pcs":16000},"TS SWT I SWEET 12DX25SX1.5G":{"ctn":288000,"ratio":12,"pcs":24000},"HI LO DRINK TEH TARIK PLS 8RX10SX15G":{"ctn":128000,"ratio":8,"pcs":16000},"L-MEN PROTEIN CRUNCH BBQ BEEF 20BAGX20G":{"ctn":250000,"ratio":20,"pcs":12500},"HI LO DRINK CHOCOLATE BANANA PLS 15RX10SX14G":{"ctn":240000,"ratio":15,"pcs":16000},"HI LO DRINK CHOCOLATE TARO PLS 15RX10SX14G":{"ctn":240000,"ratio":15,"pcs":16000},"HI LO GOLD ORIGINAL 12DX200G":{"ctn":444000,"ratio":12,"pcs":37000},"HI LO DRINK WHITE CHOCOLATE PLS 15RX10SX14G":{"ctn":240000,"ratio":15,"pcs":16000},"HI LO DRINK CHOCO HAZELNUT 8GUSX10SX14G":{"ctn":220000,"ratio":8,"pcs":27500},"NS JERUK PERAS 72GUSX5SX14G":{"ctn":590400,"ratio":72,"pcs":8200},"NS MANGGA GANDARIA PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"NS COCOPANDAN PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"NS STRAWBERRY PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"NS BLEWAH PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"NS LOKALATE KOPI SHOWBERRY 24DX4SX15G":{"ctn":288000,"ratio":24,"pcs":12000},"NS MADU JERUK PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"NS BRAZILIAN SWEET ORANGE FC 72OX10SX11G":{"ctn":936000,"ratio":72,"pcs":13000},"NS APEL JERUK PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"HI LO SCHOOL RTD VEGIBERI 24TPKX200ML":{"ctn":163200,"ratio":24,"pcs":6800},"HI LO DRINK RTD CHOCOLATE TARO 24TPKX200ML":{"ctn":141600,"ratio":24,"pcs":5900},"TS SWT GULA BUAH 24DX50SX2.5G":{"ctn":984000,"ratio":24,"pcs":41000},"HI LO DRINK RTD PROTEIN BERRYFIT 24TPKX190ML":{"ctn":264000,"ratio":24,"pcs":11000},"TS SHIRATAKI NOODLES 40OX71G":{"ctn":740000,"ratio":40,"pcs":18500},"NS JERUK JEJU PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"NS YUZU ORANGE PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"HI LO SCHOOL HONEY 12DX250G":{"ctn":480000,"ratio":12,"pcs":40000},"HI LO DRINK CREAMY MATCHA PLS 8RX10SX20G":{"ctn":136000,"ratio":8,"pcs":17000},"HI LO DRINK AVOCADO CHOCOLATE PLS 15RX10SX14G":{"ctn":240000,"ratio":15,"pcs":16000},"HI LO DRINK ES KETAN HITAM PLS 8RX10SX14G":{"ctn":128000,"ratio":8,"pcs":16000},"HI LO SCHOOL ORIGINAL 12DX12SX25G":{"ctn":924000,"ratio":12,"pcs":77000},"HI LO TEEN POPCORN CARAMEL 12DX500G":{"ctn":960000,"ratio":12,"pcs":80000},"L-MEN GAINMASS BANANA 12DX225G":{"ctn":900000,"ratio":12,"pcs":75000},"L-MEN PLANTPROTEIN OGURA 12DX216G":{"ctn":1200000,"ratio":12,"pcs":100000},"L-MEN PLATINUM NOODLE SEMUR DAGING 18BAGX56.5G":{"ctn":405000,"ratio":18,"pcs":22500},"NS ISOTONIK REFRESHING CITRUS PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"NS JERUK PERAS FC 72OX10SX14G":{"ctn":792000,"ratio":72,"pcs":11000},"NS LESS SUGAR BELIMBING PLS 4PX40SX6G":{"ctn":180000,"ratio":16,"pcs":11250},"NS LYCHEE TEA REF PLS 12BAGX400G":{"ctn":402000,"ratio":12,"pcs":33500},"NS MILKY PEACH PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"NS PREMIUM JUS MANGGA REF PLS 12BAGX420G":{"ctn":456000,"ratio":12,"pcs":38000},"NS W'DANK BAJIGUR PLS 12RX10SX15G":{"ctn":192000,"ratio":12,"pcs":16000},"NS W'DANK BANDREK PLS 12RX10SX15G":{"ctn":192000,"ratio":12,"pcs":16000},"NS ES CINCAU PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"NS ES RUJAK PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"NS LESS SUGAR JERUK BALI PLS 4PX40SX6G":{"ctn":180000,"ratio":16,"pcs":11250},"NS JERUK MANADO PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"TS SWT DIABTX PLS 10PX80SX1.8G":{"ctn":530000,"ratio":10,"pcs":53000},"TS DIABETAMIL SWT PLS 10PX80SX1G":{"ctn":300000,"ratio":10,"pcs":30000},"TS BERAS PORANG INSTAN NASI GORENG 12DX7SX38.5G":{"ctn":780000,"ratio":12,"pcs":65000},"TS MAYO ROASTED SESAME 24BTLX200ML":{"ctn":588000,"ratio":24,"pcs":24500},"TS SOY LATTE 12DX10SX15G":{"ctn":480000,"ratio":12,"pcs":40000},"TS SWT STEVIA 12DX100SX1.8G":{"ctn":1296000,"ratio":12,"pcs":108000}};
+const ITEM_PRICE = {"TS EXTRA LIGHT OLIVE OIL 12BTLX500ML":{"ctn":1500000,"ratio":12,"pcs":125000},"TS BERAS PORANG INSTAN 12PCHX1000G":{"ctn":2112000,"ratio":12,"pcs":176000},"TS BERAS PORANG INSTAN SACHET 12DX10SX40G":{"ctn":780000,"ratio":12,"pcs":65000},"TS EXTRA VIRGIN OLIVE OIL 12BTLX500ML":{"ctn":1656000,"ratio":12,"pcs":138000},"TS BERAS PORANG INSTAN GOLDEN UBE 12DX7SX40G":{"ctn":780000,"ratio":12,"pcs":65000},"TS CANOLA OIL 12BTLX946ML":{"ctn":840000,"ratio":12,"pcs":70000},"TS SWT CLASSIC IND 12PX125SX2.5G":{"ctn":900000,"ratio":12,"pcs":75000},"HI LO PLATINUM ORIGINAL 12DX12SX30G":{"ctn":1272000,"ratio":12,"pcs":106000},"TS SWT DIABTX 12DX100SX1.8G":{"ctn":936000,"ratio":12,"pcs":78000},"HI LO PLATINUM SWISS CHOCOLATE 12DX12SX34G":{"ctn":1080000,"ratio":12,"pcs":90000},"TS CORN OIL 12BTLX946ML":{"ctn":1080000,"ratio":12,"pcs":90000},"TS CORN OIL REF 16PCHX1000ML":{"ctn":1520000,"ratio":16,"pcs":95000},"TS SWT CLASSIC 12DX100SX2.5G":{"ctn":912000,"ratio":12,"pcs":76000},"TS BERAS MERAH ORGANIK 12PCHX1000G":{"ctn":528000,"ratio":12,"pcs":44000},"TS SWT CLASSIC 24DX50SX2.5G":{"ctn":960000,"ratio":24,"pcs":40000},"TS SOY SAUCE 24BTLX200ML":{"ctn":636000,"ratio":24,"pcs":26500},"TS HONEY 12BTLX350ML":{"ctn":744000,"ratio":12,"pcs":62000},"TS COOKIES HOKKAIDO CHEESE 12DX5SX20G":{"ctn":276000,"ratio":12,"pcs":23000},"TS CHOCOLATE SPREAD 12BTLX300G":{"ctn":1056000,"ratio":12,"pcs":88000},"HI LO PLATINUM +HMB VANILLA 12DX8SX42G":{"ctn":1500000,"ratio":12,"pcs":125000},"TS SUNFLOWER OIL 12BTLX946ML":{"ctn":912000,"ratio":12,"pcs":76000},"HI LO SCHOOL VANILLA 12DX250G":{"ctn":480000,"ratio":12,"pcs":40000},"TS SWT DIABTX 24DX50SX1.8G":{"ctn":1008000,"ratio":24,"pcs":42000},"TS NFDM FIBER PRO 6DX500G":{"ctn":624000,"ratio":6,"pcs":104000},"HI LO TEEN CHOCOLATE 12DX500G":{"ctn":960000,"ratio":12,"pcs":80000},"TS PEANUT ALMOND BUTTER 12BTLX300G":{"ctn":816000,"ratio":12,"pcs":68000},"TS STRAWBERRY JAM 12BTLX375G":{"ctn":816000,"ratio":12,"pcs":68000},"TS SWT STEVIA 24DX50SX1.8G":{"ctn":1416000,"ratio":24,"pcs":59000},"HI LO TEEN CHOCOLATE 6DX750G":{"ctn":696000,"ratio":6,"pcs":116000},"HI LO SCHOOL CHOCOLATE 12DX500G":{"ctn":924000,"ratio":12,"pcs":77000},"HI LO GOLD ORIGINAL 6DX750G":{"ctn":702000,"ratio":6,"pcs":117000},"HI LO SCHOOL CHOCOLATE 6DX750G":{"ctn":684000,"ratio":6,"pcs":114000},"L-MEN PLATINUM BASIC UNFLAVOURED 6PCHX800G":{"ctn":1980000,"ratio":6,"pcs":330000},"TS GULA JAWA 12BTLX350ML":{"ctn":708000,"ratio":12,"pcs":59000},"TS COLLAGEN DRINK STRAWBERRY 12KLRX200G":{"ctn":1980000,"ratio":12,"pcs":165000},"NS AMERICAN SWEET ORANGE PLS 18PX40SX14G":{"ctn":810000,"ratio":72,"pcs":11250},"TS KENTAL MANIS 24BTLX150ML":{"ctn":744000,"ratio":24,"pcs":31000},"HI LO SCHOOL COKELAT SUSU PLS 12RX10SX30G":{"ctn":378000,"ratio":12,"pcs":31500},"TS NFDM ORIGINAL 6DX1000G":{"ctn":1104000,"ratio":6,"pcs":184000},"TS NFDM COFFEE 12DX500G":{"ctn":1248000,"ratio":12,"pcs":104000},"HI LO TEEN VANILLA CARAMEL 6DX750G":{"ctn":696000,"ratio":6,"pcs":116000},"NS JERUK PERAS PLS 18PX40SX14G":{"ctn":810000,"ratio":72,"pcs":11250},"HI LO TEEN VANILLA CARAMEL 12DX500G":{"ctn":960000,"ratio":12,"pcs":80000},"TS LOW FAT MILK VANILLA 12DX500G":{"ctn":936000,"ratio":12,"pcs":78000},"TS RTD OAT DRINK VANILLICIOUS 24TPKX190ML":{"ctn":180000,"ratio":24,"pcs":7500},"TS 7 FRUITS FIBER DAILY 12DX12SX15G":{"ctn":1224000,"ratio":12,"pcs":102000},"HI LO SCHOOL SUSU VANILA PLS 12RX10SX26G":{"ctn":378000,"ratio":12,"pcs":31500},"L-MEN PROTEIN 2GO RTD CHOCOLATE 24TPKX200ML":{"ctn":276000,"ratio":24,"pcs":11500},"TS DIABETAMIL SWT 24DX50SX1G":{"ctn":552000,"ratio":24,"pcs":23000},"NS LEMON TEA PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"TS ROYAL MATCHA SPREAD 12BTLX300G":{"ctn":1080000,"ratio":12,"pcs":90000},"HI LO SCHOOL STRAWBERRY CHEESECAKE 12DX500G":{"ctn":924000,"ratio":12,"pcs":77000},"TS COOKIES CHOCOLATE 12DX10SX20G":{"ctn":540000,"ratio":12,"pcs":45000},"HI LO SCHOOL HONEY 12DX500G":{"ctn":924000,"ratio":12,"pcs":77000},"TS SWT CLASSIC 24DX25SX2.5G":{"ctn":528000,"ratio":24,"pcs":22000},"HI LO PLATINUM +HMB CHOCO MOCHA 12DX8SX40G":{"ctn":1500000,"ratio":12,"pcs":125000},"L-MEN PLATINUM CHOCO LATTE 6DX6SX38.5G":{"ctn":720000,"ratio":6,"pcs":120000},"TS CAFE LATTE 12DX10SX14G":{"ctn":336000,"ratio":12,"pcs":28000},"HI LO SCHOOL SUSU VANILLA 8GUSX10SX35G":{"ctn":384000,"ratio":8,"pcs":48000},"TS RTD ALMOND DRINK CHOCOLICIOUS 24TPKX190ML":{"ctn":199200,"ratio":24,"pcs":8300},"HI LO ACTIVE CHOCOLATE 6DX750G":{"ctn":630000,"ratio":6,"pcs":105000},"TS NFDM CHOCOLATE 12DX500G":{"ctn":1248000,"ratio":12,"pcs":104000},"TS SWT DIABTX 12DX25SX1.8G":{"ctn":276000,"ratio":12,"pcs":23000},"TS DIABTX MILK VANILLA MALT 12DX500G":{"ctn":1236000,"ratio":12,"pcs":103000},"NS MARKISA PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"NS LYCHEE TEA PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"L-MEN LOSE WEIGHT CHOCOLATE CEREAL 6DX12SX25G":{"ctn":792000,"ratio":6,"pcs":132000},"NS BLACKCURRANT TEA PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"HI LO ACTIVE CHOCOLATE 12DX500G":{"ctn":900000,"ratio":12,"pcs":75000},"TS BUMBU KALDU AYAM JAMUR 24PX100G":{"ctn":552000,"ratio":24,"pcs":23000},"NS SWEET MANGO PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"HI LO ACTIVE HIPROTEIN BERRY FITSHAKE 12DX8SX33.5G":{"ctn":1440000,"ratio":12,"pcs":120000},"L-MEN ADVANCE GOLD VANILLA 6DX500G":{"ctn":1080000,"ratio":6,"pcs":180000},"TS WHITE COFFEE 12DX4SX15G":{"ctn":216000,"ratio":12,"pcs":18000},"NS JERUK MANIS REF 12DX500G":{"ctn":420000,"ratio":12,"pcs":35000},"L-MEN PROTEIN BAR CHOCOLATE 6SBX12SX22G":{"ctn":690000,"ratio":72,"pcs":9583},"HI LO SCHOOL VANILLA VEGIBERI 6DX750G":{"ctn":684000,"ratio":6,"pcs":114000},"TS SANTAN 24DX5SX20G":{"ctn":456000,"ratio":24,"pcs":19000},"NS JERUK (EX) MANIS PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"L-MEN PROTEIN 2GO RTD CAPPUCCINO 24TPKX190ML":{"ctn":276000,"ratio":24,"pcs":11500},"HI LO GOLD CHOCOLATE 12DX500G":{"ctn":960000,"ratio":12,"pcs":80000},"TS COOKIES KOREAN GARLIC BUTTER 12DX5SX20G":{"ctn":276000,"ratio":12,"pcs":23000},"HI LO SCHOOL VANILLA VEGIBERI 12DX500G":{"ctn":924000,"ratio":12,"pcs":77000},"TS WAFER KOREAN STRAWBERRY CHEESE 12DX5SX20G":{"ctn":264000,"ratio":12,"pcs":22000},"L-MEN GAINMASS CHOCOLATE 6DX500G":{"ctn":912000,"ratio":6,"pcs":152000},"L-MEN GAINMASS CHOCOLATE 12DX225G":{"ctn":900000,"ratio":12,"pcs":75000},"TS RTD COLLAGEN SHOT PEACH BLOSSOM 24TPKX190ML":{"ctn":180000,"ratio":24,"pcs":7500},"TS SYRUP COCOPANDAN 12BTLX750ML":{"ctn":360000,"ratio":12,"pcs":30000},"NS ANGGUR PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"HI LO ACTIVE VANILLA 12DX500G":{"ctn":900000,"ratio":12,"pcs":75000},"TS SYRUP LYCHEE 12BTLX750ML":{"ctn":360000,"ratio":12,"pcs":30000},"NS PREMIUM JUS MANGGA PLS 12RX10SX15G":{"ctn":192000,"ratio":12,"pcs":16000},"TS AVOCADO COFFEE 12DX4SX14G":{"ctn":192000,"ratio":12,"pcs":16000},"TS SWT CLASSIC REF 24DX100G":{"ctn":672000,"ratio":24,"pcs":28000},"TS COOKIES KLEPON 12DX5SX20G":{"ctn":276000,"ratio":12,"pcs":23000},"TS COOKIES KOREAN GOGUMA 12DX5SX20G":{"ctn":276000,"ratio":12,"pcs":23000},"NS W'DANK SEREH JAHE NIPIS PLS 12RX10SX11G":{"ctn":192000,"ratio":12,"pcs":16000},"HI LO SCHOOL SUSU COKELAT 8GUSX10SX35G":{"ctn":384000,"ratio":8,"pcs":48000},"HI LO TEEN CHOCOLATE 12DX250G":{"ctn":504000,"ratio":12,"pcs":42000},"HI LO TEEN VANILLA CARAMEL 12DX250G":{"ctn":504000,"ratio":12,"pcs":42000},"HI LO ACTIVE CLEAR PROTEIN PEACH 12PX8SX30G":{"ctn":1500000,"ratio":12,"pcs":125000},"TS SWT GULA AREN 24DX50SX2G":{"ctn":972000,"ratio":24,"pcs":40500},"NS PEACH TEA PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"NS JERUK MANIS REF 12DX250G":{"ctn":240000,"ratio":12,"pcs":20000},"TS COLLAGEN DRINK STRAWBERRY STICK 12DX6SX12G":{"ctn":720000,"ratio":12,"pcs":60000},"TS SAUS TIRAM 24BTLX200ML":{"ctn":720000,"ratio":24,"pcs":30000},"HI LO SCHOOL CHOCOLATE 12DX250G":{"ctn":468000,"ratio":12,"pcs":39000},"TS SYRUP ORANGE 12BTLX750ML":{"ctn":360000,"ratio":12,"pcs":30000},"TS LOW FAT MILK KOREAN STRAWBERRY 12DX500G":{"ctn":936000,"ratio":12,"pcs":78000},"L-MEN PROTEIN BAR STRONGBERY 6SBX12SX20G":{"ctn":690000,"ratio":72,"pcs":9583},"HI LO DRINK RTD CHOCOFIT 24TPKX200ML":{"ctn":264000,"ratio":24,"pcs":11000},"NS RTD JAMBU BIJI 24TPKX200ML":{"ctn":141600,"ratio":24,"pcs":5900},"HI LO DRINK CHOCO MALT PLS 8RX10SX14G":{"ctn":128000,"ratio":8,"pcs":16000},"NS JERUK PERAS REF 12BAGX500G":{"ctn":420000,"ratio":12,"pcs":35000},"HI LO ACTIVE VANILLA 12DX200G":{"ctn":408000,"ratio":12,"pcs":34000},"TS SWT CLASSIC REF 12DX500G":{"ctn":1212000,"ratio":12,"pcs":101000},"TS RTD ALMOND DRINK BANANA DELIGHT 24TPKX190ML":{"ctn":199200,"ratio":24,"pcs":8300},"TS SALTY SOY SAUCE 24BTLX200ML":{"ctn":588000,"ratio":24,"pcs":24500},"HI LO SCHOOL BUBBLE GUM 12DX500G":{"ctn":924000,"ratio":12,"pcs":77000},"HI LO 3IN1 SUSU COKLAT BELGIA PLS 12RX10SX25G":{"ctn":378000,"ratio":12,"pcs":31500},"HI LO SCHOOL SUSU STROBERI PLS 12RX10SX24G":{"ctn":378000,"ratio":12,"pcs":31500},"HI LO SCHOOL RTD COKELAT 24TPKX200ML":{"ctn":163200,"ratio":24,"pcs":6800},"NS RTD JERUK MADU 24TPKX200ML":{"ctn":141600,"ratio":24,"pcs":5900},"NS APPLE TEA PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"NS ORANGE TEA PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"NS JERUK NIPIS PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"TS LOW FAT MILK VANILLA 12DX180G":{"ctn":420000,"ratio":12,"pcs":35000},"TS DIABTX MILK VANILLA MALT 12DX150G":{"ctn":414000,"ratio":12,"pcs":34500},"HI LO DRINK SWISS CHOCOLATE PLS 12RX10SX28G":{"ctn":152000,"ratio":8,"pcs":19000},"TS MINT COCOA 12DX4SX15G":{"ctn":204000,"ratio":12,"pcs":17000},"NS LOKALATE KOPI GULA AREN PLS 12RX10SX15G":{"ctn":192000,"ratio":12,"pcs":16000},"HI LO TEEN HIPROTEIN MELON 12DX400G":{"ctn":960000,"ratio":12,"pcs":80000},"HI LO TEEN HIPROTEIN ORIGINAL 12DX10SX33G":{"ctn":960000,"ratio":12,"pcs":80000},"L-MEN ADVANCE CHOCO VANILLA 6DX500G":{"ctn":960000,"ratio":6,"pcs":160000},"HI LO GOLD ORIGINAL 12DX500G":{"ctn":936000,"ratio":12,"pcs":78000},"HI LO ACTIVE POWERMELON 12DX7SX32G":{"ctn":936000,"ratio":12,"pcs":78000},"HI LO SCHOOL COTTON CANDY 12DX500G":{"ctn":924000,"ratio":12,"pcs":77000},"NS SEMANGKA PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"TS BALI ARTISAN SEA SALT 12BTLX300G":{"ctn":600000,"ratio":12,"pcs":50000},"L-MEN PROTEIN 2GO RTD OGURA 24TPKX190ML":{"ctn":288000,"ratio":24,"pcs":12000},"NS W'DANK JAHE KAYU MANIS 24DX4SX15G":{"ctn":288000,"ratio":24,"pcs":12000},"NS RTD SQUEEZED ORANGE 24TPKX200ML":{"ctn":141600,"ratio":24,"pcs":5900},"HI LO ACTIVE BELGIAN CHOCOLATE 8GUSX10SX30G":{"ctn":424000,"ratio":8,"pcs":53000},"NS FLORIDA ORANGE PLS 18PX40SX11G":{"ctn":810000,"ratio":72,"pcs":11250},"NS MILKY ORANGE PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"NS LESS SUGAR JERUK PONTIANAK PLS 4PX40SX6G":{"ctn":180000,"ratio":16,"pcs":11250},"NS MELON PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"TS RTD OAT DRINK CANTALOUPE MELON 24TPKX190ML":{"ctn":180000,"ratio":24,"pcs":7500},"HI LO DRINK CHOCO HAZELNUT PLS 12RX10SX14G":{"ctn":240000,"ratio":15,"pcs":16000},"L-MEN DAILY CHOCOLATE 12DX250G":{"ctn":708000,"ratio":12,"pcs":59000},"HI LO GOLD CHOCOLATE 6DX750G":{"ctn":702000,"ratio":6,"pcs":117000},"TS SWEET ORANGE 12DX10SX6G":{"ctn":234000,"ratio":12,"pcs":19500},"TS SWT CLASSIC REF 12DX250G":{"ctn":696000,"ratio":12,"pcs":58000},"TS DRIP COFFEE SEVILLE ORANGE 12DX4SX12G":{"ctn":660000,"ratio":12,"pcs":55000},"HI LO TEEN RTD COKELAT 24TPKX200ML":{"ctn":163200,"ratio":24,"pcs":6800},"L-MEN ISOPOWER STARGIZING 6DX30SX7.8G":{"ctn":618000,"ratio":6,"pcs":103000},"L-MEN ADVANCE CAPPUCINO 12DX250G":{"ctn":1056000,"ratio":12,"pcs":88000},"HI LO ACTIVE GRANOLA BERRY BERRY HONEY 12PX150G":{"ctn":600000,"ratio":12,"pcs":50000},"NS LOKALATE KOPI ALPUKAT PLS 12RX10SX15G":{"ctn":192000,"ratio":12,"pcs":16000},"HI LO ACTIVE BELGIAN CHOCOLATE 14GUSX4SX30G":{"ctn":315000,"ratio":14,"pcs":22500},"TS SWT LEMON 12DX25SX2.5G":{"ctn":288000,"ratio":12,"pcs":24000},"NS LECI PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"NS MADU LEMON PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"NS JERUK MAROKO PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"HI LO DRINK THAI TEA PLS 12RX10SX15G":{"ctn":128000,"ratio":8,"pcs":16000},"HI LO GOLD CHOCOLATE 12DX250G":{"ctn":504000,"ratio":12,"pcs":42000},"HI LO TEEN KOREAN BANANA 12DX250G":{"ctn":504000,"ratio":12,"pcs":42000},"HI LO TEEN RTD COFFEE TIRAMISU 24TPKX200ML":{"ctn":163200,"ratio":24,"pcs":6800},"HI LO DRINK CHOCOLATE PLS 12RX10SX14G":{"ctn":240000,"ratio":15,"pcs":16000},"HI LO DRINK CREAMY MARIE PLS 15RX10SX14G":{"ctn":240000,"ratio":15,"pcs":16000},"NS AMERICAN SWEET ORANGE FC 72OX10SX14G":{"ctn":936000,"ratio":72,"pcs":13000},"NS FLORIDA ORANGE FC 72OX10SX11G":{"ctn":936000,"ratio":72,"pcs":13000},"NS JERUK NIPIS 72OX10SX11G":{"ctn":936000,"ratio":72,"pcs":13000},"HI LO ACTIVE CHOCOLATE 12DX250G":{"ctn":456000,"ratio":12,"pcs":38000},"HI LO GOLD VANILLA 12DX500G":{"ctn":936000,"ratio":12,"pcs":78000},"HI LO GOLD VANILLA 12DX200G":{"ctn":444000,"ratio":12,"pcs":37000},"NS W'DANK BAJIGUR 24DX4SX15G":{"ctn":288000,"ratio":24,"pcs":12000},"NS KELAPA MUDA PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"NS LESS SUGAR JERUK SONKIT PLS 4PX40SX6G":{"ctn":180000,"ratio":16,"pcs":11250},"NS NANAS PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"NS SIRSAK PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"NS SWEET GUAVA PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"NS ANGGUR HIJAU PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"HI LO DRINK RTD MILKY BROWN SUGAR 24TPKX200ML":{"ctn":163200,"ratio":24,"pcs":6800},"NS JERUK JEJU FC 72OX10SX11G":{"ctn":1152000,"ratio":72,"pcs":16000},"TS SWT I SWEET 12DX25SX1.5G":{"ctn":288000,"ratio":12,"pcs":24000},"HI LO DRINK TEH TARIK PLS 12RX10SX15G":{"ctn":128000,"ratio":8,"pcs":16000},"L-MEN PROTEIN CRUNCH BBQ BEEF 20BAGX20G":{"ctn":250000,"ratio":20,"pcs":12500},"HI LO DRINK CHOCOLATE BANANA PLS 12RX10SX14G":{"ctn":240000,"ratio":15,"pcs":16000},"HI LO DRINK CHOCOLATE TARO PLS 12RX10SX14G":{"ctn":240000,"ratio":15,"pcs":16000},"HI LO GOLD ORIGINAL 12DX200G":{"ctn":444000,"ratio":12,"pcs":37000},"HI LO DRINK WHITE CHOCOLATE PLS 12RX10SX14G":{"ctn":240000,"ratio":15,"pcs":16000},"HI LO DRINK CHOCO HAZELNUT 8GUSX10SX14G":{"ctn":220000,"ratio":8,"pcs":27500},"NS JERUK PERAS 72GUSX5SX14G":{"ctn":590400,"ratio":72,"pcs":8200},"NS MANGGA GANDARIA PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"NS COCOPANDAN PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"NS STRAWBERRY PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"NS BLEWAH PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"NS LOKALATE KOPI SHOWBERRY 24DX4SX15G":{"ctn":288000,"ratio":24,"pcs":12000},"NS MADU JERUK PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"NS BRAZILIAN SWEET ORANGE FC 72OX10SX11G":{"ctn":936000,"ratio":72,"pcs":13000},"NS APEL JERUK PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"HI LO SCHOOL RTD VEGIBERI 24TPKX200ML":{"ctn":163200,"ratio":24,"pcs":6800},"HI LO DRINK RTD CHOCOLATE TARO 24TPKX200ML":{"ctn":141600,"ratio":24,"pcs":5900},"TS SWT GULA BUAH 24DX50SX2.5G":{"ctn":984000,"ratio":24,"pcs":41000},"HI LO DRINK RTD PROTEIN BERRYFIT 24TPKX190ML":{"ctn":264000,"ratio":24,"pcs":11000},"TS SHIRATAKI NOODLES 40OX71G":{"ctn":740000,"ratio":40,"pcs":18500},"NS JERUK JEJU PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"NS YUZU ORANGE PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"HI LO SCHOOL HONEY 12DX250G":{"ctn":480000,"ratio":12,"pcs":40000},"HI LO DRINK CREAMY MATCHA PLS 12RX10SX20G":{"ctn":136000,"ratio":8,"pcs":17000},"HI LO DRINK AVOCADO CHOCOLATE PLS 12RX10SX14G":{"ctn":240000,"ratio":15,"pcs":16000},"HI LO DRINK ES KETAN HITAM PLS 12RX10SX14G":{"ctn":128000,"ratio":8,"pcs":16000},"HI LO SCHOOL ORIGINAL 12DX12SX25G":{"ctn":924000,"ratio":12,"pcs":77000},"HI LO TEEN POPCORN CARAMEL 12DX500G":{"ctn":960000,"ratio":12,"pcs":80000},"L-MEN GAINMASS BANANA 12DX225G":{"ctn":900000,"ratio":12,"pcs":75000},"L-MEN PLANTPROTEIN OGURA 12DX216G":{"ctn":1200000,"ratio":12,"pcs":100000},"L-MEN PLATINUM NOODLE SEMUR DAGING 18BAGX56.5G":{"ctn":405000,"ratio":18,"pcs":22500},"NS ISOTONIK REFRESHING CITRUS PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"NS JERUK PERAS FC 72OX10SX14G":{"ctn":792000,"ratio":72,"pcs":11000},"NS LESS SUGAR BELIMBING PLS 4PX40SX6G":{"ctn":180000,"ratio":16,"pcs":11250},"NS LYCHEE TEA REF PLS 12BAGX400G":{"ctn":402000,"ratio":12,"pcs":33500},"NS MILKY PEACH PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"NS PREMIUM JUS MANGGA REF PLS 12BAGX420G":{"ctn":456000,"ratio":12,"pcs":38000},"NS W'DANK BAJIGUR PLS 12RX10SX15G":{"ctn":192000,"ratio":12,"pcs":16000},"NS W'DANK BANDREK PLS 12RX10SX15G":{"ctn":192000,"ratio":12,"pcs":16000},"NS ES CINCAU PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"NS ES RUJAK PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"NS LESS SUGAR JERUK BALI PLS 4PX40SX6G":{"ctn":180000,"ratio":16,"pcs":11250},"NS JERUK MANADO PLS 4PX40SX11G":{"ctn":180000,"ratio":16,"pcs":11250},"TS SWT DIABTX PLS 10PX80SX1.8G":{"ctn":530000,"ratio":10,"pcs":53000},"TS DIABETAMIL SWT PLS 10PX80SX1G":{"ctn":300000,"ratio":10,"pcs":30000},"TS BERAS PORANG INSTAN NASI GORENG 12DX7SX38.5G":{"ctn":780000,"ratio":12,"pcs":65000},"TS MAYO ROASTED SESAME 24BTLX200ML":{"ctn":588000,"ratio":24,"pcs":24500},"TS SOY LATTE 12DX10SX15G":{"ctn":480000,"ratio":12,"pcs":40000},"TS SWT STEVIA 12DX100SX1.8G":{"ctn":1296000,"ratio":12,"pcs":108000}};
 /* ─────────── SCREEN ─────────── */
 function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
