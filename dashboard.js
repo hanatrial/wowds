@@ -4215,7 +4215,7 @@ async function tpDelete(id){
 
 
 // ── INSIGHT Display WOW: AV, item, kabupaten. Visual ringan (bar horizontal, heatmap, takeaways) tanpa pustaka grafik/foto ──
-let INS_MODE='all',INS_PIC='',WOW_MATCHA_TDK=[];
+let INS_MODE='all',INS_PIC='',WOW_MATCHA_TDK=[],WOW_EVAL_LOW=[];
 function wowInsSetFilter(v){const f=document.getElementById('f-mds');if(f){f.value=v;wowFilterKab();}}
 function wowInsMode(m){
   INS_MODE=m;
@@ -4354,15 +4354,17 @@ function renderWowInsight(rows){
   // toko perlu dievaluasi: AV total (NS+HILO+TS item ada) di visit terakhir < EVAL_MAX
   const EVAL_MAX=15;
   const evAll=Object.values(lastBy).map(r=>{const av=wowInsAv(r.items);return {r,ns:av.NS[0],hilo:av.HILO[0],ts:av.TS[0],t:av.NS[0]+av.HILO[0]+av.TS[0]};});
+  const evLowSrc=evAll;
   const evLow=evAll.filter(x=>x.t<EVAL_MAX).sort((a,b)=>a.t-b.t||String(a.r.store).localeCompare(String(b.r.store)));
   const evTbl=l=>wowInsTable(modePic?['Toko','Kabupaten','NS','HILO','TS','Total','Visit terakhir']:['Toko','PIC','Kabupaten','NS','HILO','TS','Total','Visit terakhir'],l.map(x=>{const d=x.r.timestamp?x.r.timestamp.toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'}):'';return (modePic?[]:[wowInsEsc(x.r.mds)]).length?[wowInsEsc(x.r.store),wowInsEsc(x.r.mds),wowInsEsc(x.r.area),x.ns,x.hilo,x.ts,'<b class="ins-w">'+x.t+'</b>',d]:[wowInsEsc(x.r.store),wowInsEsc(x.r.area),x.ns,x.hilo,x.ts,'<b class="ins-w">'+x.t+'</b>',d];}),'Tidak ada toko dengan AV total di bawah '+EVAL_MAX+'.');
+  WOW_EVAL_LOW=evLow;
   let secEval;
   if(modePic){
-    secEval='<div class="ins-card ins-wide"><h4>Toko perlu dievaluasi · AV total &lt; '+EVAL_MAX+'</h4><div class="ins-big"><b class="w">'+evLow.length+'</b><span>dari '+evAll.length+' toko ('+(wowInsPct(evLow.length,evAll.length)==null?0:wowInsPct(evLow.length,evAll.length))+'%) di '+wowInsEsc(INS_PIC)+' punya AV total di bawah '+EVAL_MAX+' item (NS + HILO + TS, visit terakhir)</span></div>'+evTbl(evLow.slice(0,200))+(evLow.length>200?'<p class="ins-note">… +'+(evLow.length-200)+' toko lagi</p>':'')+'</div>';
+    secEval='<div class="ins-card ins-wide"><h4>Toko perlu dievaluasi · AV total &lt; '+EVAL_MAX+'</h4><div class="ins-big"><b class="w">'+evLow.length+'</b><span>dari '+evAll.length+' toko ('+(wowInsPct(evLow.length,evAll.length)==null?0:wowInsPct(evLow.length,evAll.length))+'%) di '+wowInsEsc(INS_PIC)+' punya AV total di bawah '+EVAL_MAX+' item (NS + HILO + TS, visit terakhir)</span></div>'+evTbl(evLow.slice(0,200))+(evLow.length>200?'<p class="ins-note">… +'+(evLow.length-200)+' toko lagi</p>':'')+(evLow.length?'<button class="ins-exp" onclick="exportEvalToko()">⬇ Export Excel · toko perlu dievaluasi ('+evLow.length+')</button>':'')+'</div>';
   }else{
     const perP={};evAll.forEach(x=>{const p=x.r.mds||'—';if(!picList.includes(p))return;const g=perP[p]||(perP[p]={low:0,n:0});g.n++;if(x.t<EVAL_MAX)g.low++;});
     const bars=Object.entries(perP).map(([p,g])=>({l:p,v:g.low,t:g.low+' <small>dari '+g.n+' toko ('+wowInsPct(g.low,g.n)+'%)</small>',warn:g.low/g.n>0.3,p:g.low/g.n})).sort((a,b)=>b.p-a.p);
-    secEval='<div class="ins-card ins-wide"><h4>Toko perlu dievaluasi · AV total &lt; '+EVAL_MAX+'</h4><div class="ins-big"><b class="w">'+evLow.length+'</b><span>dari '+evAll.length+' toko punya AV total di bawah '+EVAL_MAX+' item (NS + HILO + TS, visit terakhir). Pilih PIC di filter untuk melihat daftar tokonya.</span></div>'+wowInsBars(bars.map(x=>({l:x.l,v:x.v,t:x.t,warn:x.warn})))+'<details style="margin-top:10px"><summary>Lihat semua toko ('+evLow.length+')</summary><div style="overflow-x:auto;margin-top:8px">'+evTbl(evLow.slice(0,300))+'</div></details></div>';
+    secEval='<div class="ins-card ins-wide"><h4>Toko perlu dievaluasi · AV total &lt; '+EVAL_MAX+'</h4><div class="ins-big"><b class="w">'+evLow.length+'</b><span>dari '+evAll.length+' toko punya AV total di bawah '+EVAL_MAX+' item (NS + HILO + TS, visit terakhir). Pilih PIC di filter untuk melihat daftar tokonya.</span></div>'+wowInsBars(bars.map(x=>({l:x.l,v:x.v,t:x.t,warn:x.warn})))+'<button class="ins-exp" onclick="exportEvalToko()">⬇ Export Excel · toko perlu dievaluasi ('+evLow.length+')</button></div>';
   }
 
   // toko AV terendah
@@ -4412,7 +4414,7 @@ function renderWowInsight(rows){
   tks.push('<b>HILO Matcha</b> sudah ada di '+mt.ada.length+' dari '+mTot+' toko'+(mP!=null?' ('+mP+'%)':'')+'. <b>'+noDispN+' kabupaten</b> belum punya display.');
   const tk3='<div class="ins-tks">'+tks.map((t,i)=>'<div class="ins-tk"><em>0'+(i+1)+'</em><p>'+t+'</p></div>').join('')+'</div>';
 
-  box.innerHTML=modeBar+kpis+tk3+'<div class="ins-grid">'+secMatcha+secPic+secKab+secHeat+secEval+secTk+secNol+secKabNoDisp+secKabKosong+'</div>';
+  box.innerHTML=modeBar+kpis+tk3+'<div class="ins-grid">'+secMatcha+secPic+secKab+secHeat+secEval+secKabNoDisp+secKabKosong+'</div>';
 }
 
 
@@ -4446,4 +4448,15 @@ async function exportMatchaBelum(){
   const ws=XLSX.utils.aoa_to_sheet(aoa);ws['!cols']=[{wch:14},{wch:24},{wch:56}];
   const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Belum ada HILO Matcha');
   XLSX.writeFile(wb,'toko_belum_ada_hilo_matcha_'+new Date().toISOString().slice(0,10)+'.xlsx');
+}
+
+// Export Excel: toko perlu dievaluasi (AV total < 15) — Nama PIC, Nama MDS, Nama Toko (+ AV total); mengikuti filter aktif
+async function exportEvalToko(){
+  const l=WOW_EVAL_LOW||[];
+  if(!l.length){alert('Tidak ada toko yang perlu dievaluasi pada filter ini.');return;}
+  try{await ensureXlsx();}catch(e){alert('Gagal memuat pustaka Excel (XLSX). Cek koneksi lalu coba lagi.');return;}
+  const aoa=[['Nama PIC','Nama MDS','Nama Toko','AV Total']].concat(l.slice().sort((a,b)=>String(a.r.mds).localeCompare(String(b.r.mds))||a.t-b.t||String(a.r.store).localeCompare(String(b.r.store))).map(x=>[x.r.mds||'',x.r.mdsAsli||'',x.r.store||'',x.t]));
+  const ws=XLSX.utils.aoa_to_sheet(aoa);ws['!cols']=[{wch:14},{wch:24},{wch:56},{wch:10}];
+  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Perlu dievaluasi');
+  XLSX.writeFile(wb,'toko_perlu_dievaluasi_'+new Date().toISOString().slice(0,10)+'.xlsx');
 }
