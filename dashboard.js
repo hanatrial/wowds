@@ -175,8 +175,7 @@ function stripMobileHeavy(){
    vars (STOCK_ALL, NED_ALL, SPG_ALL, SUBTAB_*) that are declared later in this
    file, so running it inline here would hit their temporal-dead-zone. */
 let _pinOk=false;try{_pinOk=sessionStorage.getItem('mds_dash_pin_ok_'+PIN_SCOPE)==='1';const _pinMode=sessionStorage.getItem('mds_dash_pin_mode_'+PIN_SCOPE);RESTRICT_TO_PJMDS=_pinMode==='mds_only';RESTRICT_TO_WOW=_pinMode==='wow_only';}catch(e){}
-if(_pinOk){setTimeout(enterDash,0);}
-else document.getElementById('pin-input').focus();
+setTimeout(enterDash,0); // tanpa PIN: langsung masuk
 
 // ── HELPERS ─────────────────────────────────────────────────────────────────
 function brandOf(n){
