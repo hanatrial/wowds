@@ -3063,12 +3063,12 @@ function renderWow(wowF){
   th.innerHTML=`<tr>
     <th onclick="sortBy('id')">ID${ar('id')}</th>
     <th onclick="sortBy('timestamp')">Waktu${ar('timestamp')}</th>
-    <th onclick="sortBy('mds')">MDS${ar('mds')}</th>
-    <th onclick="sortBy('area')">Area${ar('area')}</th>
+    <th onclick="sortBy('mds')">PIC${ar('mds')}</th>
+    <th onclick="sortBy('area')">Kabupaten${ar('area')}</th>
     <th onclick="sortBy('store')">Toko${ar('store')}</th>
     <th>Toko Pasangan</th>
     <th onclick="sortBy('avail')">AV${ar('avail')}</th>
-    <th>AV NS</th><th>AV Hilo</th><th>Validasi PIC</th><th>Keterangan</th>
+    <th>AV NS</th><th>AV Hilo</th><th>Validasi PIC</th><th>Keterangan</th><th>Status</th>
   </tr>`;
   tb.innerHTML=rows.length?rows.map(r=>{
     const ts=r.timestamp;
@@ -3107,8 +3107,16 @@ function renderWow(wowF){
           <option value="Hanger dan Rak"${r.keterangan==='Hanger dan Rak'?' selected':''}>Hanger dan Rak</option>
         </select>
       </td>
+      <td onclick="event.stopPropagation()">
+        <select onchange="updateWowStatus('${r._docId}',this.value)" style="font-size:11px;padding:3px 6px;border-radius:6px;border:1px solid var(--border);background:var(--bg2);color:var(--text)">
+          <option value=""${!r.statusToko?' selected':''}>—</option>
+          <option value="New"${r.statusToko==='New'?' selected':''}>New</option>
+          <option value="Existing"${r.statusToko==='Existing'?' selected':''}>Existing</option>
+          <option value="Cancel"${r.statusToko==='Cancel'?' selected':''}>Cancel</option>
+        </select>
+      </td>
     </tr>`;
-  }).join(''):`<tr><td colspan="11"><div class="empty-state">Tidak ada data Validasi Display WOW.</div></td></tr>`;
+  }).join(''):`<tr><td colspan="12"><div class="empty-state">Tidak ada data Validasi Display WOW.</div></td></tr>`;
   const tf=document.getElementById('tfoot-wow');
   if(tf)tf.textContent=`${rows.length} kunjungan`;
   if(_expandedWowVid){const tr=document.querySelector(`tr[data-vid="${_expandedWowVid}"]`);if(tr)toggleWowDetail(tr,_expandedWowVid);}
@@ -3173,6 +3181,12 @@ function updateWowKeterangan(docId,val){
   const r=WOW_ALL.find(x=>x._docId===docId);
   if(r)r.keterangan=val||null;
   db.collection('wow_logs').doc(docId).update({keterangan:val||null}).catch(e=>console.error('keterangan update failed',e.code,e.message));
+}
+function updateWowStatus(docId,val){
+  if(!docId)return;
+  const r=WOW_ALL.find(x=>x._docId===docId);
+  if(r)r.statusToko=val||null;
+  db.collection('wow_logs').doc(docId).update({statusToko:val||null}).catch(e=>console.error('status update failed',e.code,e.message));
 }
 function toggleWowValidasi(docId,val){
   if(!docId)return;
@@ -3275,11 +3289,11 @@ async function exportWowValidasiExcel(){
   const wsSum=XLSX.utils.aoa_to_sheet(aoaSum);
   wsSum['!cols']=[{wch:16},{wch:12},{wch:12},{wch:14},{wch:16},{wch:12},{wch:14}];
 
-  const aoaDetail=[['ID','Waktu','MDS','Area','Toko','Toko Pasangan','Keterangan Validasi','Keterangan Display']]
+  const aoaDetail=[['ID','Waktu','PIC','Kabupaten','Toko','Toko Pasangan','Keterangan Validasi','Keterangan Display','Status']]
     .concat(rows.slice().sort((a,b)=>a.timestamp-b.timestamp).map(r=>[
       r.id||'',
       r.timestamp.toLocaleString('id-ID',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}),
-      r.mds||'',r.area||'',r.store||'',r.storePasangan||'',wowValidasiLabel(r.picValidated),r.keterangan||''
+      r.mds||'',r.area||'',r.store||'',r.storePasangan||'',wowValidasiLabel(r.picValidated),r.keterangan||'',r.statusToko||''
     ]));
   const wsDetail=XLSX.utils.aoa_to_sheet(aoaDetail);
   wsDetail['!cols']=[{wch:12},{wch:18},{wch:26},{wch:14},{wch:52},{wch:40},{wch:18},{wch:18}];
