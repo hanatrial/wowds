@@ -4109,12 +4109,38 @@ async function tpNextSo(){
 async function openTokoPopup(){
   const pics=Object.keys(typeof WOW_PIC_KAB!=='undefined'?WOW_PIC_KAB:{}).sort();
   tpEl('tp-pic').innerHTML='<option value="">— Pilih PIC —</option>'+pics.map(p=>'<option>'+tpEsc(p)+'</option>').join('');
-  tpFillKab();tpEl('tp-msg').textContent='';
+  tpFillKab();tpEl('tp-msg').textContent='';tpResetFoto();
   tpEl('tp-overlay').classList.remove('hidden');
   tpEl('tp-so').value='…';
   tpEl('tp-so').value=TP_SO_PREFIX+await tpNextSo();
   tpLoadList();
 }
+const TP_FOTO=[null,null,null];
+function tpCompress(file){
+  return new Promise((ok,err)=>{
+    const rd=new FileReader();
+    rd.onerror=()=>err(new Error('baca file gagal'));
+    rd.onload=()=>{
+      const img=new Image();
+      img.onerror=()=>err(new Error('file bukan gambar'));
+      img.onload=()=>{
+        const MAX=800;let w=img.width,h=img.height;
+        if(w>MAX||h>MAX){if(w>h){h=Math.round(h*MAX/w);w=MAX;}else{w=Math.round(w*MAX/h);h=MAX;}}
+        const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);
+        ok(c.toDataURL('image/jpeg',0.6));
+      };
+      img.src=rd.result;
+    };
+    rd.readAsDataURL(file);
+  });
+}
+async function tpFoto(i){
+  const f=tpEl('tp-foto'+i).files[0];const pv=tpEl('tp-prev'+i);
+  if(!f){TP_FOTO[i]=null;pv.classList.add('hidden');return;}
+  try{TP_FOTO[i]=await tpCompress(f);pv.src=TP_FOTO[i];pv.classList.remove('hidden');}
+  catch(e){TP_FOTO[i]=null;pv.classList.add('hidden');tpEl('tp-msg').style.color='#B5502A';tpEl('tp-msg').textContent='Foto '+(i+1)+': '+e.message;}
+}
+function tpResetFoto(){[0,1,2].forEach(i=>{TP_FOTO[i]=null;tpEl('tp-foto'+i).value='';tpEl('tp-prev'+i).classList.add('hidden');});}
 function closeTokoPopup(){tpEl('tp-overlay').classList.add('hidden');}
 function tpFillKab(){
   const p=tpEl('tp-pic').value;const l=(typeof WOW_PIC_KAB!=='undefined'&&WOW_PIC_KAB[p])||[];
@@ -4126,6 +4152,7 @@ async function saveToko(){
   const m=tpEl('tp-msg');
   const miss=[['pic','PIC'],['kab','Kabupaten'],['nama1','Nama Outlet 1'],['distributor','Distributor Penerima'],['status','Status']].filter(([k])=>!d[k]).map(x=>x[1]);
   if(miss.length){m.style.color='#B5502A';m.textContent='Wajib diisi: '+miss.join(', ');return;}
+  if(!TP_FOTO[0]){m.style.color='#B5502A';m.textContent='Foto Pajangan 1 wajib diisi.';return;}
   if(d.kode2&&!d.nama2){m.style.color='#B5502A';m.textContent='Kode Dist 2 diisi, Nama Outlet 2 juga wajib.';return;}
   try{
     const ref=db.collection('app_data').doc('toko_'+d.ts.toString(36)+Math.random().toString(36).slice(2,6));
@@ -4135,11 +4162,11 @@ async function saveToko(){
       const c=await tx.get(cref);
       const cur=Math.max(base,c.exists?(c.data().n||0):0)+1;
       tx.set(cref,{n:cur});
-      tx.set(ref,{...d,so:TP_SO_PREFIX+cur,soNo:cur});
+      tx.set(ref,{...d,so:TP_SO_PREFIX+cur,soNo:cur,photoData:TP_FOTO[0],...(TP_FOTO[1]?{photoData2:TP_FOTO[1]}:{}),...(TP_FOTO[2]?{photoData3:TP_FOTO[2]}:{})});
       return cur;
     });
     m.style.color='var(--green)';m.textContent='✓ Tersimpan: '+d.nama1+' ('+TP_SO_PREFIX+n+')';
-    ['tp-kode1','tp-nama1','tp-kode2','tp-nama2'].forEach(i=>tpEl(i).value='');
+    ['tp-kode1','tp-nama1','tp-kode2','tp-nama2'].forEach(i=>tpEl(i).value='');tpResetFoto();
     tpEl('tp-so').value=TP_SO_PREFIX+(n+1);
     tpLoadList();
   }catch(e){m.style.color='#B5502A';m.textContent='Gagal menyimpan: '+(e.message||e);}
@@ -4150,7 +4177,7 @@ async function tpLoadList(){
     const s=await db.collection('app_data').where('type','==','toko').get();
     const rows=[];s.forEach(d=>rows.push({id:d.id,...d.data()}));
     rows.sort((a,b)=>(b.ts||0)-(a.ts||0));
-    box.innerHTML=rows.length?rows.slice(0,30).map(r=>'<div class="tp-row"><div><b>'+tpEsc(r.nama1)+'</b>'+(r.nama2?' / '+tpEsc(r.nama2):'')+'<br><span>'+tpEsc(r.so||'')+' · '+tpEsc(r.pic)+' · '+tpEsc(r.kab)+' · '+tpEsc(r.distributor)+' · '+tpEsc(r.status)+(r.kode1?' · '+tpEsc(r.kode1):'')+(r.kode2?' / '+tpEsc(r.kode2):'')+'</span></div><button onclick="tpDelete(\''+r.id+'\')">Hapus</button></div>').join(''):'Belum ada input.';
+    box.innerHTML=rows.length?rows.slice(0,30).map(r=>'<div class="tp-row"><div class="tp-main">'+(r.photoData?'<img class="tp-thumb" src="'+r.photoData+'" alt="">':'')+'<div><b>'+tpEsc(r.nama1)+'</b>'+(r.nama2?' / '+tpEsc(r.nama2):'')+'<br><span>'+tpEsc(r.so||'')+' · '+tpEsc(r.pic)+' · '+tpEsc(r.kab)+' · '+tpEsc(r.distributor)+' · '+tpEsc(r.status)+(r.kode1?' · '+tpEsc(r.kode1):'')+(r.kode2?' / '+tpEsc(r.kode2):'')+(r.photoData?' · '+(1+(r.photoData2?1:0)+(r.photoData3?1:0))+' foto':'')+'</span></div></div><button onclick="tpDelete(\''+r.id+'\')">Hapus</button></div>').join(''):'Belum ada input.';
   }catch(e){box.textContent='Gagal memuat: '+(e.message||e);}
 }
 async function tpDelete(id){
