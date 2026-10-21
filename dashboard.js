@@ -4314,16 +4314,40 @@ function renderWowInsight(rows){
   const kab=Object.entries(perKab).map(([k,g])=>({l:k,v:g.v,a:g.NS/g.v,b:g.HILO/g.v})).sort((x,y)=>x.a-y.a).slice(0,10);
   const secKab='<div class="ins-card"><h4>AV per kabupaten · 10 terendah</h4>'+wowInsDual(kab)+'</div>';
 
-  // heatmap PIC x item fokus (hanya keseluruhan)
-  let secHeat='';
-  if(!modePic){
-    const all=Object.entries(itemPic).map(([k,m])=>{let ada=0,n=0;Object.values(m).forEach(g=>{ada+=g.ada;n+=g.n;});return {k,p:wowInsPct(ada,n),n};}).filter(x=>x.n>=30);
-    const cols=all.slice().sort((a,b)=>a.p-b.p).slice(0,7).map(x=>x.k);
-    const mk=Object.keys(itemPic).find(isMatcha);if(mk&&!cols.includes(mk))cols.push(mk);
-    const pics=picList.filter(p=>rowsAll.some(r=>r.mds===p));
-    const body=pics.map(p=>'<tr><th>'+wowInsEsc(p)+'</th>'+cols.map(k=>{const g=(itemPic[k]||{})[p];const v=g&&g.n>=2?Math.round(g.ada/g.n*100):null;return '<td class="'+wowInsHeat(v)+'">'+(v==null?'·':v+'%')+'</td>';}).join('')+'</tr>').join('');
-    secHeat='<div class="ins-card ins-wide"><h4>Heatmap ketersediaan item fokus per PIC</h4><p class="ins-note">% toko yang item-nya ada. Kolom = 7 item yang paling sering kosong + HILO Matcha. Titik = data kurang dari 2 toko.</p><div class="ins-hm"><table><thead><tr><th>PIC</th>'+cols.map(k=>'<th>'+wowInsEsc(wowInsShort(k))+'</th>').join('')+'</tr></thead><tbody>'+body+'</tbody></table></div><div class="ins-legend"><span class="h0">&lt;5%</span><span class="h1">5-15%</span><span class="h2">16-30%</span><span class="h3">31-45%</span><span class="h4">&gt;45%</span></div></div>';
-  }
+  // heatmap: item utama (grup rasa). Toko "ada" bila minimal 1 item dalam grup ada pada visit itu.
+  const HM_GROUPS=[
+    {b:'NS',n:'Jeruk Peras',re:/JERUK PERAS/},
+    {b:'NS',n:'American Sweet Orange',re:/AMERICAN SWEET ORANGE/},
+    {b:'NS',n:'Anggur',re:/ANGGUR/},
+    {b:'NS',n:'Nipis',re:/JERUK NIPIS/},
+    {b:'NS',n:'Mango',re:/SWEET MANGO/},
+    {b:'NS',n:'Manis',re:/\bMANIS\b/},
+    {b:'NS',n:'Milky Mango',re:/MILKY MANGO/},
+    {b:'NS',n:'NS Tea',re:/\bTEA\b/},
+    {b:'HILO',n:'Matcha',re:/MATCHA/},
+    {b:'HILO',n:'Swiss',re:/SWISS/},
+    {b:'HILO',n:'School',re:/SCHOOL/},
+    {b:'HILO',n:'Coklat',re:/DRINK CHOCOLATE PLS/},
+    {b:'HILO',n:'Chocomalt',re:/CHOCO MALT/}
+  ];
+  const hmKey=r=>modePic?(r.area||'(kabupaten kosong)'):(r.mds||'—');
+  const hmRows=modePic?rows:rowsAll.filter(r=>picList.includes(r.mds));
+  const hm={};
+  hmRows.forEach(r=>{
+    const key=hmKey(r);const it=Object.entries(r.items||{});
+    HM_GROUPS.forEach((g,gi)=>{
+      const m=it.filter(([k,v])=>brandOf(k)===g.b&&g.re.test(String(k).toUpperCase())&&(v===true||v===false));
+      if(!m.length)return;
+      const c=(hm[key]||(hm[key]={}))[gi]||(hm[key][gi]={ada:0,n:0});
+      c.n++;if(m.some(([,v])=>v===true))c.ada++;
+    });
+  });
+  const hmKeys=Object.keys(hm).sort((x,y)=>modePic?x.localeCompare(y):picList.indexOf(x)-picList.indexOf(y));
+  const nsN=HM_GROUPS.filter(g=>g.b==='NS').length,hiN=HM_GROUPS.length-nsN;
+  const hmTot=HM_GROUPS.map((g,gi)=>{let ada=0,n=0;Object.values(hm).forEach(r=>{if(r[gi]){ada+=r[gi].ada;n+=r[gi].n;}});return wowInsPct(ada,n);});
+  const hmBody=hmKeys.map(k=>'<tr><th>'+wowInsEsc(k)+'</th>'+HM_GROUPS.map((g,gi)=>{const c=hm[k][gi];const v=c&&c.n>=2?Math.round(c.ada/c.n*100):null;return '<td class="'+wowInsHeat(v)+'">'+(v==null?'·':v+'%')+'</td>';}).join('')+'</tr>').join('');
+  const hmFoot='<tr class="hm-tot"><th>'+(modePic?'Total PIC':'Sulawesi')+'</th>'+hmTot.map(v=>'<td>'+(v==null?'·':v+'%')+'</td>').join('')+'</tr>';
+  const secHeat=hmKeys.length?'<div class="ins-card ins-wide"><h4>Heatmap item utama · '+(modePic?'per kabupaten':'per PIC')+'</h4><p class="ins-note">% visit yang item-nya ada (minimal 1 rasa dalam kelompok itu). NS Tea = semua rasa tea digabung, School = semua rasa HI LO School. Titik = data kurang dari 2 visit.</p><div class="ins-hm"><table><thead><tr><th></th><th colspan="'+nsN+'" class="hm-grp">Nutrisari</th><th colspan="'+hiN+'" class="hm-grp">HiLo</th></tr><tr><th>'+(modePic?'Kabupaten':'PIC')+'</th>'+HM_GROUPS.map(g=>'<th>'+g.n+'</th>').join('')+'</tr></thead><tbody>'+hmBody+hmFoot+'</tbody></table></div><div class="ins-legend"><span class="h0">&lt;5%</span><span class="h1">5-15%</span><span class="h2">16-30%</span><span class="h3">31-45%</span><span class="h4">&gt;45%</span></div></div>':'';
 
   // toko AV terendah
   const tk=Object.values(lastBy).map(r=>{const av=wowInsAv(r.items);return {r,ns:av.NS[0],hilo:av.HILO[0],t:av.NS[0]+av.HILO[0]};}).sort((a,b)=>a.t-b.t).slice(0,15);

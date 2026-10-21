@@ -191,3 +191,6 @@ body::before,body::after{display:none!important;}
 .ins-legend{display:flex;gap:6px;margin-top:8px;font-size:10px;}
 .ins-legend span{padding:3px 10px;border-radius:4px;color:var(--text);} .ins-legend .h4{color:#fff;}
 @media(max-width:760px){.ins-tks{grid-template-columns:1fr;}.bc-row{grid-template-columns:100px 1fr auto;}}
+
+.ins-hm .hm-grp{text-transform:uppercase;letter-spacing:.14em;color:var(--accent);font-size:10px;border-bottom:1px solid var(--border);}
+.ins-hm .hm-tot td,.ins-hm .hm-tot th{font-weight:700;border-top:1px solid var(--border);background:transparent;color:var(--text);}
