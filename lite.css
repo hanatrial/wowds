@@ -276,3 +276,5 @@ body::before,body::after{display:none!important;}
 
 .hm-belum{display:block;font-size:10px;font-weight:600;color:#C0562A;letter-spacing:0;text-transform:none;}
 .ins-hm tbody th small{display:block;font-size:10px;font-weight:400;color:var(--t3);}
+
+.ws-hmg td.ws-cnt{background:transparent;font-weight:700;font-size:15px;color:var(--text);}
