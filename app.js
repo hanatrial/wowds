@@ -23600,8 +23600,6 @@ function openMod(m){
 ═══════════════════════════════════════ */
 function initRka(){
   const as=document.getElementById('rka-area-sel');
-  as.innerHTML='<option value="">— Pilih Area —</option>';
-  AREAS.forEach(n=>{ const o=document.createElement('option'); o.value=n; o.textContent=n; as.appendChild(o); });
 
   document.getElementById('rka-mds-sel').innerHTML='<option value="">— Pilih Area dulu —</option>';
   document.getElementById('rka-store-sel').innerHTML='<option value="">— Pilih Toko —</option>';
@@ -23868,6 +23866,38 @@ function addNewWowStore(){
   document.getElementById('wow-store-box').classList.remove('open');
   wowStoreInputChanged();
 }
+let _wowLastTok=0;
+function _wowAv(items,pref){
+  const k=Object.keys(items||{}).filter(n=>{const u=n.toUpperCase();return pref==='NS'?u.startsWith('NS '):(u.startsWith('HI LO')||u.startsWith('HILO'));});
+  if(!k.length)return '—';
+  const ada=k.filter(n=>items[n]===true).length;
+  return Math.round(ada*100/k.length)+'% ('+ada+'/'+k.length+')';
+}
+async function wowLoadLast(name,pair){
+  const box=document.getElementById('wow-last');
+  if(!box)return;
+  const tok=++_wowLastTok;
+  if(!name||typeof db==='undefined'||!WOW_STORE_NAMES.includes(name)){box.classList.add('hidden');box.innerHTML='';return;}
+  box.classList.remove('hidden');box.textContent='Memuat visit terakhir…';
+  try{
+    const names=[name].concat(pair&&pair!==name?[pair]:[]);
+    const snap=await db.collection('wow_logs').where('store','in',names).limit(30).get();
+    if(tok!==_wowLastTok)return;
+    let best=null,bt=-1;
+    snap.forEach(d=>{const v=d.data();const t=v.timestamp&&v.timestamp.toMillis?v.timestamp.toMillis():Date.now();if(t>bt){bt=t;best=v;}});
+    if(!best){box.innerHTML='<div class="lv-t">Visit terakhir</div><div class="lv-n">Belum pernah divisit</div>';return;}
+    const tgl=best.tanggalVisit?new Date(best.tanggalVisit+'T12:00:00'):new Date(bt);
+    const ds=tgl.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
+    const esc=x=>String(x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+    box.innerHTML='<div class="lv-t">Visit terakhir</div><div class="lv-d">'+esc(ds)+(best.mds?' · '+esc(best.mds):'')+'</div>'
+      +'<div class="lv-av"><div><span>AV NS</span><b>'+_wowAv(best.items,'NS')+'</b></div><div><span>AV HILO</span><b>'+_wowAv(best.items,'HILO')+'</b></div></div>'
+      +(best.photoData?'<img class="lv-img" alt="Foto visit terakhir" src="'+best.photoData+'">':'');
+  }catch(e){
+    if(tok!==_wowLastTok)return;
+    console.warn('visit terakhir gagal',e);
+    box.classList.add('hidden');box.innerHTML='';
+  }
+}
 function wowStoreInputChanged(){
   const val=document.getElementById('wow-store-input').value.trim();
   const entry=wowFindTokoEntry(val);
@@ -23881,6 +23911,7 @@ function wowStoreInputChanged(){
     pasInput.value='';
     pasWrap.classList.add('hidden');
   }
+  wowLoadLast(entry?(_sameName(entry.name,val)?entry.name:entry.pair):val,entry&&entry.pair?(_sameName(entry.name,val)?entry.pair:entry.name):'');
   const mapLink=document.getElementById('wow-store-map-link');
   if(entry&&entry.lat!=null&&entry.lng!=null){
     mapLink.href=`https://www.google.com/maps?q=${entry.lat},${entry.lng}`;
@@ -23900,8 +23931,6 @@ function wowGetItems(){
 function initWow(){
   Object.assign(WOW,{step:0,area:'',mds:'',date:'',store:'',storePasangan:'',photo:null,photoUpload:null,uploadDone:false,items:{},photos:[null,null,null],uploads:[null,null,null],done:[true,true,true]});
   const as=document.getElementById('wow-area-sel');
-  as.innerHTML='<option value="">— Pilih Area —</option>';
-  AREAS.forEach(n=>{ const o=document.createElement('option'); o.value=n; o.textContent=n; as.appendChild(o); });
   wowFillMds();
   document.getElementById('wow-store-input').value='';
   document.getElementById('wow-store-pasangan').value='';
@@ -23911,53 +23940,31 @@ function initWow(){
   dt.value=new Date().toISOString().slice(0,10);
   wowGoTo(0);
 }
-const WOW_PIC=["BINCHA","FATUR","HENDRY","IAN","IMAD","LAYWITH","PANCA","VILO","WAFI"];
+const WOW_PIC=Object.keys(WOW_PIC_KAB).sort((a,b)=>a.localeCompare(b));
 function wowFillMds(){
   const ms=document.getElementById('wow-mds-sel');
   if(ms.options.length<=1){
     ms.innerHTML='<option value="">— Pilih PIC —</option>';
     WOW_PIC.forEach(n=>{ const o=document.createElement('option'); o.value=n; o.textContent=n; ms.appendChild(o); });
   }
+  wowFillKab();
+}
+function wowFillKab(){
+  const pic=document.getElementById('wow-mds-sel').value;
+  const ks=document.getElementById('wow-area-sel');
+  ks.innerHTML=pic?'<option value="">— Pilih Kabupaten —</option>':'<option value="">— Pilih PIC dulu —</option>';
+  (WOW_PIC_KAB[pic]||[]).forEach(n=>{ const o=document.createElement('option'); o.value=n; o.textContent=n; ks.appendChild(o); });
   wowCheck(0);
 }
+function wowPicChanged(){ wowFillKab(); wowFillStore(); }
 const WOW_MDS_SHORT_TO_FULL={
   'Gorontalo':{'Apin':'Mohammad Rahman Marwan','Rio':'Satrio Yusuf','Abdul':'Abd. Rahman Lahay','Adit':'Aditya Hulopi'}
 };
 let WOW_STORE_NAMES=[];
 function wowFillStore(){
-  const area=document.getElementById('wow-area-sel')?document.getElementById('wow-area-sel').value:'';
-  const mds='';
-  const shortMap=WOW_MDS_SHORT_TO_FULL[area];
-  let pool=WOW_TOKO_MASTER;
-  if(area){
-    pool=pool.filter(t=>(t.formArea||t.area)===area);
-  }
-  if(WOW_VISITED_LOADED && area && WOW_VISITED_FILTER_AREAS.includes(area)){
-    pool=pool.filter(t=>{
-      const n1=t.name.trim().toUpperCase();
-      const n2=t.pair?t.pair.trim().toUpperCase():null;
-      return !(WOW_VISITED_NAMES.has(n1)||(n2&&WOW_VISITED_NAMES.has(n2)));
-    });
-  }
-  let narrowedByMds=false;
-  if(mds){
-    const directMatches=pool.filter(t=>t.mds && (t.mds===mds || (shortMap && shortMap[t.mds]===mds)));
-    if(directMatches.length){ pool=directMatches; narrowedByMds=true; }
-  }
+  const pic=document.getElementById('wow-mds-sel')?document.getElementById('wow-mds-sel').value:'';
   const names=new Set();
-  pool.forEach(t=>{ names.add(t.name); if(t.pair)names.add(t.pair); });
-  WOW_CUSTOM_STORES.forEach(s=>{
-    if(narrowedByMds){
-      if(typeof s!=='object'||s.mds!==mds)return;
-      names.add(s.name);
-      return;
-    }
-    if(typeof s==='string'){ names.add(s); return; }
-    if(s.excludeArea && area && s.excludeArea===area)return;
-    if(s.area && area && s.area!==area)return;
-    if(s.mds && mds && s.mds!==mds)return;
-    names.add(s.name);
-  });
+  WOW_TOKO_MASTER.filter(t=>t.pic===pic).forEach(t=>{ names.add(t.name); if(t.pair)names.add(t.pair); });
   WOW_STORE_NAMES=[...names].sort((a,b)=>a.localeCompare(b));
   wowRenderSuggest(document.getElementById('wow-store-input')?document.getElementById('wow-store-input').value:'');
 }
@@ -24021,7 +24028,7 @@ function wowCheck(step){
     const area=document.getElementById('wow-area-sel').value;
     const sel=document.getElementById('wow-mds-sel').value;
     const date=document.getElementById('wow-date-input').value;
-    ok=sel!==''&&date!=='';
+    ok=sel!==''&&area!==''&&date!=='';
   } else if(step===1){
     const val=document.getElementById('wow-store-input').value.trim();
     ok=val!=='';
@@ -24040,16 +24047,14 @@ function wowNext(){
     const area=document.getElementById('wow-area-sel').value;
     const mds=document.getElementById('wow-mds-sel').value;
     if(!WOW_PIC.includes(mds)){ alert('Pilih PIC dari daftar.'); return; }
-    WOW.area='';
+    if(!area){ alert('Pilih kabupaten.'); return; }
+    WOW.area=area;
     WOW.date=document.getElementById('wow-date-input').value;
     WOW.mds=mds;
   }
   if(WOW.step===1){
     WOW.store=document.getElementById('wow-store-input').value.trim();
     WOW.storePasangan=document.getElementById('wow-store-pasangan').value.trim();
-    const _nm=WOW.store.toUpperCase();
-    const _t=(typeof WOW_TOKO_MASTER!=='undefined'?WOW_TOKO_MASTER:[]).find(t=>t.name&&t.name.trim().toUpperCase()===_nm);
-    WOW.area=_t?(_t.formArea||_t.area||''):'';
   }
   if(WOW.step===3){
     wowGetItems().forEach((_,i)=>{ if(WOW.items[i]===undefined||WOW.items[i]===null) WOW.items[i]=false; });
@@ -24194,8 +24199,6 @@ function resetWow(){
 function initBeli(){
   B.step=0; B.area=''; B.mds=''; B.store=''; B.photo=null;
   const as=document.getElementById('beli-area-sel');
-  as.innerHTML='<option value="">— Pilih Area —</option>';
-  AREAS.forEach(n=>{ const o=document.createElement('option'); o.value=n; o.textContent=n; as.appendChild(o); });
   document.getElementById('beli-store-sel').innerHTML='<option value="">— Pilih Toko —</option>';
 
   // Pre-fill from last RKA session
@@ -24551,8 +24554,6 @@ function initStock(){
   stockStep=0;
   SK.area=''; SK.status=''; SK.nama=''; SK.store=''; SK.stockType='awal'; SK.items={};
   const as=document.getElementById('stock-area-sel');
-  as.innerHTML='<option value="">— Pilih Area —</option>';
-  AREAS.forEach(n=>{ const o=document.createElement('option'); o.value=n; o.textContent=n; as.appendChild(o); });
   document.getElementById('stock-nama-input').value='';
   document.getElementById('stock-mds-sel').innerHTML='<option value="">— Pilih Area dulu —</option>';
   document.getElementById('stock-store-sel').innerHTML='<option value="">— Pilih Toko —</option>';
@@ -25223,8 +25224,6 @@ function initNed(){
   nedStep=0;
   ND.area=''; ND.status=''; ND.nama=''; ND.store=''; ND.items={};
   const as=document.getElementById('ned-area-sel');
-  as.innerHTML='<option value="">— Pilih Area —</option>';
-  AREAS.forEach(n=>{ const o=document.createElement('option'); o.value=n; o.textContent=n; as.appendChild(o); });
   document.getElementById('ned-nama-input').value='';
   document.getElementById('ned-mds-sel').innerHTML='<option value="">— Pilih Area dulu —</option>';
   document.getElementById('ned-store-sel').innerHTML='<option value="">— Pilih Toko —</option>';
@@ -25416,8 +25415,6 @@ function initSpg(){
   spgStep=0;
   SG.area=''; SG.nama=''; SG.store=''; SG.date=''; SG.items={}; SG.total=0;
   const as=document.getElementById('spg-area-sel');
-  as.innerHTML='<option value="">— Pilih Area —</option>';
-  AREAS.forEach(n=>{ const o=document.createElement('option'); o.value=n; o.textContent=n; as.appendChild(o); });
   document.getElementById('spg-nama-input').value='';
   spgFillNames();
   // visibility is driven purely by the .open class (.add-box{display:none} /
