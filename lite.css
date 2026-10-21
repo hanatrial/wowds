@@ -306,3 +306,5 @@ body::before,body::after{display:none!important;}
 .wr-phc img{height:150px;width:auto;border-radius:8px;border:1px solid var(--border);margin:0 8px 8px 0;cursor:zoom-in;vertical-align:top;}
 .wr-phc img.big{height:auto;max-width:100%;cursor:zoom-out;}
 .wr-t input[type=checkbox]{width:16px;height:16px;}
+
+.ins-hm .hm-logo{height:22px;width:auto;vertical-align:middle;}

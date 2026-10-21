@@ -4409,7 +4409,7 @@ function renderWowInsight(rows){
     {b:'NS',n:'Nipis',re:/JERUK NIPIS/},
     {b:'NS',n:'Mango',re:/SWEET MANGO/},
     {b:'NS',n:'Manis',re:/\bMANIS\b/},
-    {b:'NS',n:'Milky Mango',re:/MILKY MANGO/},
+    {b:'NS',n:'Milky Mango',re:/MILKY MANGO/,hide:1},
     {b:'NS',n:'NS Tea',re:/\bTEA\b/},
     {b:'HILO',n:'Matcha',re:/MATCHA/},
     {b:'HILO',n:'Swiss',re:/SWISS/},
@@ -4432,11 +4432,11 @@ function renderWowInsight(rows){
   const hmKeys0=Object.keys(hm);
   if(modePic)(PK[INS_PIC]||[]).forEach(k=>{if(!hm[k])hmKeys0.push(k);});
   const hmKeys=hmKeys0.sort((x,y)=>modePic?x.localeCompare(y):picList.indexOf(x)-picList.indexOf(y));
-  const nsN=HM_GROUPS.filter(g=>g.b==='NS').length,hiN=HM_GROUPS.length-nsN;
+  const nsN=HM_GROUPS.filter(g=>g.b==='NS'&&!g.hide).length,hiN=HM_GROUPS.filter(g=>g.b==='HILO'&&!g.hide).length; // kelompok hide:1 disimpan datanya tapi tidak ditampilkan
   const hmTot=HM_GROUPS.map((g,gi)=>{let ada=0,n=0;Object.values(hm).forEach(r=>{if(r[gi]){ada+=r[gi].ada;n+=r[gi].n;}});return wowInsPct(ada,n);});
-  const hmBody=hmKeys.map(k=>'<tr><th>'+wowInsEsc(k)+(hm[k]?'':'<small class="hm-belum">belum dikerjakan</small>')+'</th>'+HM_GROUPS.map((g,gi)=>{const c=(hm[k]||{})[gi];const v=c&&c.n>=1?Math.round(c.ada/c.n*100):null;return '<td class="'+(v==null?'hx':v<30?'h0':v<50?'h1':v<70?'h2':v<80?'h3':'h4')+'">'+(v==null?'·':v+'%')+'</td>';}).join('')+'</tr>').join('');
-  const hmFoot='<tr class="hm-tot"><th>'+(modePic?'Total PIC':'Sulawesi')+'</th>'+hmTot.map(v=>'<td>'+(v==null?'·':v+'%')+'</td>').join('')+'</tr>';
-  const secHeat=hmKeys.length?'<div class="ins-card ins-wide"><h4>Heatmap item utama · '+(modePic?'per kabupaten':'per PIC')+'</h4><p class="ins-note">% toko yang item-nya ada pada visit terakhir (minimal 1 rasa dalam kelompok itu). Warna menurut skala 100%. NS Tea = semua rasa tea digabung, School = semua rasa HI LO School. Titik = belum ada toko yang divisit.'+(modePic?' Baris "belum dikerjakan" = kabupaten PIC ini yang belum punya visit.':'')+'</p><div class="ins-hm"><table><thead><tr><th></th><th colspan="'+nsN+'" class="hm-grp">Nutrisari</th><th colspan="'+hiN+'" class="hm-grp">HiLo</th></tr><tr><th>'+(modePic?'Kabupaten':'PIC')+'</th>'+HM_GROUPS.map(g=>'<th>'+g.n+'</th>').join('')+'</tr></thead><tbody>'+hmBody+hmFoot+'</tbody></table></div><div class="ins-legend"><span class="h0">&lt;30%</span><span class="h1">30-49%</span><span class="h2">50-69%</span><span class="h3">70-79%</span><span class="h4">&ge;80%</span></div></div>':'';
+  const hmBody=hmKeys.map(k=>'<tr><th>'+wowInsEsc(k)+(hm[k]?'':'<small class="hm-belum">belum dikerjakan</small>')+'</th>'+HM_GROUPS.map((g,gi)=>{if(g.hide)return '';const c=(hm[k]||{})[gi];const v=c&&c.n>=1?Math.round(c.ada/c.n*100):null;return '<td class="'+(v==null?'hx':v<30?'h0':v<50?'h1':v<70?'h2':v<80?'h3':'h4')+'">'+(v==null?'·':v+'%')+'</td>';}).join('')+'</tr>').join('');
+  const hmFoot='<tr class="hm-tot"><th>'+(modePic?'Total PIC':'Sulawesi')+'</th>'+hmTot.map((v,gi)=>HM_GROUPS[gi].hide?'':'<td>'+(v==null?'·':v+'%')+'</td>').join('')+'</tr>';
+  const secHeat=hmKeys.length?'<div class="ins-card ins-wide"><h4>Heatmap item utama · '+(modePic?'per kabupaten':'per PIC')+'</h4><p class="ins-note">% toko yang item-nya ada pada visit terakhir (minimal 1 rasa dalam kelompok itu). Warna menurut skala 100%. NS Tea = semua rasa tea digabung, School = semua rasa HI LO School. Titik = belum ada toko yang divisit.'+(modePic?' Baris "belum dikerjakan" = kabupaten PIC ini yang belum punya visit.':'')+'</p><div class="ins-hm"><table><thead><tr><th></th><th colspan="'+nsN+'" class="hm-grp"><img class="hm-logo" src="img/nutrisari.png" alt="Nutrisari"></th><th colspan="'+hiN+'" class="hm-grp"><img class="hm-logo" src="img/hilo.png" alt="HiLo"></th></tr><tr><th>'+(modePic?'Kabupaten':'PIC')+'</th>'+HM_GROUPS.map(g=>g.hide?'':'<th>'+g.n+'</th>').join('')+'</tr></thead><tbody>'+hmBody+hmFoot+'</tbody></table></div><div class="ins-legend"><span class="h0">&lt;30%</span><span class="h1">30-49%</span><span class="h2">50-69%</span><span class="h3">70-79%</span><span class="h4">&ge;80%</span></div></div>':'';
 
   // toko perlu dievaluasi: AV total (NS+HILO+TS item ada) di visit terakhir < EVAL_MAX
   const EVAL_MAX=15;
