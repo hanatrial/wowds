@@ -325,7 +325,7 @@ function pjBuildItemPriceCoreNoPls(){
   if(!ITEM_PRICE_CORE)pjBuildItemPriceCore();
   ITEM_PRICE_CORE_NOPLS={};
   Object.keys(ITEM_PRICE_CORE).forEach(core=>{
-    const c2=pjCoreNoPls(core);
+    let c2=pjCoreNoPls(core);
     if(!ITEM_PRICE_CORE_NOPLS[c2])ITEM_PRICE_CORE_NOPLS[c2]=[];
     ITEM_PRICE_CORE_NOPLS[c2].push(...ITEM_PRICE_CORE[core]);
   });
@@ -4318,6 +4318,14 @@ function wowInsAv(items){
   Object.entries(items||{}).forEach(([k,v])=>{const b=brandOf(k);if(!o[b]||(v!==true&&v!==false))return;o[b][1]++;if(v===true)o[b][0]++;});
   return o;
 }
+// Penjelasan singkat di dalam kartu: "Artinya" (bahasa awam) dan "Yang perlu dilakukan"
+function wowAdv(card,arti,aksi){
+  if(!card||(!arti&&!aksi))return card;
+  const h='<div class="ins-adv">'+(arti?'<p><b>Artinya</b> '+arti+'</p>':'')+(aksi?'<p><b>Yang perlu dilakukan</b> '+aksi+'</p>':'')+'</div>';
+  const i=card.lastIndexOf('</div>');
+  return i<0?card+h:card.slice(0,i)+h+card.slice(i);
+}
+const wowAdvList=(a,n)=>a.slice(0,n||3).map(x=>'<b>'+wowInsEsc(String(x).split('/')[0].trim())+'</b>').join(', '); // nama toko dipendekkan sebelum alamat
 function wowInsPct(a,b){return b?Math.round(a/b*100):null;}
 function wowInsAvg(a,v){return v?(Math.round(a/v*10)/10).toString().replace('.',','):'—';}
 function wowInsTable(head,rows,empty){
@@ -4388,7 +4396,7 @@ function renderWowInsight(rows){
   WOW_MATCHA_TDK=mt.tdk;
   const mTot=mt.ada.length+mt.tdk.length;const mP=wowInsPct(mt.ada.length,mTot);
   const matchaPic=Object.entries(mPic).filter(([k])=>picList.includes(k)).map(([k,g])=>({k,ada:g.ada,n:g.ada+g.tdk,p:wowInsPct(g.ada,g.ada+g.tdk)})).sort((a,b)=>a.p-b.p);
-  const secMatcha='<div class="ins-card ins-wide"><h4>HILO Matcha · sudah ada atau belum</h4>'
+  let secMatcha='<div class="ins-card ins-wide"><h4>HILO Matcha · sudah ada atau belum</h4>'
     +(mTot?'<div class="ins-big"><b>'+mt.ada.length+'</b><span>dari '+mTot+' toko sudah ada <em>('+mP+'%)</em></span><b class="w">'+mt.tdk.length+'</b><span>toko belum ada</span></div>'
       +'<p class="ins-note">Berdasarkan visit terakhir tiap toko'+(mt.blm?' · '+mt.blm+' toko visit terakhirnya belum mencatat item ini':'')+'.</p>'
       +(modePic?'':wowInsBars(matchaPic.map(x=>({l:x.k,v:x.p,t:x.p+'% <small>'+x.ada+'/'+x.n+'</small>',warn:x.p<50})),100))
@@ -4397,9 +4405,9 @@ function renderWowInsight(rows){
 
   // AV per PIC (hanya keseluruhan) dan per kabupaten
   const pic=Object.entries(perPic).filter(([k])=>picList.includes(k)).map(([k,g])=>({l:k,v:g.v,a:g.NS/g.v,b:g.HILO/g.v})).sort((x,y)=>x.a-y.a);
-  const secPic=modePic?'':'<div class="ins-card"><h4>AV per PIC · terendah dulu</h4>'+wowInsDual(pic)+'</div>';
+  let secPic=modePic?'':'<div class="ins-card"><h4>AV per PIC · terendah dulu</h4>'+wowInsDual(pic)+'</div>';
   const kab=Object.entries(perKab).map(([k,g])=>({l:k,v:g.v,a:g.NS/g.v,b:g.HILO/g.v})).sort((x,y)=>x.a-y.a).slice(0,10);
-  const secKab='<div class="ins-card"><h4>AV per kabupaten · 10 terendah</h4>'+wowInsDual(kab)+'</div>';
+  let secKab='<div class="ins-card"><h4>AV per kabupaten · 10 terendah</h4>'+wowInsDual(kab)+'</div>';
 
   // heatmap: item utama (grup rasa). Toko "ada" bila minimal 1 item dalam grup ada pada visit itu.
   const HM_GROUPS=[
@@ -4436,7 +4444,7 @@ function renderWowInsight(rows){
   const hmTot=HM_GROUPS.map((g,gi)=>{let ada=0,n=0;Object.values(hm).forEach(r=>{if(r[gi]){ada+=r[gi].ada;n+=r[gi].n;}});return wowInsPct(ada,n);});
   const hmBody=hmKeys.map(k=>'<tr><th>'+wowInsEsc(k)+(hm[k]?'':'<small class="hm-belum">belum dikerjakan</small>')+'</th>'+HM_GROUPS.map((g,gi)=>{const c=(hm[k]||{})[gi];const v=c&&c.n>=1?Math.round(c.ada/c.n*100):null;return '<td class="'+(v==null?'hx':v<30?'h0':v<50?'h1':v<70?'h2':v<80?'h3':'h4')+'">'+(v==null?'·':v+'%')+'</td>';}).join('')+'</tr>').join('');
   const hmFoot='<tr class="hm-tot"><th>'+(modePic?'Total PIC':'Sulawesi')+'</th>'+hmTot.map(v=>'<td>'+(v==null?'·':v+'%')+'</td>').join('')+'</tr>';
-  const secHeat=hmKeys.length?'<div class="ins-card ins-wide"><h4>Heatmap item utama · '+(modePic?'per kabupaten':'per PIC')+'</h4><p class="ins-note">% toko yang item-nya ada pada visit terakhir (minimal 1 rasa dalam kelompok itu). Warna menurut skala 100%. NS Tea = semua rasa tea digabung, School = semua rasa HI LO School. Titik = belum ada toko yang divisit.'+(modePic?' Baris "belum dikerjakan" = kabupaten PIC ini yang belum punya visit.':'')+'</p><div class="ins-hm"><table><thead><tr><th></th><th colspan="'+nsN+'" class="hm-grp">Nutrisari</th><th colspan="'+hiN+'" class="hm-grp">HiLo</th></tr><tr><th>'+(modePic?'Kabupaten':'PIC')+'</th>'+HM_GROUPS.map(g=>'<th>'+g.n+'</th>').join('')+'</tr></thead><tbody>'+hmBody+hmFoot+'</tbody></table></div><div class="ins-legend"><span class="h0">&lt;30%</span><span class="h1">30-49%</span><span class="h2">50-69%</span><span class="h3">70-79%</span><span class="h4">&ge;80%</span></div></div>':'';
+  let secHeat=hmKeys.length?'<div class="ins-card ins-wide"><h4>Heatmap item utama · '+(modePic?'per kabupaten':'per PIC')+'</h4><p class="ins-note">% toko yang item-nya ada pada visit terakhir (minimal 1 rasa dalam kelompok itu). Warna menurut skala 100%. NS Tea = semua rasa tea digabung, School = semua rasa HI LO School. Titik = belum ada toko yang divisit.'+(modePic?' Baris "belum dikerjakan" = kabupaten PIC ini yang belum punya visit.':'')+'</p><div class="ins-hm"><table><thead><tr><th></th><th colspan="'+nsN+'" class="hm-grp">Nutrisari</th><th colspan="'+hiN+'" class="hm-grp">HiLo</th></tr><tr><th>'+(modePic?'Kabupaten':'PIC')+'</th>'+HM_GROUPS.map(g=>'<th>'+g.n+'</th>').join('')+'</tr></thead><tbody>'+hmBody+hmFoot+'</tbody></table></div><div class="ins-legend"><span class="h0">&lt;30%</span><span class="h1">30-49%</span><span class="h2">50-69%</span><span class="h3">70-79%</span><span class="h4">&ge;80%</span></div></div>':'';
 
   // toko perlu dievaluasi: AV total (NS+HILO+TS item ada) di visit terakhir < EVAL_MAX
   const EVAL_MAX=15;
@@ -4486,6 +4494,9 @@ function renderWowInsight(rows){
     noDispN=rowsK.length;
     secKabNoDisp='<div class="ins-card ins-wide"><h4>Kabupaten yang belum ada display WOW</h4><div class="ins-big"><b class="w">'+rowsK.length+'</b><span>dari '+totKab+' kabupaten di database kabupaten belum punya satu pun toko display</span></div><p class="ins-note">Dihitung dari toko yang kabupatennya sudah terisi. Toko tanpa kabupaten belum bisa dihitung, jadi PIC yang banyak tokonya belum berkabupaten bisa jadi sebenarnya sudah punya display di kabupaten itu.</p>'
       +wowInsTable(modePic?['Kabupaten','Toko PIC ini yang belum berkabupaten (bisa jadi ada di sini)']:['PIC','Kabupaten','Toko PIC ini yang belum berkabupaten (bisa jadi ada di sini)'],rowsK.map(x=>(modePic?[]:[wowInsEsc(x.pic)]).concat([wowInsEsc(x.k),x.u?'<details><summary style="color:'+(x.u>10?'#E8833A':'var(--t3)')+'">'+x.u+' toko'+(x.u>10?' · belum bisa dipastikan':'')+'</summary><div class="ins-list">'+(unkN[x.pic]||[]).slice(0,40).map(wowInsEsc).join('<br>')+((unkN[x.pic]||[]).length>40?'<br>… +'+((unkN[x.pic]||[]).length-40)+' lagi':'')+'</div></details>':'—'])),'Semua kabupaten sudah punya display.')+'</div>';
+    secKabNoDisp=wowAdv(secKabNoDisp,
+      rowsK.length?'<b>'+rowsK.length+' kabupaten</b> yang terdaftar di database belum punya satu pun toko display WOW'+(rowsK.length<=4?' ('+wowAdvList(rowsK.map(x=>x.k),4)+')':'')+'. Bisa jadi tokonya ada tetapi kabupatennya belum diisi.':'Semua kabupaten sudah punya display WOW.',
+      rowsK.length?'Cek dulu daftar toko tanpa kabupaten di kotak bawah; kalau tokonya ternyata ada di kabupaten itu, cukup isi kabupatennya. Kalau memang belum ada toko, pertimbangkan membuka display baru di sana.':'Fokus naikkan kualitas pajangan (lihat AV dan heatmap).');
     // semua status (termasuk Cancel); kabupaten wajib diisi
     const WMall=typeof WOW_TOKO_MASTER!=='undefined'?(modePic?WOW_TOKO_MASTER.filter(t=>t.pic===INS_PIC):WOW_TOKO_MASTER):[];
     const kosongM=WMall.filter(t=>!t.kab);
@@ -4495,6 +4506,10 @@ function renderWowInsight(rows){
     const tabel=Object.entries(perP).sort((a,b)=>b[1].length-a[1].length).map(([p,l])=>[wowInsEsc(p),'<b>'+l.length+'</b> dari '+totP[p],cnt(l,'Existing'),cnt(l,'New'),cnt(l,'Cancel'),'<details><summary>lihat toko</summary><div class="ins-list">'+l.slice(0,80).map(t=>wowInsEsc(t.name)+' <em style="color:var(--t3)">· '+wowInsEsc(t.st||'—')+'</em>').join('<br>')+(l.length>80?'<br>… +'+(l.length-80)+' lagi':'')+'</div></details>']);
     WS_LISTS.kabkosong=kosongM.map(t=>[t.pic,'',t.name,t.st||'','']);
     secKabKosong='<div class="ins-card ins-wide"><h4>Toko yang belum punya kabupaten · wajib diisi</h4><p class="ins-note"><b>'+kosongM.length+'</b> dari '+WMall.length+' toko di database belum punya kabupaten (semua status: Existing '+cnt(kosongM,'Existing')+', New '+cnt(kosongM,'New')+', Cancel '+cnt(kosongM,'Cancel')+'). Kabupaten wajib diisi untuk setiap toko; konfirmasi kabupaten saat input akan melengkapinya.</p>'+wowInsTable(['PIC','Tanpa kabupaten','Existing','New','Cancel','Daftar'],tabel,'Semua toko sudah punya kabupaten.')+(kosongM.length?'<button class="ins-exp" onclick="wsExport(\'kabkosong\')">⬇ Export Excel · toko tanpa kabupaten ('+kosongM.length+')</button>':'')+'</div>';
+    const topK=Object.entries(perP).sort((a,b)=>b[1].length-a[1].length).slice(0,2).map(x=>x[0]);
+    secKabKosong=wowAdv(secKabKosong,
+      kosongM.length?'<b>'+kosongM.length+' toko</b> belum punya kabupaten, jadi belum ikut hitungan per kabupaten (heatmap, AV, dan penjualan per kabupaten).':'Semua toko sudah punya kabupaten.',
+      kosongM.length?'Isi kolom KAB di Sheet Database untuk toko-toko ini (atau konfirmasi kabupaten saat input di form). Mulai dari PIC dengan toko paling banyak yang kosong: '+wowAdvList(topK,2)+'. Setelah sheet diisi, dashboard ikut terisi otomatis besok pagi.':'Tidak ada yang perlu dilakukan.');
   }
 
   // takeaways otomatis
@@ -4505,6 +4520,39 @@ function renderWowInsight(rows){
   tks.push('<b>HILO Matcha</b> sudah ada di '+mt.ada.length+' dari '+mTot+' toko'+(mP!=null?' ('+mP+'%)':'')+'. <b>'+noDispN+' kabupaten</b> belum punya display.');
   const tk3='<div class="ins-tks">'+tks.map((t,i)=>'<div class="ins-tk"><em>0'+(i+1)+'</em><p>'+t+'</p></div>').join('')+'</div>';
 
+  // ── penjelasan per kartu ──
+  if(mTot){
+    const lowP=matchaPic.filter(x=>x.n>=2).slice(0,2).map(x=>x.k);
+    secMatcha=wowAdv(secMatcha,
+      'Dari '+mTot+' toko yang dicek, <b>'+mt.ada.length+' toko ('+mP+'%)</b> sudah memajang HILO Matcha dan <b>'+mt.tdk.length+' toko belum</b>. Angka diambil dari kunjungan terakhir tiap toko.',
+      mt.tdk.length?('Kunjungi toko yang belum ada Matcha (daftarnya ada di tombol Excel di bawah) dan minta toko memajangnya.'+(!modePic&&lowP.length?' Mulai dari PIC dengan persen terendah: '+wowAdvList(lowP,2)+'.':'')):'Semua toko sudah ada Matcha. Cukup pastikan stoknya tidak kosong saat kunjungan berikutnya.');
+  }
+  if(!modePic&&pic.length>1){
+    const lo=pic.slice(0,2),hi=pic[pic.length-1];
+    secPic=wowAdv(secPic,
+      'Angka = rata-rata jumlah item yang ada di setiap toko (makin besar makin lengkap). Paling sedikit: <b>'+wowInsEsc(lo[0].l)+'</b> (NS '+wowInsAvg(lo[0].a*lo[0].v,lo[0].v)+' item); paling lengkap: <b>'+wowInsEsc(hi.l)+'</b> (NS '+wowInsAvg(hi.a*hi.v,hi.v)+' item).',
+      'Dampingi PIC '+wowAdvList(lo.map(x=>x.l),2)+': lihat toko-tokonya di bagian "Toko perlu dievaluasi", lalu lengkapi item yang kosong. Cara kerja PIC '+wowInsEsc(hi.l)+' bisa dijadikan contoh.');
+  }
+  if(kab.length){
+    secKab=wowAdv(secKab,
+      'Ini 10 kabupaten dengan item NS paling sedikit per toko. Yang paling rendah: '+wowAdvList(kab.map(x=>x.l),3)+'. Jadi toko di sana rata-rata baru memajang sedikit item.',
+      'Jadwalkan kunjungan ke kabupaten tersebut lebih dulu, bawa daftar item utama yang kosong (lihat heatmap di bawah), dan minta toko menambah pajangan.');
+  }
+  if(hmKeys.length){
+    const gs=HM_GROUPS.map((g,gi)=>({n:g.n,b:g.b,p:hmTot[gi]})).filter(x=>x.p!=null).sort((a,b)=>a.p-b.p);
+    const lowG=gs.slice(0,3);
+    const rr=hmKeys.filter(k=>hm[k]).map(k=>{let a=0,n=0;Object.values(hm[k]).forEach(c=>{a+=c.ada;n+=c.n;});return {k,p:wowInsPct(a,n),n};}).filter(x=>x.p!=null).sort((a,b)=>a.p-b.p);
+    const belum=hmKeys.filter(k=>!hm[k]);
+    secHeat=wowAdv(secHeat,
+      'Setiap kotak = berapa persen toko yang item itu ada di pajangannya. Hijau tua = hampir semua toko sudah ada, oranye/merah = banyak toko yang belum.'+(lowG.length?' Item yang paling jarang ada: '+lowG.map(x=>'<b>'+wowInsEsc(x.n)+' ('+x.p+'%)</b>').join(', ')+'.':''),
+      (lowG.length?'Fokuskan penawaran '+wowAdvList(lowG.map(x=>x.n),2)+' ke toko yang belum punya. ':'')+(rr.length>1?'Wilayah dengan item paling banyak kosong: '+wowAdvList(rr.slice(0,2).map(x=>x.k),2)+'. ':'')+(belum.length?belum.length+' wilayah belum punya kunjungan sama sekali ('+wowAdvList(belum,3)+'), jadwalkan kunjungan pertamanya.':''));
+  }
+  if(evAll.length){
+    const pe=wowInsPct(evLow.length,evAll.length);
+    secEval=wowAdv(secEval,
+      evLow.length?'<b>'+evLow.length+' dari '+evAll.length+' toko ('+pe+'%)</b> pajangannya masih sedikit (kurang dari '+EVAL_MAX+' item ada). Toko seperti ini paling berpeluang menambah penjualan kalau dilengkapi.':'Semua toko sudah punya minimal '+EVAL_MAX+' item di pajangan.',
+      evLow.length?'Kunjungi toko dengan angka terendah lebih dulu ('+wowAdvList(evLow.slice(0,2).map(x=>x.r.store),2)+'), lengkapi item yang kosong, lalu kunjungi ulang untuk memastikan item bertahan. Daftar lengkapnya ada di tombol Excel.':'Pertahankan: cukup cek rutin saat kunjungan.');
+  }
   box.innerHTML=modeBar+kpis+tk3+'<div class="ins-grid">'+secMatcha+secPic+secKab+secHeat+secEval+secKabNoDisp+secKabKosong+'</div>';
 }
 
@@ -4843,7 +4891,7 @@ function renderWowSales(){
     const mx=Math.max.apply(null,tampil.map(x=>Math.max(x.nn,x.h)).concat([1]));
     return '<div class="ins-card"><h4>Line/EA per kabupaten · 3 bulan terakhir</h4><p class="ins-note">Terendah dan tertinggi menurut NS + HILO (kabupaten dengan minimal 3 toko).</p><div class="bc"><div class="bc-key"><span class="k1"></span>NS <span class="k2"></span>HILO</div>'+tampil.map(x=>'<div class="bc-row bc-dual"><span class="bc-l">'+wsEsc(x.k)+'<small style="display:block;color:var(--t3)">'+x.toko+' toko</small></span><span class="bc-d"><span class="bc-t"><i style="width:'+Math.max(2,Math.round(x.nn/mx*80))+'%"></i><b>'+wsNum(x.nn,2)+'</b></span><span class="bc-t"><i class="h" style="width:'+Math.max(2,Math.round(x.h/mx*80))+'%"></i><b>'+wsNum(x.h,2)+'</b></span></span></div>').join('')+'</div></div>';
   })();
-  const leKabCard=leKabDual;
+  let leKabCard=leKabDual;
   // Line/EA per PIC
   let leP='';
   if(!modePic){
@@ -4871,7 +4919,7 @@ function renderWowSales(){
   rows.forEach(r=>{const v=avBy.get(String(r[0]).trim().toUpperCase());if(v==null){belum.push(r);return;}const b=bk.find(x=>v>=x.lo&&v<x.hi);if(b)b.rs.push(r);});
   const avRows=bk.concat([{n:'Belum divisit (data AV tidak ada)',rs:belum}]).filter(b=>b.rs.length).map(b=>{const e=wsAgg(b.rs,n);const avgO=b.rs.length&&idxY1.length?idxY1.reduce((s,i)=>s+e.sv[i],0)/idxY1.length/b.rs.length:0;const l3=[n-3,n-2,n-1];const ea=l3.reduce((s,i)=>s+e.ea[i],0);const le=ea?l3.reduce((s,i)=>s+e.hilo[i]+e.ns[i],0)/ea:null;return {n:b.n,toko:b.rs.length,avgO,le};});
   const mxAv=Math.max.apply(null,avRows.map(x=>x.avgO).concat([1]));
-  const avCard='<div class="ins-card"><h4>Display (AV) vs omzet</h4><p class="ins-note">Rata-rata omzet per toko per bulan '+Y1+', menurut AV total visit terakhir (NS+HILO+TS item ada).</p>'+wowInsBars(avRows.map(x=>({l:x.n,s:x.toko+' toko',v:x.avgO,t:wsRp(x.avgO,true)+' <small>Line/EA '+wsNum(x.le,2)+'</small>',warn:x.n==='AV < 15'})),mxAv)+'</div>';
+  let avCard='<div class="ins-card"><h4>Display (AV) vs omzet</h4><p class="ins-note">Rata-rata omzet per toko per bulan '+Y1+', menurut AV total visit terakhir (NS+HILO+TS item ada).</p>'+wowInsBars(avRows.map(x=>({l:x.n,s:x.toko+' toko',v:x.avgO,t:wsRp(x.avgO,true)+' <small>Line/EA '+wsNum(x.le,2)+'</small>',warn:x.n==='AV < 15'})),mxAv)+'</div>';
 
   // ── daftar toko + export ──
   const mdsOf=(nm)=>{if(typeof WOW_ALL==='undefined')return '';const u=String(nm).trim().toUpperCase();for(let i=0;i<WOW_ALL.length;i++){if(String(WOW_ALL[i].store).trim().toUpperCase()===u&&WOW_ALL[i].mdsAsli)return WOW_ALL[i].mdsAsli;}return '';};
@@ -4900,10 +4948,44 @@ function renderWowSales(){
   const gFoot='<tr class="hm-tot"><th>'+(modePic?'Total '+wsEsc(INS_PIC):'Sulawesi')+'</th><td class="ws-cnt">'+rows.length+'</td>'+gCell(gTot.g.om,gTot.c.om,gTot.p.om,fOm)+gCell(gTot.g.ns,gTot.c.ns,gTot.p.ns,fLe)+gCell(gTot.g.hi,gTot.c.hi,gTot.p.hi,fLe)+'</tr>';
   const hmG='<div class="ins-card ins-wide"><h4>Heatmap growth rata-rata · '+(modePic?'per kabupaten':'per PIC')+'</h4><p class="ins-note">Growth average: rata-rata bulanan '+Y1+' ('+lblM[idxY1[0]]+'–'+lblM[idxY1[idxY1.length-1]]+', dibagi '+idxY1.length+' bulan) dibanding rata-rata bulanan '+Y0+' ('+lblM[idxY0[0]]+'–'+lblM[idxY0[idxY0.length-1]]+', dibagi '+idxY0.length+' bulan). Angka kecil = rata-rata '+Y1+'. Line/EA = total line (PA) ÷ jumlah bulan ÷ jumlah toko.</p><div class="ins-hm"><table class="ws-hmg"><thead><tr><th>'+(modePic?'Kabupaten':'PIC')+'</th><th>Jumlah toko</th><th>Omzet</th><th>Line/EA NS</th><th>Line/EA HILO</th></tr></thead><tbody>'+gBody+gFoot+'</tbody></table></div><div class="ins-legend"><span class="h0">minus (&lt;0%)</span><span class="h2">0 s/d +10%</span><span class="h3">+10 s/d +30%</span><span class="h4">&gt;+30%</span></div></div>';
   const card=(t,body,wide)=>'<div class="ins-card'+(wide?' ins-wide':'')+'"><h4>'+t+'</h4>'+body+'</div>';
+  // narasi penjualan
+  const cTren=wowAdv(card('Tren omzet bulanan · '+Y0+' vs '+Y1,trenOmzet,true),
+    'Garis terang = '+Y0+', garis gelap = '+Y1+', garis putus-putus = rata-rata bulanan. Rata-rata omzet per bulan '+Y1+' <b>'+wsRp(avg1,true)+'</b>, '+(dAvg==null?'':(dAvg<0?'turun ':'naik ')+'<b>'+wsPct(Math.abs(dAvg)).replace('+','')+'</b> dibanding rata-rata '+Y0+' ('+wsRp(avg0,true)+'). ')+'Bulan tertinggi '+lblM[bestI]+', terendah '+lblM[worstI]+(A.sv[last]<avg1*0.85?'; bulan terakhir ('+lblM[last]+') masih di bawah rata-rata '+Y1+', karena bulannya belum penuh atau memang melemah':'')+'.',
+    dAvg!=null&&dAvg<0?'Omzet masih di bawah tahun lalu. Cek di heatmap bawah PIC atau kabupaten yang merah, lalu kejar toko yang berhenti membeli (lihat "Toko tanpa transaksi"). Prioritaskan bulan berjalan supaya rata-rata '+Y1+' bisa naik.':'Omzet sudah di atas tahun lalu. Pertahankan, dan kejar wilayah yang masih merah di heatmap supaya pertumbuhannya merata.');
+  let hmGa=hmG;
+  {
+    const gr=gRows.filter(x=>x.e&&x.k.charAt(0)!=='(').map(x=>({k:x.k,toko:x.toko,r:wsGrowthAvg(x.e,idxY1,idxY0,x.toko)})).filter(x=>x.r.g.om!=null);
+    if(gr.length){
+      const neg=gr.filter(x=>x.r.g.om<0),srt=gr.slice().sort((a,b)=>a.r.g.om-b.r.g.om);
+      const lowHi=gr.filter(x=>x.r.g.hi!=null).sort((a,b)=>a.r.g.hi-b.r.g.hi)[0],lowNs=gr.filter(x=>x.r.g.ns!=null).sort((a,b)=>a.r.g.ns-b.r.g.ns)[0];
+      hmGa=wowAdv(hmG,
+        'Tiap baris = '+(modePic?'kabupaten':'PIC')+'. Angka besar = naik/turun berapa persen rata-rata bulanan '+Y1+' dibanding '+Y0+' (hijau naik, merah turun); angka kecil = nilai rata-rata '+Y1+'. <b>'+neg.length+' dari '+gr.length+'</b> '+(modePic?'kabupaten':'PIC')+' omzetnya turun. Terlemah: <b>'+wsEsc(srt[0].k)+'</b> ('+wsPct(srt[0].r.g.om)+'), terkuat: <b>'+wsEsc(srt[srt.length-1].k)+'</b> ('+wsPct(srt[srt.length-1].r.g.om)+').',
+        (neg.length?'Dahulukan '+srt.slice(0,2).map(x=>'<b>'+wsEsc(x.k)+'</b>').join(' dan ')+': cari toko yang omzetnya turun dan toko yang berhenti beli. ':'')+(lowHi&&lowHi.r.g.hi<=-5?'Variasi HILO melemah di <b>'+wsEsc(lowHi.k)+'</b> ('+wsPct(lowHi.r.g.hi)+'). ':'')+(lowNs&&lowNs.r.g.ns<=-5?'Variasi NS melemah di <b>'+wsEsc(lowNs.k)+'</b> ('+wsPct(lowNs.r.g.ns)+'). ':'')+'Wilayah yang sudah hijau tua bisa dijadikan contoh cara kerja.');
+    }
+  }
+  if(!modePic&&leP){
+    const a=picArr.map(x=>{const e=wsAgg(x.rows,n),l3=[n-3,n-2,n-1],tk=x.rows.length||1;return {k:x.k,h:l3.reduce((q,i)=>q+e.hilo[i],0)/3/tk,nn:l3.reduce((q,i)=>q+e.ns[i],0)/3/tk};}).sort((p,q)=>(p.h+p.nn)-(q.h+q.nn));
+    if(a.length>1){
+      const lo=a[0],hi=a[a.length-1];
+      leP=wowAdv(leP,
+        'Line/EA = rata-rata jumlah item (varian) yang dibeli tiap toko dalam sebulan, dihitung dari 3 bulan terakhir. Makin tinggi berarti tokonya membeli makin beragam. Terendah: <b>'+wsEsc(lo.k)+'</b> (NS '+wsNum(lo.nn,2)+', HILO '+wsNum(lo.h,2)+'); tertinggi: <b>'+wsEsc(hi.k)+'</b> (NS '+wsNum(hi.nn,2)+', HILO '+wsNum(hi.h,2)+').',
+        'Dorong toko milik <b>'+wsEsc(lo.k)+'</b> menambah varian, terutama '+(lo.h<lo.nn?'HILO':'NS')+' yang lebih rendah. Pakai program varian yang sedang berjalan dan ajak toko membeli lebih dari satu rasa dalam satu pesanan.');
+    }
+  }
+  {
+    const l3=[n-3,n-2,n-1];
+    const ka=kabArr.filter(x=>x.toko>=3).map(x=>({k:x.k,t:x.toko,v:l3.reduce((q,i)=>q+x.e.ns[i]+x.e.hilo[i],0)/3/x.toko})).sort((p,q)=>p.v-q.v);
+    if(ka.length>1)leKabCard=wowAdv(leKabCard,
+      'Batang oranye/hijau tua = rata-rata item NS dan HILO yang dibeli per toko per bulan, per kabupaten (3 bulan terakhir, minimal 3 toko). Terendah: '+wowAdvList(ka.slice(0,3).map(x=>x.k+' ('+wsNum(x.v,1)+')'),3)+'.',
+      'Di kabupaten terendah, pelajari toko mana yang hanya membeli 1 sampai 2 varian, lalu tawarkan varian tambahan lewat kunjungan dan program varian. Kabupaten yang tinggi bisa jadi contoh toko yang cocok untuk ditiru.');
+  }
+  const tMatiA=mati.length?wowAdv(tMati,
+    '<b>'+mati.length+' toko</b> pernah membeli tetapi 3 bulan terakhir tidak ada transaksi sama sekali (toko yang "tidur"). Urutannya dari yang omzet historisnya terbesar, jadi yang paling atas paling berharga untuk dikejar.',
+    'Kunjungi dulu '+wowAdvList(mati.slice(0,3).map(x=>x.r[0]),3)+'. Tanyakan penyebabnya (stok habis, pindah ke kompetitor, tutup, atau belum ditawari lagi), lalu tawarkan pesanan ulang. Daftar lengkap ada di tombol Excel.'):wowAdv(tMati,'Tidak ada toko yang berhenti membeli dalam 3 bulan terakhir.','Pertahankan ritme kunjungan.');
   box.innerHTML=modeBar+kpis+tkHtml+'<div class="ins-grid">'
-    +card('Tren omzet bulanan · '+Y0+' vs '+Y1,trenOmzet,true)
-    +hmG
-    +leP+leKabCard+tMati
+    +cTren
+    +hmGa
+    +leP+leKabCard+tMatiA
     +'</div>';
 }
 
@@ -4945,7 +5027,7 @@ function renderWowCombo(){
     +kpi('Omzet/toko/bln · AV ≥ 30',wsRp(high.om,true),high.toko+' toko · '+high.aktif+' bertransaksi')
     +'<div class="ins-kpi ws-growth'+(ratio!=null&&ratio<1?' neg':'')+'"><span>AV tinggi vs rendah</span><b>'+(ratio==null?'—':wsNum(ratio,1)+'×')+'</b><small>omzet toko AV ≥ 30 dibanding AV < 15</small></div>'
     +'</div>';
-  const avCard='<div class="ins-card ins-wide"><h4>Display (AV) vs omzet</h4><p class="ins-note">Rata-rata omzet per toko per bulan '+Y1+', menurut AV total visit terakhir (NS+HILO+TS item ada).</p>'+wowInsBars(bk.concat([{n:'Belum divisit (tanpa data AV)',toko:noAv.length,om:noAv.length?noAv.reduce((s,x)=>s+x.om,0)/noAv.length:0,le:null}]).filter(b=>b.toko).map(b=>({l:b.n,s:b.toko+' toko',v:b.om,t:wsRp(b.om,true)+(b.le!=null?' <small>Line/EA '+wsNum(b.le,2)+'</small>':''),warn:b.n==='AV < 15'})),Math.max.apply(null,bk.map(b=>b.om).concat([1])))+'</div>';
+  let avCard='<div class="ins-card ins-wide"><h4>Display (AV) vs omzet</h4><p class="ins-note">Rata-rata omzet per toko per bulan '+Y1+', menurut AV total visit terakhir (NS+HILO+TS item ada).</p>'+wowInsBars(bk.concat([{n:'Belum divisit (tanpa data AV)',toko:noAv.length,om:noAv.length?noAv.reduce((s,x)=>s+x.om,0)/noAv.length:0,le:null}]).filter(b=>b.toko).map(b=>({l:b.n,s:b.toko+' toko',v:b.om,t:wsRp(b.om,true)+(b.le!=null?' <small>Line/EA '+wsNum(b.le,2)+'</small>':''),warn:b.n==='AV < 15'})),Math.max.apply(null,bk.map(b=>b.om).concat([1])))+'</div>';
   // per PIC (Sulawesi): omzet/toko/bulan menurut bucket AV
   let perPic='';
   if(!modePic){
@@ -4960,8 +5042,8 @@ function renderWowCombo(){
   const highLow=withAv.filter(x=>x.av>=30&&x.om<=medAll).sort((a,b)=>a.om-b.om||b.av-a.av);
   WS_LISTS.avrendah=lowHigh.slice(0,300).map(row);WS_LISTS.avtinggi=highLow.slice(0,300).map(row);
   const tbl=(l)=>wowInsTable(['Toko','PIC','AV','Omzet/bln'],l.slice(0,10).map(x=>[wsEsc(x.r[0]),wsEsc(x.r[1]),'<b>'+x.av+'</b>',wsRp(x.om,true)]),'Tidak ada.');
-  const c1='<div class="ins-card"><h4>AV rendah, omzet di atas median</h4><p class="ins-note">AV &lt; 15 padahal omzet per bulan di atas median ('+wsRp(medAll,true)+'). Display belum menopang toko yang sebenarnya laku — prioritas perbaikan.</p>'+tbl(lowHigh)+wsBtn('avrendah','AV rendah, omzet tinggi')+'</div>';
-  const c2='<div class="ins-card"><h4>AV tinggi, omzet rendah</h4><p class="ins-note">AV ≥ 30 tetapi omzet per bulan sama atau di bawah median. Display sudah lengkap, penjualannya belum jalan — cek eksekusi atau potensi toko.</p>'+tbl(highLow)+wsBtn('avtinggi','AV tinggi, omzet rendah')+'</div>';
+  let c1='<div class="ins-card"><h4>AV rendah, omzet di atas median</h4><p class="ins-note">AV &lt; 15 padahal omzet per bulan di atas median ('+wsRp(medAll,true)+'). Display belum menopang toko yang sebenarnya laku — prioritas perbaikan.</p>'+tbl(lowHigh)+wsBtn('avrendah','AV rendah, omzet tinggi')+'</div>';
+  let c2='<div class="ins-card"><h4>AV tinggi, omzet rendah</h4><p class="ins-note">AV ≥ 30 tetapi omzet per bulan sama atau di bawah median. Display sudah lengkap, penjualannya belum jalan — cek eksekusi atau potensi toko.</p>'+tbl(highLow)+wsBtn('avtinggi','AV tinggi, omzet rendah')+'</div>';
   // takeaways
   const tks=[
     'Toko <b>AV ≥ 30</b> rata-rata beromzet '+wsRp(high.om,true)+' per bulan, '+(ratio==null?'—':wsNum(ratio,1)+'×')+' toko <b>AV &lt; 15</b> ('+wsRp(low.om,true)+').',
@@ -4975,16 +5057,64 @@ function renderWowCombo(){
   const l3=[n-3,n-2,n-1];
   const gArr=Object.entries(grp).map(([k,l])=>{const e=wsAgg(l.map(x=>x.r),n);return {k,toko:l.length,av:l.reduce((a,x)=>a+x.av,0)/l.length,om:l.reduce((a,x)=>a+x.om,0)/l.length,le:l3.reduce((a,i)=>a+e.hilo[i]+e.ns[i],0)/3/l.length,sum:l.reduce((a,x)=>a+x.om,0),l};});
   const mean=(a,f)=>a.length?a.reduce((q,x)=>q+f(x),0)/a.length:0;
-  const bubble=gArr.length>=2?'<div class="ins-card ins-wide"><h4>Kuadran: kualitas display vs Line/EA · per '+(modePic?'kabupaten':'PIC')+'</h4><p class="ins-note">Sumbu X = rata-rata AV total, Y = Line/EA (total line ÷ bulan ÷ toko, 3 bulan terakhir), ukuran = omzet. Garis hijau = rata-rata '+(modePic?'kabupaten':'PIC')+'.</p>'+wsSvgBubble({pts:gArr.map((g,i)=>({x:g.av,y:g.le,r:g.sum,l:g.k,c:WS_PAL[i%WS_PAL.length],t:g.toko+' toko · '+wsRp(g.om,true)+'/toko/bln'})),qx:mean(gArr,g=>g.av),qy:mean(gArr,g=>g.le),xl:'AV total',yl:'Line/EA',q1:'AV rendah, Line/EA tinggi',q2:'perlu dibenahi',q3:'display kuat, laku',q4:'AV tinggi, Line/EA rendah'})+'</div>':'';
+  let bubble=gArr.length>=2?'<div class="ins-card ins-wide"><h4>Kuadran: kualitas display vs Line/EA · per '+(modePic?'kabupaten':'PIC')+'</h4><p class="ins-note">Sumbu X = rata-rata AV total, Y = Line/EA (total line ÷ bulan ÷ toko, 3 bulan terakhir), ukuran = omzet. Garis hijau = rata-rata '+(modePic?'kabupaten':'PIC')+'.</p>'+wsSvgBubble({pts:gArr.map((g,i)=>({x:g.av,y:g.le,r:g.sum,l:g.k,c:WS_PAL[i%WS_PAL.length],t:g.toko+' toko · '+wsRp(g.om,true)+'/toko/bln'})),qx:mean(gArr,g=>g.av),qy:mean(gArr,g=>g.le),xl:'AV total',yl:'Line/EA',q1:'AV rendah, Line/EA tinggi',q2:'perlu dibenahi',q3:'display kuat, laku',q4:'AV tinggi, Line/EA rendah'})+'</div>':'';
   const pts=withAv.map(x=>({x:x.av,y:x.om,l:x.r[0],c:(x.av<15&&x.om>medAll)?'#E8833A':(x.av>=30&&x.om<=medAll)?'#F2C94C':'#4F8A6B'}));
-  const scatter='<div class="ins-card ins-wide"><h4>Peta toko: AV vs omzet</h4><p class="ins-note">Satu titik = satu toko ('+withAv.length+' toko). Garis putus-putus: AV 15 dan 30, serta median omzet. Titik oranye = prioritas perbaikan display; kuning = display sudah lengkap tapi omzet rendah.</p>'+wsSvgScatter({pts,vx:[15,30],hy:medAll})+'</div>';
+  let scatter='<div class="ins-card ins-wide"><h4>Peta toko: AV vs omzet</h4><p class="ins-note">Satu titik = satu toko ('+withAv.length+' toko). Garis putus-putus: AV 15 dan 30, serta median omzet. Titik oranye = prioritas perbaikan display; kuning = display sudah lengkap tapi omzet rendah.</p>'+wsSvgScatter({pts,vx:[15,30],hy:medAll})+'</div>';
   const dRows=gArr.map(g=>{const a=g.l.filter(x=>x.av<15),b=g.l.filter(x=>x.av>=30);return {l:g.k,a:a.length?mean(a,x=>x.om):null,b:b.length?mean(b,x=>x.om):null,n:a.length+b.length};}).filter(r=>r.a!=null||r.b!=null).sort((x,y)=>(y.b||0)-(x.b||0));
-  const dumb=dRows.length?'<div class="ins-card ins-wide"><h4>Omzet toko AV rendah vs AV tinggi · per '+(modePic?'kabupaten':'PIC')+'</h4>'+wsSvgDumbbell({rows:dRows})+'</div>':'';
+  let dumb=dRows.length?'<div class="ins-card ins-wide"><h4>Omzet toko AV rendah vs AV tinggi · per '+(modePic?'kabupaten':'PIC')+'</h4>'+wsSvgDumbbell({rows:dRows})+'</div>':'';
   const stackRows=gArr.map(g=>({l:g.k,s:g.toko+' toko',parts:[{v:g.l.filter(x=>x.av<15).length,c:'#E8833A',t:'AV < 15'},{v:g.l.filter(x=>x.av>=15&&x.av<30).length,c:'#F2C94C',t:'AV 15–29'},{v:g.l.filter(x=>x.av>=30).length,c:'#235347',t:'AV ≥ 30'}]})).sort((a,b)=>(b.parts[2].v/(b.parts[0].v+b.parts[1].v+b.parts[2].v||1))-(a.parts[2].v/(a.parts[0].v+a.parts[1].v+a.parts[2].v||1)));
-  const stack='<div class="ins-card"><h4>Kesiapan display · sebaran toko menurut AV</h4>'+wsStack100(stackRows,[{c:'#E8833A',t:'AV < 15'},{c:'#F2C94C',t:'15–29'},{c:'#235347',t:'≥ 30'}])+'</div>';
+  let stack='<div class="ins-card"><h4>Kesiapan display · sebaran toko menurut AV</h4>'+wsStack100(stackRows,[{c:'#E8833A',t:'AV < 15'},{c:'#F2C94C',t:'15–29'},{c:'#235347',t:'≥ 30'}])+'</div>';
   const totOm=withAv.reduce((a,x)=>a+x.om,0)||1;
   const shareRows=[{l:'Jumlah toko',parts:bkDef.map((b,i)=>({v:withAv.filter(x=>b.t(x.av)).length,c:['#E8833A','#F2C94C','#235347'][i],t:b.n}))},{l:'Omzet',parts:bkDef.map((b,i)=>({v:withAv.filter(x=>b.t(x.av)).reduce((a,x)=>a+x.om,0),c:['#E8833A','#F2C94C','#235347'][i],t:b.n}))}];
-  const share='<div class="ins-card"><h4>Porsi toko vs porsi omzet menurut AV</h4>'+wsStack100(shareRows,[{c:'#E8833A',t:'AV < 15'},{c:'#F2C94C',t:'15–29'},{c:'#235347',t:'≥ 30'}])+'<p class="ins-note" style="margin-top:8px">Toko AV ≥ 30 = '+Math.round(withAv.filter(x=>x.av>=30).length/withAv.length*100)+'% dari toko, menyumbang '+Math.round(withAv.filter(x=>x.av>=30).reduce((a,x)=>a+x.om,0)/totOm*100)+'% omzet.</p></div>';
+  let share='<div class="ins-card"><h4>Porsi toko vs porsi omzet menurut AV</h4>'+wsStack100(shareRows,[{c:'#E8833A',t:'AV < 15'},{c:'#F2C94C',t:'15–29'},{c:'#235347',t:'≥ 30'}])+'<p class="ins-note" style="margin-top:8px">Toko AV ≥ 30 = '+Math.round(withAv.filter(x=>x.av>=30).length/withAv.length*100)+'% dari toko, menyumbang '+Math.round(withAv.filter(x=>x.av>=30).reduce((a,x)=>a+x.om,0)/totOm*100)+'% omzet.</p></div>';
+  // narasi gabungan
+  const W=modePic?'kabupaten':'PIC',pc=(a,b)=>b?Math.round(a/b*100):0;
+  if(bubble){
+    const qx=mean(gArr,g=>g.av),qy=mean(gArr,g=>g.le);
+    const nm=l=>wowAdvList(l.map(g=>g.k),3);
+    const benahi=gArr.filter(g=>g.av<qx&&g.le<qy),kuat=gArr.filter(g=>g.av>=qx&&g.le>=qy),q4=gArr.filter(g=>g.av>=qx&&g.le<qy),q1=gArr.filter(g=>g.av<qx&&g.le>=qy);
+    bubble=wowAdv(bubble,
+      'Satu gelembung = satu '+W+'. Makin ke kanan = pajangan (AV) makin lengkap; makin ke atas = tiap toko membeli makin banyak varian (Line/EA); gelembung besar = omzet besar.'+(benahi.length?' Kiri-bawah (perlu dibenahi): '+nm(benahi)+'.':'')+(kuat.length?' Kanan-atas (sudah baik): '+nm(kuat)+'.':''),
+      (benahi.length?'<b>'+nm(benahi)+'</b>: lengkapi pajangan sekaligus dorong varian. ':'')+(q4.length?'<b>'+nm(q4)+'</b>: pajangan sudah lengkap tapi variannya belum dibeli, fokus penawaran varian dan order ulang. ':'')+(q1.length?'<b>'+nm(q1)+'</b>: toko sudah banyak membeli varian padahal pajangan masih sedikit, lengkapi pajangan karena potensinya besar.':''));
+  }
+  scatter=wowAdv(scatter,
+    'Satu titik = satu toko ('+withAv.length+' toko). Makin ke kanan pajangannya makin lengkap, makin ke atas omzetnya makin tinggi. <b>'+lowHigh.length+' titik oranye</b> = toko yang sudah laku tapi pajangannya masih sedikit; <b>'+highLow.length+' titik kuning</b> = pajangan sudah lengkap tapi omzetnya rendah.',
+    (lowHigh.length?'Mulai dari toko oranye: dampaknya paling cepat karena tokonya sudah terbukti laku (daftar lengkap di tombol Excel kotak "AV rendah, omzet di atas median"). ':'')+(highLow.length?'Untuk toko kuning, jangan menambah pajangan lagi; cek stok, harga, dan apakah tokonya rutin order.':''));
+  if(dumb){
+    const ok=dRows.filter(r=>r.a!=null&&r.b!=null);
+    const naik=ok.filter(r=>r.b>r.a),gap=ok.slice().sort((p,q)=>(q.b-q.a)-(p.b-p.a))[0];
+    dumb=wowAdv(dumb,
+      'Tiap baris membandingkan omzet rata-rata toko ber-AV rendah dengan toko ber-AV tinggi di satu '+W+'. '+(ok.length?'Di <b>'+naik.length+' dari '+ok.length+' '+W+'</b> toko ber-AV tinggi omzetnya lebih besar. ':'')+'Ini hubungan, bukan bukti sebab-akibat, tetapi arahnya menunjukkan pajangan lengkap umumnya sejalan dengan omzet yang lebih baik.',
+      (gap&&gap.b>gap.a?'Selisih terbesar ada di <b>'+wsEsc(gap.l)+'</b>; di sana melengkapi pajangan paling menjanjikan. ':'')+(ok.length&&naik.length<ok.length?'Di '+W+' yang selisihnya kecil atau terbalik, periksa kualitas eksekusi (stok, harga, order ulang) selain kelengkapan pajangan.':''));
+  }
+  {
+    const sr=gArr.map(g=>({k:g.k,n:g.l.length,low:g.l.filter(x=>x.av<15).length})).filter(x=>x.n>=1).sort((a,b)=>b.low/b.n-a.low/a.n);
+    if(sr.length)stack=wowAdv(stack,
+      'Tiap batang = sebaran toko satu '+W+' menurut kelengkapan pajangan: <b>oranye</b> = di bawah 15 item (belum siap), <b>kuning</b> = 15 sampai 29, <b>hijau tua</b> = 30 atau lebih (lengkap). Paling banyak oranye: <b>'+wsEsc(sr[0].k)+'</b> ('+pc(sr[0].low,sr[0].n)+'% tokonya).',
+      'Prioritaskan <b>'+wsEsc(sr[0].k)+'</b>'+(sr[1]&&sr[1].low?' dan <b>'+wsEsc(sr[1].k)+'</b>':'')+': naikkan toko oranye ke kuning dulu (target minimal 15 item), baru dorong ke 30.');
+  }
+  {
+    const nT=withAv.length,tHi=withAv.filter(x=>x.av>=30).length,oHi=withAv.filter(x=>x.av>=30).reduce((a,x)=>a+x.om,0),pT=pc(tHi,nT),pO=pc(oHi,totOm);
+    share=wowAdv(share,
+      'Toko ber-AV 30 atau lebih hanya <b>'+pT+'%</b> dari jumlah toko, tetapi menyumbang <b>'+pO+'%</b> omzet.',
+      pO>pT?'Pajangan lengkap berkaitan dengan omzet yang lebih besar. Cara paling cepat menaikkan omzet adalah menambah jumlah toko ber-AV tinggi, mulai dari toko oranye yang sudah laku.':'Porsi omzet toko lengkap belum lebih besar dari porsi jumlahnya, jadi kelengkapan saja belum cukup; cek juga stok, harga, dan frekuensi order di toko-toko itu.');
+  }
+  avCard=wowAdv(avCard,
+    'Toko ber-AV 30 atau lebih rata-rata beromzet <b>'+wsRp(high.om,true)+'</b> per bulan, '+(ratio==null?'':'<b>'+wsNum(ratio,1)+'×</b> ')+'toko ber-AV di bawah 15 ('+wsRp(low.om,true)+'). AV = jumlah item NS + HILO + TS yang ada di pajangan pada kunjungan terakhir.',
+    ratio!=null&&ratio>1?'Target sederhana: naikkan '+low.toko+' toko ber-AV di bawah 15 minimal ke 15, lalu ke 30. Ini hubungan, bukan jaminan, jadi cek hasilnya di bulan berikutnya.':'Belum terlihat toko ber-AV tinggi lebih laku. Periksa eksekusi di toko lengkap (stok, harga, order ulang) sebelum menambah pajangan.');
+  if(perPic&&!modePic){
+    const byP={};withAv.forEach(x=>{(byP[x.r[1]]=byP[x.r[1]]||[]).push(x);});
+    const lw=Object.entries(byP).map(([p,l])=>({p,n:l.length,low:l.filter(x=>x.av<15).length})).filter(x=>x.low>0).sort((a,b)=>b.low-a.low);
+    perPic=wowAdv(perPic,
+      'Tabel ini menunjukkan omzet rata-rata satu toko per bulan menurut tingkat pajangan, untuk tiap PIC. Kalau kolom "AV ≥ 30" lebih besar dari "AV < 15", berarti pajangan lengkap di PIC itu sejalan dengan omzet lebih besar.',
+      lw.length?'PIC dengan toko ber-AV di bawah 15 terbanyak: '+lw.slice(0,3).map(x=>'<b>'+wsEsc(x.p)+'</b> ('+x.low+' toko)').join(', ')+'. Dahulukan kunjungan perbaikan di sana.':'Tidak ada toko ber-AV di bawah 15.');
+  }
+  c1=lowHigh.length?wowAdv(c1,
+    '<b>'+lowHigh.length+' toko</b> omzetnya di atas median tapi pajangannya masih kurang dari 15 item. Tokonya sudah terbukti laku, tapi display belum membantu.',
+    'Kunjungi lebih dulu '+wowAdvList(lowHigh.slice(0,3).map(x=>x.r[0]),3)+', lengkapi item yang kosong, lalu pantau omzet bulan berikutnya. Daftar lengkapnya di tombol Excel.'):wowAdv(c1,'Tidak ada toko laku dengan pajangan sedikit.','Pertahankan.');
+  c2=highLow.length?wowAdv(c2,
+    '<b>'+highLow.length+' toko</b> pajangannya sudah lengkap (30 item atau lebih) tetapi omzetnya rendah. Berarti masalahnya bukan di kelengkapan.',
+    'Jangan menambah pajangan. Cek penyebabnya saat kunjungan: stok kosong, harga, lokasi, atau tokonya jarang order. Mulai dari '+wowAdvList(highLow.slice(0,3).map(x=>x.r[0]),3)+'.'):wowAdv(c2,'Tidak ada toko berpajangan lengkap dengan omzet rendah.','Pertahankan.');
   box.innerHTML=modeBar+kpis+tk+'<div class="ins-grid">'+bubble+scatter+dumb+stack+share+avCard+perPic+c1+c2+'</div>';
 }
 
