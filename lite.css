@@ -268,3 +268,8 @@ body::before,body::after{display:none!important;}
 .ws-growth b{font-size:44px;line-height:1.05;color:#0B6B3A;letter-spacing:-.02em;}
 .ws-growth.neg{background:#FBE3D3;border-color:#E8833A;}
 .ws-growth.neg b{color:#C0562A;}
+
+.ws-hmg td{padding:9px 6px;}
+.ws-hmg td b{display:block;font-size:14px;}
+.ws-hmg td small{display:block;font-size:10px;font-weight:400;opacity:.8;margin-top:1px;}
+.ws-hmg tbody th small{display:block;font-size:10px;font-weight:400;color:var(--t3);}
