@@ -205,3 +205,5 @@ body::before,body::after{display:none!important;}
 .ins-hm td.h3{background:#A9CDB5;color:var(--text);}
 .ins-hm td.h4{background:#4F8A6B;color:#fff!important;}
 .ins-legend .h0{background:#F2B79B;}.ins-legend .h1{background:#F7E3A6;}.ins-legend .h2{background:#EEF3EF;}.ins-legend .h3{background:#A9CDB5;}.ins-legend .h4{background:#4F8A6B;color:#fff;}
+
+.bc-dual .bc-t{overflow:visible;}

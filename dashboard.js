@@ -4251,13 +4251,15 @@ function wowInsBars(list,max){
 function wowInsDual(list){
   if(!list.length)return '<div class="ins-empty">Belum ada data.</div>';
   const max=Math.max.apply(null,list.map(x=>Math.max(x.a,x.b)))||1;
-  return '<div class="bc"><div class="bc-key"><span class="k1"></span>NS <span class="k2"></span>HILO <em>rata-rata item ada per toko</em></div>'+list.map(x=>'<div class="bc-row bc-dual"><span class="bc-l">'+wowInsEsc(x.l)+'<small>'+x.v+' visit</small></span><span class="bc-d"><span class="bc-t"><i style="width:'+Math.max(2,Math.round(x.a/max*100))+'%"></i><b>'+wowInsAvg(x.a*x.v,x.v)+'</b></span><span class="bc-t"><i class="h" style="width:'+Math.max(2,Math.round(x.b/max*100))+'%"></i><b>'+wowInsAvg(x.b*x.v,x.v)+'</b></span></span></div>').join('')+'</div>';
+  return '<div class="bc"><div class="bc-key"><span class="k1"></span>NS <span class="k2"></span>HILO <em>rata-rata item ada per toko</em></div>'+list.map(x=>'<div class="bc-row bc-dual"><span class="bc-l">'+wowInsEsc(x.l)+'<small>'+x.v+' toko</small></span><span class="bc-d"><span class="bc-t"><i style="width:'+Math.max(2,Math.round(x.a/max*80))+'%"></i><b>'+wowInsAvg(x.a*x.v,x.v)+'</b></span><span class="bc-t"><i class="h" style="width:'+Math.max(2,Math.round(x.b/max*80))+'%"></i><b>'+wowInsAvg(x.b*x.v,x.v)+'</b></span></span></div>').join('')+'</div>';
 }
 function wowInsHeat(p){return p==null?'hx':p<5?'h0':p<=15?'h1':p<=30?'h2':p<=45?'h3':'h4';}
 
+// satu toko = satu data (visit terakhir pada filter yang aktif)
+function wowInsLast(list){const m=new Map();(list||[]).slice().sort((a,b)=>a.timestamp-b.timestamp).forEach(r=>{m.set(r.store,r);});return [...m.values()];}
 function renderWowInsight(rows){
   const box=document.getElementById('wow-insight');if(!box)return;
-  rows=rows||[];
+  rows=wowInsLast(rows);
   const picList=typeof WOW_PIC_KAB!=='undefined'?Object.keys(WOW_PIC_KAB).sort():[];
   const gf=(document.getElementById('f-mds')||{}).value||'';
   if(gf){INS_MODE='pic';INS_PIC=gf;}else INS_MODE='all';
@@ -4283,7 +4285,7 @@ function renderWowInsight(rows){
 
   const kpi=(t,a)=>'<div class="ins-kpi"><span>'+t+'</span><b>'+a[0]+'</b><small>item ada · rata-rata '+wowInsAvg(a[0],rows.length)+' per toko</small></div>';
   const kpis='<div class="ins-kpis">'+kpi('AV NS',tot.NS)+kpi('AV HILO',tot.HILO)+kpi('AV TS',tot.TS)+'</div>';
-  if(!rows.length){box.innerHTML=modeBar+kpis+'<div class="ins-empty">Belum ada visit pada filter ini.</div>';return;}
+  if(!rows.length){box.innerHTML=modeBar+kpis+'<div class="ins-empty">Belum ada toko pada filter ini.</div>';return;}
 
   const items=Object.entries(itemSt).filter(([,s])=>s.n>=3).map(([k,s])=>({k,p:Math.round(s.ada/s.n*100),ada:s.ada,n:s.n,b:brandOf(k)}));
   const kosong=items.slice().sort((a,b)=>a.p-b.p||b.n-a.n);
@@ -4349,7 +4351,7 @@ function renderWowInsight(rows){
   const hmTot=HM_GROUPS.map((g,gi)=>{let ada=0,n=0;Object.values(hm).forEach(r=>{if(r[gi]){ada+=r[gi].ada;n+=r[gi].n;}});return wowInsPct(ada,n);});
   const hmBody=hmKeys.map(k=>'<tr><th>'+wowInsEsc(k)+'</th>'+HM_GROUPS.map((g,gi)=>{const c=hm[k][gi];const v=c&&c.n>=2?Math.round(c.ada/c.n*100):null;const tv=hmTot[gi];const dv=(v==null||tv==null)?null:v-tv;return '<td class="'+(dv==null?'hx':dv<=-15?'h0':dv<-5?'h1':dv<=5?'h2':dv<=15?'h3':'h4')+'">'+(v==null?'·':v+'%')+'</td>';}).join('')+'</tr>').join('');
   const hmFoot='<tr class="hm-tot"><th>'+(modePic?'Total PIC':'Sulawesi')+'</th>'+hmTot.map(v=>'<td>'+(v==null?'·':v+'%')+'</td>').join('')+'</tr>';
-  const secHeat=hmKeys.length?'<div class="ins-card ins-wide"><h4>Heatmap item utama · '+(modePic?'per kabupaten':'per PIC')+'</h4><p class="ins-note">% visit yang item-nya ada (minimal 1 rasa dalam kelompok itu). Warna = selisih dengan rata-rata Sulawesi di kolom itu, jadi yang tertinggal langsung terlihat. NS Tea = semua rasa tea digabung, School = semua rasa HI LO School. Titik = data kurang dari 2 visit.</p><div class="ins-hm"><table><thead><tr><th></th><th colspan="'+nsN+'" class="hm-grp">Nutrisari</th><th colspan="'+hiN+'" class="hm-grp">HiLo</th></tr><tr><th>'+(modePic?'Kabupaten':'PIC')+'</th>'+HM_GROUPS.map(g=>'<th>'+g.n+'</th>').join('')+'</tr></thead><tbody>'+hmBody+hmFoot+'</tbody></table></div><div class="ins-legend"><span class="h0">jauh di bawah (&ge;15 poin)</span><span class="h1">di bawah (5-15)</span><span class="h2">sekitar rata-rata (&plusmn;5)</span><span class="h3">di atas (5-15)</span><span class="h4">jauh di atas (&ge;15)</span></div></div>':'';
+  const secHeat=hmKeys.length?'<div class="ins-card ins-wide"><h4>Heatmap item utama · '+(modePic?'per kabupaten':'per PIC')+'</h4><p class="ins-note">% toko yang item-nya ada pada visit terakhir (minimal 1 rasa dalam kelompok itu). Warna = selisih dengan rata-rata Sulawesi di kolom itu, jadi yang tertinggal langsung terlihat. NS Tea = semua rasa tea digabung, School = semua rasa HI LO School. Titik = data kurang dari 2 toko.</p><div class="ins-hm"><table><thead><tr><th></th><th colspan="'+nsN+'" class="hm-grp">Nutrisari</th><th colspan="'+hiN+'" class="hm-grp">HiLo</th></tr><tr><th>'+(modePic?'Kabupaten':'PIC')+'</th>'+HM_GROUPS.map(g=>'<th>'+g.n+'</th>').join('')+'</tr></thead><tbody>'+hmBody+hmFoot+'</tbody></table></div><div class="ins-legend"><span class="h0">jauh di bawah (&ge;15 poin)</span><span class="h1">di bawah (5-15)</span><span class="h2">sekitar rata-rata (&plusmn;5)</span><span class="h3">di atas (5-15)</span><span class="h4">jauh di atas (&ge;15)</span></div></div>':'';
 
   // toko perlu dievaluasi: AV total (NS+HILO+TS item ada) di visit terakhir < EVAL_MAX
   const EVAL_MAX=15;
