@@ -23877,7 +23877,7 @@ function _wowAv(items,pref){
   const k=Object.keys(items||{}).filter(n=>{const u=n.toUpperCase();return pref==='NS'?u.startsWith('NS '):(u.startsWith('HI LO')||u.startsWith('HILO'));});
   if(!k.length)return '—';
   const ada=k.filter(n=>items[n]===true).length;
-  return Math.round(ada*100/k.length)+'% ('+ada+'/'+k.length+')';
+  return String(ada);
 }
 function wowHash(n){let h=5381;n=String(n).toUpperCase().replace(/\s+/g,' ').trim();for(let i=0;i<n.length;i++)h=((h<<5)+h+n.charCodeAt(i))>>>0;return 'wl_'+h.toString(16);}
 async function wowLoadLast(name,pair){
