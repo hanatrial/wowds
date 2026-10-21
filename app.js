@@ -23873,6 +23873,7 @@ function _wowAv(items,pref){
   const ada=k.filter(n=>items[n]===true).length;
   return Math.round(ada*100/k.length)+'% ('+ada+'/'+k.length+')';
 }
+function wowHash(n){let h=5381;n=String(n).toUpperCase().replace(/\s+/g,' ').trim();for(let i=0;i<n.length;i++)h=((h<<5)+h+n.charCodeAt(i))>>>0;return 'wl_'+h.toString(16);}
 async function wowLoadLast(name,pair){
   const box=document.getElementById('wow-last');
   if(!box)return;
@@ -23885,6 +23886,9 @@ async function wowLoadLast(name,pair){
     if(tok!==_wowLastTok)return;
     let best=null,bt=-1;
     snap.forEach(d=>{const v=d.data();const t=v.timestamp&&v.timestamp.toMillis?v.timestamp.toMillis():Date.now();if(t>bt){bt=t;best=v;}});
+    const arc=await Promise.all(names.map(n=>db.collection('app_data').doc(wowHash(n)).get().catch(()=>null)));
+    if(tok!==_wowLastTok)return;
+    arc.forEach(d=>{if(d&&d.exists){const v=d.data();const t=v.ts||0;if(t>bt){bt=t;best=v;}}});
     if(!best){box.innerHTML='<div class="lv-t">Visit terakhir</div><div class="lv-n">Belum pernah divisit</div>';return;}
     const tgl=best.tanggalVisit?new Date(best.tanggalVisit+'T12:00:00'):new Date(bt);
     const ds=tgl.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
@@ -24009,8 +24013,16 @@ function wowHideSuggest(){
 function wowHideSuggestDelayed(){
   setTimeout(wowHideSuggest,150);
 }
+function wowFillKab2(){
+  const ks=document.getElementById('wow-kab2');if(!ks)return;
+  const list=(WOW_PIC_KAB[WOW.mds]||[]).slice();
+  if(WOW.area&&!list.includes(WOW.area))list.push(WOW.area);
+  ks.innerHTML=list.map(n=>'<option value="'+n.replace(/"/g,'&quot;')+'">'+n+'</option>').join('');
+  ks.value=WOW.area||'';
+}
 function wowGoTo(step){
   WOW.step=step;
+  if(step===1)wowFillKab2();
   for(let i=0;i<4;i++){
     const el=document.getElementById('ws'+i);
     el.className='s-item'+(i<step?' done':i===step?' active':'');
