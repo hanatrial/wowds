@@ -4216,22 +4216,14 @@ async function exportMdsScorecardSelisih(){
 
 
 
-// ── Input PIC / Toko (popup) -> Firestore app_data/toko_* (type:'toko'). SO Group Code urut dari terakhir (app_data/so_counter). ──
+// ── Input PIC / Toko (popup) -> Firestore app_data/toko_* (type:'toko'). SO Group Code diisi saat import ke Sheet. ──
 function tpEl(id){return document.getElementById(id);}
 function tpEsc(x){return String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
-const TP_SO_PREFIX='SULA-GT-WOW-';
-async function tpNextSo(){
-  let n=(typeof WOW_SO_MAX!=='undefined'?WOW_SO_MAX:0);
-  try{const d=await db.collection('app_data').doc('so_counter').get();if(d.exists&&d.data().n>n)n=d.data().n;}catch(e){console.warn('so_counter',e);}
-  return n+1;
-}
 async function openTokoPopup(){
   const pics=Object.keys(typeof WOW_PIC_KAB!=='undefined'?WOW_PIC_KAB:{}).sort();
   tpEl('tp-pic').innerHTML='<option value="">— Pilih PIC —</option>'+pics.map(p=>'<option>'+tpEsc(p)+'</option>').join('');
   tpFillKab();tpEl('tp-msg').textContent='';tpResetFoto();
   tpEl('tp-overlay').classList.remove('hidden');
-  tpEl('tp-so').value='…';
-  tpEl('tp-so').value=TP_SO_PREFIX+await tpNextSo();
   tpLoadList();
 }
 const TP_FOTO=[null,null,null];
@@ -4275,18 +4267,9 @@ async function saveToko(){
   if(!d.kode1&&!d.kode2){m.style.color='#B5502A';m.textContent='Isi minimal Kode Dist 1 atau Kode Dist 2.';return;}
   try{
     const ref=db.collection('app_data').doc('toko_'+d.ts.toString(36)+Math.random().toString(36).slice(2,6));
-    const cref=db.collection('app_data').doc('so_counter');
-    const base=(typeof WOW_SO_MAX!=='undefined'?WOW_SO_MAX:0);
-    const n=await db.runTransaction(async tx=>{
-      const c=await tx.get(cref);
-      const cur=Math.max(base,c.exists?(c.data().n||0):0)+1;
-      tx.set(cref,{n:cur});
-      tx.set(ref,{...d,so:TP_SO_PREFIX+cur,soNo:cur,photoData:TP_FOTO[0],...(TP_FOTO[1]?{photoData2:TP_FOTO[1]}:{}),...(TP_FOTO[2]?{photoData3:TP_FOTO[2]}:{})});
-      return cur;
-    });
-    m.style.color='var(--green)';m.textContent='✓ Tersimpan: '+(d.nama1||d.nama2||d.kode1||d.kode2)+' ('+TP_SO_PREFIX+n+')';
+    await ref.set({...d,photoData:TP_FOTO[0],...(TP_FOTO[1]?{photoData2:TP_FOTO[1]}:{}),...(TP_FOTO[2]?{photoData3:TP_FOTO[2]}:{})});
+    m.style.color='var(--green)';m.textContent='✓ Tersimpan: '+(d.nama1||d.nama2||d.kode1||d.kode2)+'. SO Group Code diisi saat import ke Sheet.';
     ['tp-kode1','tp-nama1','tp-kode2','tp-nama2'].forEach(i=>tpEl(i).value='');tpResetFoto();
-    tpEl('tp-so').value=TP_SO_PREFIX+(n+1);
     tpLoadList();
   }catch(e){m.style.color='#B5502A';m.textContent='Gagal menyimpan: '+(e.message||e);}
 }
@@ -4298,24 +4281,6 @@ async function tpLoadList(){
     rows.sort((a,b)=>(b.ts||0)-(a.ts||0));
     box.innerHTML=rows.length?rows.slice(0,30).map(r=>'<div class="tp-row"><div class="tp-main">'+(r.photoData?'<img class="tp-thumb" src="'+r.photoData+'" alt="">':'')+'<div><b>'+tpEsc(r.nama1||r.nama2||r.kode1||r.kode2)+'</b>'+(r.nama1&&r.nama2?' / '+tpEsc(r.nama2):(!r.nama1&&r.nama2?' <i>(Dist 2)</i>':''))+'<br><span>'+tpEsc(r.so||'')+' · '+tpEsc(r.pic)+' · '+tpEsc(r.kab)+' · '+tpEsc(r.distributor)+' · '+tpEsc(r.status)+(r.kode1?' · '+tpEsc(r.kode1):'')+(r.kode2?' / '+tpEsc(r.kode2):'')+(r.photoData?' · '+(1+(r.photoData2?1:0)+(r.photoData3?1:0))+' foto':'')+'</span></div></div><button onclick="tpDelete(\''+r.id+'\')">Hapus</button></div>').join(''):'Belum ada input.';
   }catch(e){box.textContent='Gagal memuat: '+(e.message||e);}
-}
-async function tpSheetCopy(btn){
-  const old=btn.textContent;btn.disabled=true;
-  try{
-    const sn=await db.collection('app_data').where('type','==','toko').get();
-    const ada=new Set((typeof WOW_TOKO_MASTER!=='undefined'?WOW_TOKO_MASTER:[]).map(t=>t.so));
-    const rows=[];sn.forEach(d=>rows.push(d.data()));
-    const baru=rows.filter(r=>r.so&&!ada.has(r.so)).sort((a,b)=>(a.soNo||0)-(b.soNo||0));
-    if(!baru.length){alert('Semua toko popup sudah ada di Sheet.');}
-    else{
-      const c=x=>String(x==null?'':x).replace(/[\t\r\n]+/g,' ').trim();
-      const txt=baru.map(r=>['',c(r.pic),c(r.so),c(r.kode1),c(r.kode2),c(r.nama1),c(r.nama2),c(r.kab),c(r.distributor),c(r.status)].join('\t')).join('\n');
-      let ok=false;try{await navigator.clipboard.writeText(txt);ok=true;}catch(e){}
-      if(ok)alert(baru.length+' toko disalin ('+baru.map(r=>r.nama1||r.nama2||r.kode1||r.kode2).join(', ')+'). Tempel di baris kosong paling bawah Sheet "database", mulai kolom No (kolom No biarkan/isi nomor urut).');
-      else prompt('Salin manual (Ctrl+C):',txt.replace(/\n/g,' | '));
-    }
-  }catch(e){alert('Gagal: '+(e.message||e));}
-  btn.textContent=old;btn.disabled=false;
 }
 async function tpDelete(id){
   if(!confirm('Hapus input ini?'))return;
