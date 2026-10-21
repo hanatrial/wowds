@@ -4632,7 +4632,7 @@ function renderWowSales(){
   const kpis='<div class="ins-kpis ws-k4">'
     +kpi('Rata-rata omzet / bulan '+Y0,wsRp(avg0),idxY0.length+' bulan · total '+wsRp(tot0))
     +kpi('Rata-rata omzet / bulan '+Y1,wsRp(avg1),idxY1.length+' bulan (sampai '+lblM[last]+') · '+wsPct(dAvg)+' vs rata-rata '+Y0,dAvg!=null&&dAvg<0?'ws-neg':'')
-    +kpi('Omzet '+idxY1.length+' bulan '+Y1,wsRp(tot1),wsPct(yoy)+' vs periode sama '+Y0+' ('+wsRp(tot0s)+')',yoy!=null&&yoy<0?'ws-neg':'')
+    +'<div class="ins-kpi ws-growth'+(yoy!=null&&yoy<0?' neg':'')+'"><span>Growth omzet '+Y1+'</span><b>'+wsPct(yoy)+'</b><small>vs periode sama '+Y0+'</small></div>'
     +kpi('Line/EA '+lblM[last],wsNum(leLast,2),'PA ÷ toko bertransaksi ('+A.ea[last]+' toko)'+(lePrev!=null?' · '+wsPct((leLast/lePrev-1)*100)+' vs '+lblM[prevYear]:''))
     +'</div>';
 

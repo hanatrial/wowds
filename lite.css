@@ -263,3 +263,8 @@ body::before,body::after{display:none!important;}
 .ws-dl em{font-style:normal;color:var(--t3);font-size:11px;}
 .ws-sp{display:block;}
 .bc-l small{display:block;font-size:10px;color:var(--t3);}
+
+.ws-growth{background:#DAF1DE;border-color:#8EB69B;}
+.ws-growth b{font-size:44px;line-height:1.05;color:#0B6B3A;letter-spacing:-.02em;}
+.ws-growth.neg{background:#FBE3D3;border-color:#E8833A;}
+.ws-growth.neg b{color:#C0562A;}
