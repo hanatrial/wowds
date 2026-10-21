@@ -4211,59 +4211,76 @@ async function tpDelete(id){
 }
 
 
-// ── INSIGHT Display WOW: isi AV, item, kabupaten (ringan: angka + bar CSS, tanpa grafik/foto) ──
+// ── INSIGHT Display WOW: AV, item, kabupaten. Visual ringan (bar horizontal, heatmap, takeaways) tanpa pustaka grafik/foto ──
+let INS_MODE='all',INS_PIC='';
+function wowInsMode(m){INS_MODE=m;render();}
+function wowInsPicSet(v){INS_PIC=v;render();}
 function wowInsEsc(x){return String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
-function wowInsBar(p,warn){return '<span class="ins-bar"><i style="width:'+Math.max(0,Math.min(100,p))+'%'+(warn?';background:#E8833A':'')+'"></i></span>';}
+function wowInsShort(k){
+  let t=String(k||'').toUpperCase().replace(/^(NS|TS|HI ?LO)( DRINK| SCHOOL| TEEN| ACTIVE| GOLD| PLATINUM)? /,'');
+  const w=t.split(/\s+/).filter(x=>x&&x!=='PLS'&&!/\d/.test(x));
+  return (w.join(' ')||t).toLowerCase().replace(/(^|[ (\/-])([a-z])/g,(m,a,b)=>a+b.toUpperCase());
+}
 function wowInsAv(items){
   const o={NS:[0,0],HILO:[0,0],TS:[0,0]};
   Object.entries(items||{}).forEach(([k,v])=>{const b=brandOf(k);if(!o[b]||(v!==true&&v!==false))return;o[b][1]++;if(v===true)o[b][0]++;});
   return o;
 }
 function wowInsPct(a,b){return b?Math.round(a/b*100):null;}
+function wowInsAvg(a,v){return v?(Math.round(a/v*10)/10).toString().replace('.',','):'—';}
 function wowInsTable(head,rows,empty){
   if(!rows.length)return '<div class="ins-empty">'+(empty||'Belum ada data.')+'</div>';
   return '<table class="ins-t"><thead><tr>'+head.map(x=>'<th>'+x+'</th>').join('')+'</tr></thead><tbody>'+rows.map(r=>'<tr>'+r.map(c=>'<td>'+c+'</td>').join('')+'</tr>').join('')+'</tbody></table>';
 }
+// bar horizontal: list [{l,v,t,s,warn}] ; v = panjang bar, t = teks nilai, s = keterangan kecil
+function wowInsBars(list,max){
+  if(!list.length)return '<div class="ins-empty">Belum ada data.</div>';
+  max=max||Math.max.apply(null,list.map(x=>x.v))||1;
+  return '<div class="bc">'+list.map(x=>'<div class="bc-row"><span class="bc-l" title="'+wowInsEsc(x.l)+'">'+wowInsEsc(x.l)+(x.s?'<small>'+wowInsEsc(x.s)+'</small>':'')+'</span><span class="bc-t"><i class="'+(x.warn?'w':'')+'" style="width:'+Math.max(2,Math.round(x.v/max*100))+'%"></i></span><b>'+x.t+'</b></div>').join('')+'</div>';
+}
+// dua bar per baris (NS dan HILO)
+function wowInsDual(list){
+  if(!list.length)return '<div class="ins-empty">Belum ada data.</div>';
+  const max=Math.max.apply(null,list.map(x=>Math.max(x.a,x.b)))||1;
+  return '<div class="bc"><div class="bc-key"><span class="k1"></span>NS <span class="k2"></span>HILO <em>rata-rata item ada per toko</em></div>'+list.map(x=>'<div class="bc-row bc-dual"><span class="bc-l">'+wowInsEsc(x.l)+'<small>'+x.v+' visit</small></span><span class="bc-d"><span class="bc-t"><i style="width:'+Math.max(2,Math.round(x.a/max*100))+'%"></i><b>'+wowInsAvg(x.a*x.v,x.v)+'</b></span><span class="bc-t"><i class="h" style="width:'+Math.max(2,Math.round(x.b/max*100))+'%"></i><b>'+wowInsAvg(x.b*x.v,x.v)+'</b></span></span></div>').join('')+'</div>';
+}
+function wowInsHeat(p){return p==null?'hx':p<5?'h0':p<=15?'h1':p<=30?'h2':p<=45?'h3':'h4';}
+
 function renderWowInsight(rows){
   const box=document.getElementById('wow-insight');if(!box)return;
   rows=rows||[];
+  const picList=typeof WOW_PIC_KAB!=='undefined'?Object.keys(WOW_PIC_KAB).sort():[];
+  const modePic=INS_MODE==='pic';
+  if(modePic&&!INS_PIC)INS_PIC=picList[0]||'';
+  const rowsAll=rows;
+  if(modePic)rows=rows.filter(r=>r.mds===INS_PIC);
+  const WM=typeof WOW_TOKO_MASTER!=='undefined'?(modePic?WOW_TOKO_MASTER.filter(t=>t.pic===INS_PIC):WOW_TOKO_MASTER):[];
+  const PK=typeof WOW_PIC_KAB!=='undefined'?(modePic?{[INS_PIC]:WOW_PIC_KAB[INS_PIC]||[]}:WOW_PIC_KAB):{};
+  const modeBar='<div class="ins-mode"><button class="'+(modePic?'':'on')+'" onclick="wowInsMode(\'all\')">Sulawesi keseluruhan</button><button class="'+(modePic?'on':'')+'" onclick="wowInsMode(\'pic\')">Per PIC</button>'+(modePic?'<select onchange="wowInsPicSet(this.value)">'+picList.map(p=>'<option'+(p===INS_PIC?' selected':'')+'>'+wowInsEsc(p)+'</option>').join('')+'</select>':'')+'</div>';
+
   // agregat
   const tot={NS:[0,0],HILO:[0,0],TS:[0,0]};
-  const itemSt={};const perPic={};const perKab={};const perToko=[];
+  const itemSt={},itemPic={},perPic={},perKab={};
   rows.forEach(r=>{
     const av=wowInsAv(r.items);
     ['NS','HILO','TS'].forEach(b=>{tot[b][0]+=av[b][0];tot[b][1]+=av[b][1];});
     Object.entries(r.items||{}).forEach(([k,v])=>{if(v!==true&&v!==false)return;const s=itemSt[k]||(itemSt[k]={ada:0,n:0});s.n++;if(v===true)s.ada++;});
     const pic=r.mds||'—',kab=r.area||'(kabupaten kosong)';
-    [[perPic,pic],[perKab,kab]].forEach(([m,key])=>{const g=m[key]||(m[key]={v:0,NS:[0,0],HILO:[0,0]});g.v++;g.NS[0]+=av.NS[0];g.NS[1]+=av.NS[1];g.HILO[0]+=av.HILO[0];g.HILO[1]+=av.HILO[1];});
-    perToko.push({store:r.store,pic:r.mds,kab:r.area,ns:wowInsPct(av.NS[0],av.NS[1]),hilo:wowInsPct(av.HILO[0],av.HILO[1]),adaNS:av.NS[0],adaHILO:av.HILO[0]});
+    [[perPic,pic],[perKab,kab]].forEach(([m,key])=>{const g=m[key]||(m[key]={v:0,NS:0,HILO:0});g.v++;g.NS+=av.NS[0];g.HILO+=av.HILO[0];});
   });
-  const P=(a)=>wowInsPct(a[0],a[1]);
-  const cell=p=>p==null?'—':'<b>'+p+'%</b> '+wowInsBar(p,p<40);
-  // 1. ringkasan
-  const kpi=(t,a)=>'<div class="ins-kpi"><span>'+t+'</span><b>'+(P(a)==null?'—':P(a)+'%')+'</b><small>'+a[0]+' dari '+a[1]+' pengecekan item</small></div>';
-  let html='<div class="ins-kpis">'+kpi('AV NS',tot.NS)+kpi('AV HILO',tot.HILO)+kpi('AV TS',tot.TS)+'</div>';
-  if(!rows.length){box.innerHTML=html+'<div class="ins-empty">Belum ada visit pada filter ini.</div>';return;}
-  // 2. item paling sering kosong / paling aman
+  // untuk heatmap PIC x item (butuh semua PIC, abaikan mode)
+  rowsAll.forEach(r=>{const pic=r.mds||'—';Object.entries(r.items||{}).forEach(([k,v])=>{if(v!==true&&v!==false)return;const m=itemPic[k]||(itemPic[k]={});const g=m[pic]||(m[pic]={ada:0,n:0});g.n++;if(v===true)g.ada++;});});
+
+  const kpi=(t,a)=>'<div class="ins-kpi"><span>'+t+'</span><b>'+a[0]+'</b><small>item ada · rata-rata '+wowInsAvg(a[0],rows.length)+' per toko</small></div>';
+  const kpis='<div class="ins-kpis">'+kpi('AV NS',tot.NS)+kpi('AV HILO',tot.HILO)+kpi('AV TS',tot.TS)+'</div>';
+  if(!rows.length){box.innerHTML=modeBar+kpis+'<div class="ins-empty">Belum ada visit pada filter ini.</div>';return;}
+
   const items=Object.entries(itemSt).filter(([,s])=>s.n>=3).map(([k,s])=>({k,p:Math.round(s.ada/s.n*100),ada:s.ada,n:s.n,b:brandOf(k)}));
   const kosong=items.slice().sort((a,b)=>a.p-b.p||b.n-a.n);
-  const mkItem=list=>list.map(x=>[wowInsEsc(x.k),x.b,x.ada+'/'+x.n,cell(x.p)]);
-  const secKosong=['NS','HILO'].map(b=>'<div class="ins-card"><h4>Item paling sering kosong · '+b+'</h4>'+wowInsTable(['Item','','Ada','AV'],mkItem(kosong.filter(x=>x.b===b).slice(0,8)),'Belum cukup data (min. 3 toko per item).')+'</div>').join('');
-  // 3. per PIC
-  const pic=Object.entries(perPic).map(([k,g])=>({k,v:g.v,ns:P(g.NS),hilo:P(g.HILO)})).sort((a,b)=>(a.ns==null?101:a.ns)-(b.ns==null?101:b.ns));
-  const secPic='<div class="ins-card"><h4>AV per PIC (terendah dulu)</h4>'+wowInsTable(['PIC','Visit','AV NS','AV HILO'],pic.map(x=>[wowInsEsc(x.k),x.v,cell(x.ns),cell(x.hilo)]))+'</div>';
-  // 4. per kabupaten
-  const kab=Object.entries(perKab).map(([k,g])=>({k,v:g.v,ns:P(g.NS),hilo:P(g.HILO)})).sort((a,b)=>(a.ns==null?101:a.ns)-(b.ns==null?101:b.ns)).slice(0,12);
-  const secKab='<div class="ins-card"><h4>AV per kabupaten (12 terendah)</h4>'+wowInsTable(['Kabupaten','Visit','AV NS','AV HILO'],kab.map(x=>[wowInsEsc(x.k),x.v,cell(x.ns),cell(x.hilo)]))+'</div>';
-  // 5. toko dengan AV terendah (gabungan NS+HILO, ambil visit terbaru per toko)
+  const barItem=b=>wowInsBars(kosong.filter(x=>x.b===b).slice(0,8).map(x=>({l:wowInsShort(x.k),v:x.p,t:x.p+'% <small>'+x.ada+'/'+x.n+'</small>',warn:x.p<25})),100);
+
+  // HILO Matcha
   const lastBy={};rows.slice().sort((a,b)=>a.timestamp-b.timestamp).forEach(r=>{lastBy[r.store]=r;});
-  const tk=Object.values(lastBy).map(r=>{const av=wowInsAv(r.items);const a=av.NS[0]+av.HILO[0],n=av.NS[1]+av.HILO[1];return {r,p:wowInsPct(a,n)};}).filter(x=>x.p!=null).sort((a,b)=>a.p-b.p).slice(0,10);
-  const secTk='<div class="ins-card"><h4>Toko dengan AV terendah (visit terakhir, NS+HILO)</h4>'+wowInsTable(['Toko','PIC','Kabupaten','AV'],tk.map(x=>[wowInsEsc(x.r.store),wowInsEsc(x.r.mds),wowInsEsc(x.r.area),cell(x.p)]))+'</div>';
-  // 6. item selalu ada / tidak pernah ada
-  const nol=items.filter(x=>x.p===0).sort((a,b)=>b.n-a.n);
-  const penuh=items.filter(x=>x.p===100).sort((a,b)=>b.n-a.n);
-  const secNol='<div class="ins-card"><h4>Item yang tidak pernah ada ('+nol.length+')</h4>'+(nol.length?'<div class="ins-chips">'+nol.slice(0,30).map(x=>'<span>'+wowInsEsc(x.k)+' <em>0/'+x.n+'</em></span>').join('')+'</div>':'<div class="ins-empty">Tidak ada.</div>')+'<h4 style="margin-top:14px">Item yang selalu ada ('+penuh.length+')</h4>'+(penuh.length?'<div class="ins-chips">'+penuh.slice(0,30).map(x=>'<span>'+wowInsEsc(x.k)+' <em>'+x.n+'/'+x.n+'</em></span>').join('')+'</div>':'<div class="ins-empty">Tidak ada.</div>')+'</div>';
-  // 6b. HILO Matcha: sudah ada / belum di toko (visit terakhir tiap toko)
   const isMatcha=k=>brandOf(k)==='HILO'&&/MATCHA/i.test(k);
   const mt={ada:[],tdk:[],blm:0};const mPic={};
   Object.values(lastBy).forEach(r=>{
@@ -4274,21 +4291,78 @@ function renderWowInsight(rows){
     const g=mPic[r.mds||'—']||(mPic[r.mds||'—']={ada:0,tdk:0});ada?g.ada++:g.tdk++;
   });
   const mTot=mt.ada.length+mt.tdk.length;const mP=wowInsPct(mt.ada.length,mTot);
-  const matchaPic=Object.entries(mPic).map(([k,g])=>({k,ada:g.ada,n:g.ada+g.tdk,p:wowInsPct(g.ada,g.ada+g.tdk)})).sort((a,b)=>a.p-b.p);
+  const matchaPic=Object.entries(mPic).filter(([k])=>picList.includes(k)).map(([k,g])=>({k,ada:g.ada,n:g.ada+g.tdk,p:wowInsPct(g.ada,g.ada+g.tdk)})).sort((a,b)=>a.p-b.p);
   const secMatcha='<div class="ins-card ins-wide"><h4>HILO Matcha · sudah ada atau belum</h4>'
-    +(mTot?'<p class="ins-note"><b>'+mt.ada.length+'</b> dari '+mTot+' toko sudah ada HILO Matcha ('+mP+'%) · <b>'+mt.tdk.length+'</b> toko belum ada'+(mt.blm?' · '+mt.blm+' toko visit terakhirnya belum mencatat item ini':'')+'. Berdasarkan visit terakhir tiap toko.</p>'
-      +wowInsTable(['PIC','Sudah ada','Toko dicek','Persen'],matchaPic.map(x=>[wowInsEsc(x.k),x.ada,x.n,cell(x.p)]))
+    +(mTot?'<div class="ins-big"><b>'+mt.ada.length+'</b><span>dari '+mTot+' toko sudah ada <em>('+mP+'%)</em></span><b class="w">'+mt.tdk.length+'</b><span>toko belum ada</span></div>'
+      +'<p class="ins-note">Berdasarkan visit terakhir tiap toko'+(mt.blm?' · '+mt.blm+' toko visit terakhirnya belum mencatat item ini':'')+'.</p>'
+      +(modePic?'':wowInsBars(matchaPic.map(x=>({l:x.k,v:x.p,t:x.p+'% <small>'+x.ada+'/'+x.n+'</small>',warn:x.p<50})),100))
       +'<details style="margin-top:10px"><summary>Toko yang belum ada HILO Matcha ('+mt.tdk.length+')</summary><div class="ins-list">'+mt.tdk.slice(0,120).map(r=>wowInsEsc(r.store)+' <em style="color:var(--t3)">· '+wowInsEsc(r.mds)+' · '+wowInsEsc(r.area)+'</em>').join('<br>')+(mt.tdk.length>120?'<br>… +'+(mt.tdk.length-120)+' lagi':'')+'</div></details>'
     :'<div class="ins-empty">Belum ada visit yang mencatat HILO Matcha.</div>')+'</div>';
-  // 7. kabupaten yang belum ada (database toko + visit)
-  let secKabKosong='';
-  if(typeof WOW_TOKO_MASTER!=='undefined'){
-    const kosongM=WOW_TOKO_MASTER.filter(t=>!t.kab);
-    const perP={};kosongM.forEach(t=>{(perP[t.pic]=perP[t.pic]||[]).push(t.name);});
-    const totP={};WOW_TOKO_MASTER.forEach(t=>{totP[t.pic]=(totP[t.pic]||0)+1;});
-    const tabel=Object.entries(perP).sort((a,b)=>b[1].length-a[1].length).map(([p,l])=>[wowInsEsc(p),l.length+' dari '+totP[p],'<details><summary>lihat toko</summary><div class="ins-list">'+l.slice(0,60).map(wowInsEsc).join('<br>')+(l.length>60?'<br>… +'+(l.length-60)+' lagi':'')+'</div></details>']);
-    const visitKosong=rows.filter(r=>!r.area).length;
-    secKabKosong='<div class="ins-card ins-wide"><h4>Kabupaten yang belum ada</h4><p class="ins-note">'+kosongM.length+' dari '+WOW_TOKO_MASTER.length+' toko di database belum punya kabupaten'+(visitKosong?'; '+visitKosong+' visit tercatat tanpa kabupaten':'')+'. Konfirmasi kabupaten saat input akan melengkapinya.</p>'+wowInsTable(['PIC','Toko tanpa kabupaten','Daftar'],tabel,'Semua toko sudah punya kabupaten.')+'</div>';
+
+  // AV per PIC (hanya keseluruhan) dan per kabupaten
+  const pic=Object.entries(perPic).filter(([k])=>picList.includes(k)).map(([k,g])=>({l:k,v:g.v,a:g.NS/g.v,b:g.HILO/g.v})).sort((x,y)=>x.a-y.a);
+  const secPic=modePic?'':'<div class="ins-card"><h4>AV per PIC · terendah dulu</h4>'+wowInsDual(pic)+'</div>';
+  const kab=Object.entries(perKab).map(([k,g])=>({l:k,v:g.v,a:g.NS/g.v,b:g.HILO/g.v})).sort((x,y)=>x.a-y.a).slice(0,10);
+  const secKab='<div class="ins-card"><h4>AV per kabupaten · 10 terendah</h4>'+wowInsDual(kab)+'</div>';
+
+  // heatmap PIC x item fokus (hanya keseluruhan)
+  let secHeat='';
+  if(!modePic){
+    const all=Object.entries(itemPic).map(([k,m])=>{let ada=0,n=0;Object.values(m).forEach(g=>{ada+=g.ada;n+=g.n;});return {k,p:wowInsPct(ada,n),n};}).filter(x=>x.n>=30);
+    const cols=all.slice().sort((a,b)=>a.p-b.p).slice(0,7).map(x=>x.k);
+    const mk=Object.keys(itemPic).find(isMatcha);if(mk&&!cols.includes(mk))cols.push(mk);
+    const pics=picList.filter(p=>rowsAll.some(r=>r.mds===p));
+    const body=pics.map(p=>'<tr><th>'+wowInsEsc(p)+'</th>'+cols.map(k=>{const g=(itemPic[k]||{})[p];const v=g&&g.n>=2?Math.round(g.ada/g.n*100):null;return '<td class="'+wowInsHeat(v)+'">'+(v==null?'·':v+'%')+'</td>';}).join('')+'</tr>').join('');
+    secHeat='<div class="ins-card ins-wide"><h4>Heatmap ketersediaan item fokus per PIC</h4><p class="ins-note">% toko yang item-nya ada. Kolom = 7 item yang paling sering kosong + HILO Matcha. Titik = data kurang dari 2 toko.</p><div class="ins-hm"><table><thead><tr><th>PIC</th>'+cols.map(k=>'<th>'+wowInsEsc(wowInsShort(k))+'</th>').join('')+'</tr></thead><tbody>'+body+'</tbody></table></div><div class="ins-legend"><span class="h0">&lt;5%</span><span class="h1">5-15%</span><span class="h2">16-30%</span><span class="h3">31-45%</span><span class="h4">&gt;45%</span></div></div>';
   }
-  box.innerHTML=html+'<div class="ins-grid">'+secMatcha+secKosong+secPic+secKab+secTk+secNol+secKabKosong+'</div>';
+
+  // toko AV terendah
+  const tk=Object.values(lastBy).map(r=>{const av=wowInsAv(r.items);return {r,ns:av.NS[0],hilo:av.HILO[0],t:av.NS[0]+av.HILO[0]};}).sort((a,b)=>a.t-b.t).slice(0,15);
+  const secTk='<div class="ins-card ins-wide"><h4>AV per toko · 15 terendah (visit terakhir)</h4>'+wowInsTable(['Toko','PIC','Kabupaten','AV NS','AV HILO','Total'],tk.map(x=>[wowInsEsc(x.r.store),wowInsEsc(x.r.mds),wowInsEsc(x.r.area),x.ns,x.hilo,'<b>'+x.t+'</b>']))+'</div>';
+
+  // item tidak pernah ada / selalu ada
+  const nol=items.filter(x=>x.p===0).sort((a,b)=>b.n-a.n);
+  const penuh=items.filter(x=>x.p===100).sort((a,b)=>b.n-a.n);
+  const lst=l=>{
+    const by={NS:[],HILO:[],TS:[],O:[]};l.forEach(x=>(by[x.b]||by.O).push(x));
+    const lab={NS:'Nutrisari',HILO:'HiLo',TS:'Tropicana Slim',O:'Lainnya'};
+    return ['NS','HILO','TS','O'].filter(b=>by[b].length).map(b=>{
+      const cnt={};by[b].forEach(x=>{const s=wowInsShort(x.k);cnt[s]=(cnt[s]||0)+1;});
+      const rr=by[b].map(x=>{let s=wowInsShort(x.k);if(cnt[s]>1){const m=String(x.k).match(/\b\d+[A-Z]*X[\dA-Z.X]*\b/);s+=/\bREF\b/i.test(x.k)?' (Ref)':(m?' ('+m[0]+')':'');}return {s,ada:x.ada,n:x.n};}).sort((a,b)=>a.s.localeCompare(b.s));
+      return '<div class="ins-bh">'+lab[b]+' <em>'+rr.length+'</em></div><ul class="ins-ul">'+rr.map(r=>'<li><span>'+wowInsEsc(r.s)+'</span><b>'+r.ada+'/'+r.n+'</b></li>').join('')+'</ul>';
+    }).join('');
+  };
+  const secNol='<div class="ins-card"><h4>Item yang tidak pernah ada ('+nol.length+')</h4>'+(nol.length?lst(nol):'<div class="ins-empty">Tidak ada.</div>')+'</div><div class="ins-card"><h4>Item yang selalu ada ('+penuh.length+')</h4>'+(penuh.length?lst(penuh):'<div class="ins-empty">Tidak ada.</div>')+'</div>';
+
+  // kabupaten belum ada display + toko tanpa kabupaten
+  let secKabNoDisp='',secKabKosong='',noDispN=0;
+  if(typeof WOW_PIC_KAB!=='undefined'&&typeof WOW_TOKO_MASTER!=='undefined'){
+    const tokoBy={};
+    WM.forEach(t=>{if(t.kab)(tokoBy[t.kab]=tokoBy[t.kab]||new Set()).add(t.name);});
+    (WOW_ALL||[]).filter(r=>!modePic||r.mds===INS_PIC).forEach(r=>{if(r.area&&r.store)(tokoBy[r.area]=tokoBy[r.area]||new Set()).add(r.store);});
+    const unk={};WM.forEach(t=>{if(!t.kab)unk[t.pic]=(unk[t.pic]||0)+1;});
+    const totKab=Object.values(PK).reduce((a,l)=>a+l.length,0);
+    const rowsK=[];
+    Object.entries(PK).forEach(([pic,l])=>l.forEach(k=>{const n=(tokoBy[k]||new Set()).size;if(!n)rowsK.push({pic,k,u:unk[pic]||0});}));
+    rowsK.sort((a,b)=>a.pic.localeCompare(b.pic)||a.k.localeCompare(b.k));
+    noDispN=rowsK.length;
+    secKabNoDisp='<div class="ins-card ins-wide"><h4>Kabupaten yang belum ada display WOW</h4><div class="ins-big"><b class="w">'+rowsK.length+'</b><span>dari '+totKab+' kabupaten di database kabupaten belum punya satu pun toko display</span></div><p class="ins-note">Dihitung dari toko yang kabupatennya sudah terisi. Toko tanpa kabupaten belum bisa dihitung, jadi PIC yang banyak tokonya belum berkabupaten bisa jadi sebenarnya sudah punya display di kabupaten itu.</p>'
+      +wowInsTable(modePic?['Kabupaten','Toko PIC ini belum berkabupaten']:['PIC','Kabupaten','Toko PIC ini belum berkabupaten'],rowsK.map(x=>(modePic?[]:[wowInsEsc(x.pic)]).concat([wowInsEsc(x.k),x.u?'<span style="color:'+(x.u>10?'#E8833A':'var(--t3)')+'">'+x.u+' toko'+(x.u>10?' · belum bisa dipastikan':'')+'</span>':'—'])),'Semua kabupaten sudah punya display.')+'</div>';
+    const kosongM=WM.filter(t=>!t.kab);
+    const perP={};kosongM.forEach(t=>{(perP[t.pic]=perP[t.pic]||[]).push(t.name);});
+    const totP={};WM.forEach(t=>{totP[t.pic]=(totP[t.pic]||0)+1;});
+    const tabel=Object.entries(perP).sort((a,b)=>b[1].length-a[1].length).map(([p,l])=>[wowInsEsc(p),l.length+' dari '+totP[p],'<details><summary>lihat toko</summary><div class="ins-list">'+l.slice(0,60).map(wowInsEsc).join('<br>')+(l.length>60?'<br>… +'+(l.length-60)+' lagi':'')+'</div></details>']);
+    secKabKosong='<div class="ins-card ins-wide"><h4>Toko yang belum punya kabupaten</h4><p class="ins-note">'+kosongM.length+' dari '+WM.length+' toko di database belum punya kabupaten. Konfirmasi kabupaten saat input akan melengkapinya.</p>'+wowInsTable(['PIC','Toko tanpa kabupaten','Daftar'],tabel,'Semua toko sudah punya kabupaten.')+'</div>';
+  }
+
+  // takeaways otomatis
+  const tks=[];
+  if(!modePic&&pic.length>1){const hi=pic[pic.length-1],lo=pic[0];tks.push('<b>AV NS per toko</b> tertinggi di '+wowInsEsc(hi.l)+' ('+wowInsAvg(hi.a*hi.v,hi.v)+'), terendah di '+wowInsEsc(lo.l)+' ('+wowInsAvg(lo.a*lo.v,lo.v)+').');}
+  else tks.push('<b>Rata-rata per toko</b>: NS '+wowInsAvg(tot.NS[0],rows.length)+' item, HILO '+wowInsAvg(tot.HILO[0],rows.length)+' item ada.');
+  const k1=kosong.filter(x=>x.b==='NS').slice(0,2).map(x=>wowInsShort(x.k)+' ('+x.p+'%)'),k2=kosong.filter(x=>x.b==='HILO').slice(0,2).map(x=>wowInsShort(x.k)+' ('+x.p+'%)');
+  tks.push('<b>Paling sering kosong</b> — NS: '+wowInsEsc(k1.join(', ')||'—')+'; HILO: '+wowInsEsc(k2.join(', ')||'—')+'.');
+  tks.push('<b>HILO Matcha</b> sudah ada di '+mt.ada.length+' dari '+mTot+' toko'+(mP!=null?' ('+mP+'%)':'')+'. <b>'+noDispN+' kabupaten</b> belum punya display.');
+  const tk3='<div class="ins-tks">'+tks.map((t,i)=>'<div class="ins-tk"><em>0'+(i+1)+'</em><p>'+t+'</p></div>').join('')+'</div>';
+
+  box.innerHTML=modeBar+kpis+tk3+'<div class="ins-grid">'+secMatcha+secPic+secKab+secHeat+'<div class="ins-card"><h4>Item paling sering kosong · Nutrisari</h4>'+barItem('NS')+'</div><div class="ins-card"><h4>Item paling sering kosong · HiLo</h4>'+barItem('HILO')+'</div>'+secTk+secNol+secKabNoDisp+secKabKosong+'</div>';
 }

@@ -142,3 +142,52 @@ body::before,body::after{display:none!important;}
 .ins-chips em{font-style:normal;color:var(--t3);margin-left:4px;}
 .ins-list{font-size:11px;color:var(--t2);max-height:180px;overflow-y:auto;margin-top:6px;}
 @media(max-width:760px){.ins-grid{grid-template-columns:1fr;}.ins-kpis{grid-template-columns:1fr;}}
+.ins-bh{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--t2);margin:10px 0 4px;}
+.ins-bh em{font-style:normal;color:var(--t3);font-weight:400;}
+.ins-ul{list-style:none;margin:0;padding:0;columns:2;column-gap:18px;}
+.ins-ul li{display:flex;justify-content:space-between;gap:8px;font-size:12px;padding:3px 0;border-bottom:1px solid var(--border2);break-inside:avoid;}
+.ins-ul b{color:var(--t2);font-weight:600;white-space:nowrap;}
+@media(max-width:760px){.ins-ul{columns:1;}}
+.ins-mode{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px;}
+.ins-mode button{border:1px solid var(--border);background:#fff;color:var(--t2);border-radius:999px;padding:7px 14px;font:inherit;font-size:12px;font-weight:600;cursor:pointer;}
+.ins-mode button.on{background:var(--primary);color:#fff;border-color:var(--primary);}
+.ins-mode select{font:inherit;font-size:12px;border:1px solid var(--border);border-radius:8px;padding:6px 10px;background:#fff;color:var(--text);}
+
+/* insight v2 */
+.bc{display:flex;flex-direction:column;gap:6px;}
+.bc-row{display:grid;grid-template-columns:minmax(90px,150px) 1fr auto;gap:10px;align-items:center;font-size:12px;}
+.bc-l{color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.bc-l small{display:block;font-size:10px;color:var(--t3);}
+.bc-t{display:block;height:14px;background:var(--bg2);border-radius:3px;position:relative;overflow:hidden;}
+.bc-t i{display:block;height:100%;background:var(--green);border-radius:3px;}
+.bc-t i.w{background:#E8833A;}
+.bc-t i.h{background:#B5D334;}
+.bc-row>b{font-size:12px;color:var(--text);white-space:nowrap;}
+.bc-row>b small{font-weight:400;color:var(--t3);}
+.bc-dual .bc-d{display:flex;flex-direction:column;gap:3px;grid-column:2/4;}
+.bc-dual{grid-template-columns:minmax(90px,150px) 1fr;}
+.bc-dual .bc-t{display:flex;align-items:center;background:transparent;height:12px;}
+.bc-dual .bc-t i{flex:none;height:12px;}
+.bc-dual .bc-t b{margin-left:6px;font-size:11px;color:var(--t2);font-weight:600;}
+.bc-key{font-size:11px;color:var(--t2);display:flex;align-items:center;gap:6px;margin-bottom:2px;}
+.bc-key .k1,.bc-key .k2{width:10px;height:10px;border-radius:2px;display:inline-block;}
+.bc-key .k1{background:var(--green);} .bc-key .k2{background:#B5D334;margin-left:8px;}
+.bc-key em{font-style:normal;color:var(--t3);margin-left:10px;}
+.ins-tks{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px;}
+.ins-tk{border-left:3px solid var(--accent);background:var(--bg2);border-radius:0 10px 10px 0;padding:10px 14px;}
+.ins-tk em{font-style:normal;font-size:11px;font-weight:700;letter-spacing:.14em;color:var(--accent);}
+.ins-tk p{font-size:12px;color:var(--text);line-height:1.5;margin-top:3px;}
+.ins-big{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:6px;}
+.ins-big b{font-size:30px;color:var(--text);line-height:1;}
+.ins-big b.w{color:#E8833A;margin-left:14px;}
+.ins-big span{font-size:12px;color:var(--t2);} .ins-big em{font-style:normal;color:var(--t3);}
+.ins-hm{overflow-x:auto;}
+.ins-hm table{border-collapse:separate;border-spacing:2px;font-size:11px;width:100%;}
+.ins-hm th{font-size:10px;font-weight:600;color:var(--t2);padding:6px 4px;text-align:center;}
+.ins-hm tbody th{text-align:left;color:var(--text);white-space:nowrap;}
+.ins-hm td{text-align:center;padding:8px 4px;border-radius:4px;font-weight:600;color:var(--text);}
+.hx{background:var(--bg2);color:var(--t3)!important;font-weight:400!important;}
+.h0{background:#F6D5C2;} .h1{background:#F5ECB0;} .h2{background:#DAF1DE;} .h3{background:#8EB69B;} .h4{background:#235347;color:#fff!important;}
+.ins-legend{display:flex;gap:6px;margin-top:8px;font-size:10px;}
+.ins-legend span{padding:3px 10px;border-radius:4px;color:var(--text);} .ins-legend .h4{color:#fff;}
+@media(max-width:760px){.ins-tks{grid-template-columns:1fr;}.bc-row{grid-template-columns:100px 1fr auto;}}
