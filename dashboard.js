@@ -4708,6 +4708,17 @@ function wowKabMaster(pic,name,pair){
   for(const n of ns){const m=_wsMasterKab&&_wsMasterKab.get(pic+'|'+n);if(m)return m;}
   return '';
 }
+// PIC dan status toko di data penjualan mengikuti master Sheet "Database" (kunci: SO Group Code, lalu nama)
+function wsNormMaster(){
+  if(typeof WOW_SALES==='undefined'||typeof WOW_TOKO_MASTER==='undefined'||WOW_SALES._norm===WOW_TOKO_MASTER.length)return;
+  const bySo=new Map();WOW_TOKO_MASTER.forEach(t=>{if(t.so)bySo.set(t.so,t);});
+  WOW_SALES.r.forEach(r=>{
+    if(r._o===undefined)r._o=[r[1],r[3]];
+    const t=(r[8]&&bySo.get(r[8]))||wowMasterOf(r[0])||wowMasterOf(r[4]);
+    if(t){if(t.pic)r[1]=t.pic;if(t.st)r[3]=t.st;}
+  });
+  WOW_SALES._norm=WOW_TOKO_MASTER.length;
+}
 function wsKabOf(r){return wowKabBest(r[1],r[0],r[4],r[2],r[8]);}
 function wsAgg(rows,n){
   const o={sv:Array(n).fill(0),hilo:Array(n).fill(0),ns:Array(n).fill(0),ea:Array(n).fill(0)};
@@ -4739,6 +4750,7 @@ function wsBtn(kind,label){return '<button class="ins-exp" onclick="wsExport(\''
 function renderWowSales(){
   const box=document.getElementById('wow-sales');if(!box)return;
   if(typeof WOW_SALES==='undefined'){wsEnsure(renderWowSales);return;}
+  wsNormMaster();
   const M=WOW_SALES.m,n=M.length;
   const picList=Object.keys(typeof WOW_PIC_KAB!=='undefined'?WOW_PIC_KAB:{}).sort();
   const gf=(document.getElementById('f-mds')||{}).value||'',gk=(document.getElementById('f-area')||{}).value||'',gs=((document.getElementById('f-store')||{}).value||'').trim().toLowerCase();
@@ -4900,6 +4912,7 @@ function renderWowSales(){
 function renderWowCombo(){
   const box=document.getElementById('wow-combo');if(!box)return;
   if(typeof WOW_SALES==='undefined'){wsEnsure(renderWowCombo);return;}
+  wsNormMaster();
   const M=WOW_SALES.m,n=M.length,yrs=M.map(m=>m.slice(0,4)),Y1=yrs[n-1];
   const idxY1=[];M.forEach((m,i)=>{if(m.slice(0,4)===Y1)idxY1.push(i);});
   const picList=Object.keys(typeof WOW_PIC_KAB!=='undefined'?WOW_PIC_KAB:{}).sort();
