@@ -24152,7 +24152,6 @@ function renderWowItems(){
       <div class="tgl-grp">
         <button class="tgl avail${st===true?' on':''}" onclick="setWowItem(${i},true)">Ada</button>
         <button class="tgl notavail${st===false?' on':''}" onclick="setWowItem(${i},false)">Tdk</button>
-        <button class="tgl needsval${st==='perlu'?' on':''}" onclick="setWowItem(${i},'perlu')">Perlu Validasi</button>
       </div>`;
     list.appendChild(row);
   });
@@ -24164,7 +24163,6 @@ function setWowItem(i,v){
   row.classList.add('ok');
   row.querySelectorAll('.tgl')[0].classList.toggle('on',v===true);
   row.querySelectorAll('.tgl')[1].classList.toggle('on',v===false);
-  row.querySelectorAll('.tgl')[2].classList.toggle('on',v==='perlu');
   wowCheck(3);
 }
 function handleWowPhoto(i){
@@ -24201,7 +24199,6 @@ async function submitWow(){
   document.getElementById('wow-sid').textContent='ID: #'+id;
   document.getElementById('wow-savail').textContent=avail;
   document.getElementById('wow-sunavail').textContent=unavail;
-  document.getElementById('wow-sneedsval').textContent=needsval;
   document.getElementById('wow-sm-area').textContent=WOW.area;
   document.getElementById('wow-sm-mds').textContent=WOW.mds;
   document.getElementById('wow-sm-store').textContent=WOW.store;
