@@ -3103,8 +3103,8 @@ function renderWow(wowF){
       <td class="td-dim">${ts.toLocaleDateString('id-ID',{day:'numeric',month:'short'})} ${ts.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})}</td>
       <td class="td-main">${r.mds||'—'}</td>
       <td class="td-dim">${r.area||'—'}</td>
-      <td class="td-mid">${r.store||'—'}${hasPhoto?' <span style="font-size:9px;color:var(--accent)">📷</span>':canExpand?' <span style="font-size:9px;color:var(--t3)">▾</span>':''}</td>
-      <td class="td-dim">${r.storePasangan||'—'}</td>
+      <td class="td-mid">${wowSides(r.store,r.storePasangan)[0]||'—'}${hasPhoto?' <span style="font-size:9px;color:var(--accent)">📷</span>':canExpand?' <span style="font-size:9px;color:var(--t3)">▾</span>':''}</td>
+      <td class="td-dim">${wowSides(r.store,r.storePasangan)[1]||'—'}</td>
       <td><span class="tag g sm">${r.avail||0}</span></td>
       <td><span class="tag g sm">${bav.NS}</span></td>
       <td><span class="tag g sm">${bav.HILO}</span></td>
@@ -3188,7 +3188,7 @@ function renderWowUnvisited(){
     return WU_DIR*cmp;
   });
   const esc=x=>String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-  tb.innerHTML=filtered.length?filtered.map(t=>'<tr><td class="c-toko"><b>'+esc(t.name)+'</b></td><td class="c-pas">'+(t.pair?esc(t.pair):'<span class="wu-nil">—</span>')+'</td><td class="c-pic">'+esc(t.pic||'—')+'</td><td class="c-kab">'+(t.kab?esc(t.kab):'<span class="wu-nil">belum diisi</span>')+'</td><td class="c-st">'+(t.st?'<span class="wu-pill st-'+esc(t.st)+'">'+esc(t.st)+'</span>':'<span class="wu-nil">—</span>')+'</td></tr>').join(''):'<tr><td colspan="5" style="text-align:center;color:var(--t3);padding:32px">Semua toko sudah divisit.</td></tr>';
+  tb.innerHTML=filtered.length?filtered.map(t=>'<tr><td class="c-toko">'+(wowSides(t.name,t.pair)[0]?'<b>'+esc(wowSides(t.name,t.pair)[0])+'</b>':'<span class="wu-nil">—</span>')+'</td><td class="c-pas">'+(wowSides(t.name,t.pair)[1]?esc(wowSides(t.name,t.pair)[1]):'<span class="wu-nil">—</span>')+'</td><td class="c-pic">'+esc(t.pic||'—')+'</td><td class="c-kab">'+(t.kab?esc(t.kab):'<span class="wu-nil">belum diisi</span>')+'</td><td class="c-st">'+(t.st?'<span class="wu-pill st-'+esc(t.st)+'">'+esc(t.st)+'</span>':'<span class="wu-nil">—</span>')+'</td></tr>').join(''):'<tr><td colspan="5" style="text-align:center;color:var(--t3);padding:32px">Semua toko sudah divisit.</td></tr>';
   const aktif=WOW_TOKO_MASTER.filter(t=>t.st!=='Cancel').length;
   if(tf)tf.innerHTML=(WU_ST==='Cancel'
     ?'<b>'+filtered.length+'</b> toko berstatus Cancel — tampil sebagai keterangan, <b>tidak dihitung</b> sebagai belum divisit'
@@ -3199,6 +3199,13 @@ function updateWowKeterangan(docId,val){
   const r=WOW_ALL.find(x=>x._docId===docId);
   if(r)r.keterangan=val||null;
   db.collection('wow_logs').doc(docId).update({keterangan:val||null}).catch(e=>console.error('keterangan update failed',e.code,e.message));
+}
+let _wowS2=null;
+// [kiri, kanan] = [Nama Outlet Distr 1, Nama Outlet Distri2] sesuai database
+function wowSides(name,pair){
+  if(!_wowS2&&typeof WOW_TOKO_MASTER!=='undefined'){_wowS2=new Set();WOW_TOKO_MASTER.forEach(t=>{if(t.s2)_wowS2.add(String(t.name).trim().toUpperCase());});}
+  if(_wowS2&&name&&_wowS2.has(String(name).trim().toUpperCase()))return ['',name];
+  return [name||'',pair||''];
 }
 let _wowStMap=null;
 function wowStatusOf(store){
@@ -3319,7 +3326,7 @@ async function exportWowValidasiExcel(){
     .concat(rows.slice().sort((a,b)=>a.timestamp-b.timestamp).map(r=>[
       r.id||'',
       r.timestamp.toLocaleString('id-ID',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}),
-      r.mds||'',r.area||'',r.store||'',r.storePasangan||'',wowValidasiLabel(r.picValidated),r.keterangan||'',wowStatusEff(r)
+      r.mds||'',r.area||'',wowSides(r.store,r.storePasangan)[0],wowSides(r.store,r.storePasangan)[1],wowValidasiLabel(r.picValidated),r.keterangan||'',wowStatusEff(r)
     ]));
   const wsDetail=XLSX.utils.aoa_to_sheet(aoaDetail);
   wsDetail['!cols']=[{wch:12},{wch:18},{wch:26},{wch:14},{wch:52},{wch:40},{wch:18},{wch:18}];
