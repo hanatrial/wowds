@@ -14,8 +14,8 @@
 <link rel="icon" type="image/svg+xml" href="icon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="app.css?v=5">
-<link rel="stylesheet" href="lite.css?v=5">
+<link rel="stylesheet" href="app.css?v=6">
+<link rel="stylesheet" href="lite.css?v=6">
 </head>
 <body>
 <div id="app">
@@ -68,7 +68,6 @@
       <div class="step-section" id="wow-s1">
         <div class="s-title">Pilih Toko</div>
         <div class="s-sub">Ketik nama toko — kalau tokonya punya nama pasangan (khusus Makassar &amp; Gorontalo), otomatis terisi</div>
-        <div class="field"><label class="f-label">Kabupaten</label><select class="f-input sel" id="wow-kab2" onchange="WOW.area=this.value"></select><div style="font-size:11px;color:var(--t3);margin-top:6px">Daftar toko tidak tergantung kabupaten. Ubah di sini kalau kabupaten toko berbeda.</div></div>
         <div class="field" style="position:relative">
           <label class="f-label">Nama Toko</label>
           <input type="text" class="f-input" id="wow-store-input" placeholder="Ketik / cari nama toko…" autocomplete="off" oninput="wowStoreInputChanged();wowShowSuggest()" onfocus="wowShowSuggest()" onblur="wowHideSuggestDelayed()">
@@ -79,6 +78,7 @@
           <input type="text" class="f-input" id="wow-store-pasangan" readonly>
         </div>
         <a class="add-trigger hidden" id="wow-store-map-link" target="_blank" rel="noopener" style="display:block;text-decoration:none;color:inherit">📍 Buka lokasi di Google Maps</a>
+        <div class="kabbox hidden" id="wow-kabbox"><div class="kb-q">Kabupaten toko ini sudah benar?</div><select class="f-input sel" id="wow-kab2" onchange="wowKabChanged()"></select><button type="button" class="btn btn-outline" id="wow-kab-ok" onclick="wowKabConfirm()">Ya, benar</button></div>
         <div class="last-visit hidden" id="wow-last"></div>
         <div class="add-trigger" onclick="toggleBox('wow-store-box')"><span>+</span> Toko tidak ada di daftar?</div>
         <div class="add-box" id="wow-store-box">
@@ -175,12 +175,12 @@
 
 </div><!-- #app -->
 
-<script src="wow_toko_master.js?v=5"></script>
-<script src="app.js?v=5"></script>
+<script src="wow_toko_master.js?v=6"></script>
+<script src="app.js?v=6"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
-<script src="app-init.js?v=5"></script>
+<script src="app-init.js?v=6"></script>
 <script>openWow();</script>
 </body>
 </html>
