@@ -4393,14 +4393,14 @@ function renderWowInsight(rows){
     const tokoBy={};
     WM.forEach(t=>{if(t.kab)(tokoBy[t.kab]=tokoBy[t.kab]||new Set()).add(t.name);});
     (WOW_ALL||[]).filter(r=>!modePic||r.mds===INS_PIC).forEach(r=>{if(r.area&&r.store)(tokoBy[r.area]=tokoBy[r.area]||new Set()).add(r.store);});
-    const unk={};WM.forEach(t=>{if(!t.kab)unk[t.pic]=(unk[t.pic]||0)+1;});
+    const unk={},unkN={};WM.forEach(t=>{if(!t.kab){unk[t.pic]=(unk[t.pic]||0)+1;(unkN[t.pic]=unkN[t.pic]||[]).push(t.name);}});
     const totKab=Object.values(PK).reduce((a,l)=>a+l.length,0);
     const rowsK=[];
     Object.entries(PK).forEach(([pic,l])=>l.forEach(k=>{const n=(tokoBy[k]||new Set()).size;if(!n)rowsK.push({pic,k,u:unk[pic]||0});}));
     rowsK.sort((a,b)=>a.pic.localeCompare(b.pic)||a.k.localeCompare(b.k));
     noDispN=rowsK.length;
     secKabNoDisp='<div class="ins-card ins-wide"><h4>Kabupaten yang belum ada display WOW</h4><div class="ins-big"><b class="w">'+rowsK.length+'</b><span>dari '+totKab+' kabupaten di database kabupaten belum punya satu pun toko display</span></div><p class="ins-note">Dihitung dari toko yang kabupatennya sudah terisi. Toko tanpa kabupaten belum bisa dihitung, jadi PIC yang banyak tokonya belum berkabupaten bisa jadi sebenarnya sudah punya display di kabupaten itu.</p>'
-      +wowInsTable(modePic?['Kabupaten','Toko PIC ini belum berkabupaten']:['PIC','Kabupaten','Toko PIC ini belum berkabupaten'],rowsK.map(x=>(modePic?[]:[wowInsEsc(x.pic)]).concat([wowInsEsc(x.k),x.u?'<span style="color:'+(x.u>10?'#E8833A':'var(--t3)')+'">'+x.u+' toko'+(x.u>10?' · belum bisa dipastikan':'')+'</span>':'—'])),'Semua kabupaten sudah punya display.')+'</div>';
+      +wowInsTable(modePic?['Kabupaten','Toko PIC ini yang belum berkabupaten (bisa jadi ada di sini)']:['PIC','Kabupaten','Toko PIC ini yang belum berkabupaten (bisa jadi ada di sini)'],rowsK.map(x=>(modePic?[]:[wowInsEsc(x.pic)]).concat([wowInsEsc(x.k),x.u?'<details><summary style="color:'+(x.u>10?'#E8833A':'var(--t3)')+'">'+x.u+' toko'+(x.u>10?' · belum bisa dipastikan':'')+'</summary><div class="ins-list">'+(unkN[x.pic]||[]).slice(0,40).map(wowInsEsc).join('<br>')+((unkN[x.pic]||[]).length>40?'<br>… +'+((unkN[x.pic]||[]).length-40)+' lagi':'')+'</div></details>':'—'])),'Semua kabupaten sudah punya display.')+'</div>';
     const kosongM=WM.filter(t=>!t.kab);
     const perP={};kosongM.forEach(t=>{(perP[t.pic]=perP[t.pic]||[]).push(t.name);});
     const totP={};WM.forEach(t=>{totP[t.pic]=(totP[t.pic]||0)+1;});
