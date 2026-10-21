@@ -137,6 +137,9 @@ function bacaLama() {
     urutan.push(e);
   }
 
+  // status sewa dari sheet (Existing / New / Cancel) -> dipakai kolom Status di dashboard
+  for (const e of urutan) { const st = statusPer.get(e.name); if (st) e.st = st; }
+
   // pertahankan kolom pair / kolom tambahan dari file lama
   for (const e of urutan) {
     const pair = pairLama.get(e.name);

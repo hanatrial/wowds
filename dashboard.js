@@ -3119,10 +3119,10 @@ function renderWow(wowF){
       </td>
       <td onclick="event.stopPropagation()">
         <select onchange="updateWowStatus('${r._docId}',this.value)" style="font-size:11px;padding:3px 6px;border-radius:6px;border:1px solid var(--border);background:var(--bg2);color:var(--text)">
-          <option value=""${!r.statusToko?' selected':''}>—</option>
-          <option value="New"${r.statusToko==='New'?' selected':''}>New</option>
-          <option value="Existing"${r.statusToko==='Existing'?' selected':''}>Existing</option>
-          <option value="Cancel"${r.statusToko==='Cancel'?' selected':''}>Cancel</option>
+          <option value=""${!wowStatusEff(r)?' selected':''}>—</option>
+          <option value="New"${wowStatusEff(r)==='New'?' selected':''}>New</option>
+          <option value="Existing"${wowStatusEff(r)==='Existing'?' selected':''}>Existing</option>
+          <option value="Cancel"${wowStatusEff(r)==='Cancel'?' selected':''}>Cancel</option>
         </select>
       </td>
     </tr>`;
@@ -3176,6 +3176,7 @@ function renderWowUnvisited(){
     <th style="cursor:pointer" onclick="wuSortBy('name')">Nama Toko${wuAr('name')}</th>
     <th>Toko Pasangan</th>
     <th style="cursor:pointer" onclick="wuSortBy('mds')">PIC${wuAr('mds')}</th>
+    <th>Status</th>
   </tr>`;
   filtered.sort((a,b)=>{
     let av,bv;
@@ -3185,7 +3186,7 @@ function renderWowUnvisited(){
     const cmp=av.localeCompare(bv)||a.name.localeCompare(b.name);
     return WU_DIR*cmp;
   });
-  tb.innerHTML=filtered.length?filtered.map(t=>`<tr><td class="td-dim">${t.kab||'—'}</td><td class="td-main">${t.name}</td><td class="td-dim">${t.pair||'—'}</td><td class="td-dim">${t.pic||'—'}</td></tr>`).join(''):'<tr><td colspan="4" style="text-align:center;color:var(--t3);padding:32px">Semua toko sudah pernah divisit / tidak ada yang cocok pencarian.</td></tr>';
+  tb.innerHTML=filtered.length?filtered.map(t=>`<tr><td class="td-dim">${t.kab||'—'}</td><td class="td-main">${t.name}</td><td class="td-dim">${t.pair||'—'}</td><td class="td-dim">${t.pic||'—'}</td><td class="td-dim">${t.st||'—'}</td></tr>`).join(''):'<tr><td colspan="4" style="text-align:center;color:var(--t3);padding:32px">Semua toko sudah pernah divisit / tidak ada yang cocok pencarian.</td></tr>';
   if(tf)tf.textContent=`${unvisited.length} dari ${WOW_TOKO_MASTER.length} toko belum pernah divalidasi WOW`+(q?` · ${filtered.length} cocok pencarian`:'');
 }
 function updateWowKeterangan(docId,val){
@@ -3194,6 +3195,13 @@ function updateWowKeterangan(docId,val){
   if(r)r.keterangan=val||null;
   db.collection('wow_logs').doc(docId).update({keterangan:val||null}).catch(e=>console.error('keterangan update failed',e.code,e.message));
 }
+let _wowStMap=null;
+function wowStatusOf(store){
+  if(!store||typeof WOW_TOKO_MASTER==='undefined')return '';
+  if(!_wowStMap){_wowStMap=new Map();WOW_TOKO_MASTER.forEach(t=>{if(!t.st)return;[t.name,t.pair].filter(Boolean).forEach(n=>{const k=n.trim().toUpperCase();if(!_wowStMap.has(k)||t.st==='Existing')_wowStMap.set(k,t.st);});});}
+  return _wowStMap.get(String(store).trim().toUpperCase())||'';
+}
+function wowStatusEff(r){return r.statusToko||wowStatusOf(r.store)||wowStatusOf(r.storePasangan)||'';}
 function updateWowStatus(docId,val){
   if(!docId)return;
   const r=WOW_ALL.find(x=>x._docId===docId);
@@ -3306,7 +3314,7 @@ async function exportWowValidasiExcel(){
     .concat(rows.slice().sort((a,b)=>a.timestamp-b.timestamp).map(r=>[
       r.id||'',
       r.timestamp.toLocaleString('id-ID',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}),
-      r.mds||'',r.area||'',r.store||'',r.storePasangan||'',wowValidasiLabel(r.picValidated),r.keterangan||'',r.statusToko||''
+      r.mds||'',r.area||'',r.store||'',r.storePasangan||'',wowValidasiLabel(r.picValidated),r.keterangan||'',wowStatusEff(r)
     ]));
   const wsDetail=XLSX.utils.aoa_to_sheet(aoaDetail);
   wsDetail['!cols']=[{wch:12},{wch:18},{wch:26},{wch:14},{wch:52},{wch:40},{wch:18},{wch:18}];
