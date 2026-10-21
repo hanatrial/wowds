@@ -4095,3 +4095,66 @@ async function exportMdsScorecardSelisih(){
   XLSX.writeFile(wb,`Selisih_Omzet_Nota_${String(period).replace(/\s+/g,'_')}_${new Date().toISOString().slice(0,10)}.xlsx`);
 }
 
+
+
+// ── Input PIC / Toko (popup) -> Firestore app_data/toko_* (type:'toko'). SO Group Code urut dari terakhir (app_data/so_counter). ──
+function tpEl(id){return document.getElementById(id);}
+function tpEsc(x){return String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+const TP_SO_PREFIX='SULA-GT-WOW-';
+async function tpNextSo(){
+  let n=(typeof WOW_SO_MAX!=='undefined'?WOW_SO_MAX:0);
+  try{const d=await db.collection('app_data').doc('so_counter').get();if(d.exists&&d.data().n>n)n=d.data().n;}catch(e){console.warn('so_counter',e);}
+  return n+1;
+}
+async function openTokoPopup(){
+  const pics=Object.keys(typeof WOW_PIC_KAB!=='undefined'?WOW_PIC_KAB:{}).sort();
+  tpEl('tp-pic').innerHTML='<option value="">— Pilih PIC —</option>'+pics.map(p=>'<option>'+tpEsc(p)+'</option>').join('');
+  tpFillKab();tpEl('tp-msg').textContent='';
+  tpEl('tp-overlay').classList.remove('hidden');
+  tpEl('tp-so').value='…';
+  tpEl('tp-so').value=TP_SO_PREFIX+await tpNextSo();
+  tpLoadList();
+}
+function closeTokoPopup(){tpEl('tp-overlay').classList.add('hidden');}
+function tpFillKab(){
+  const p=tpEl('tp-pic').value;const l=(typeof WOW_PIC_KAB!=='undefined'&&WOW_PIC_KAB[p])||[];
+  tpEl('tp-kab').innerHTML=p?'<option value="">— Pilih kabupaten —</option>'+l.map(k=>'<option>'+tpEsc(k)+'</option>').join(''):'<option value="">— Pilih PIC dulu —</option>';
+}
+async function saveToko(){
+  const v=id=>tpEl(id).value.trim();
+  const d={type:'toko',pic:v('tp-pic'),kab:v('tp-kab'),kode1:v('tp-kode1'),nama1:v('tp-nama1'),kode2:v('tp-kode2'),nama2:v('tp-nama2'),distributor:v('tp-dist'),status:v('tp-status'),ts:Date.now()};
+  const m=tpEl('tp-msg');
+  const miss=[['pic','PIC'],['kab','Kabupaten'],['nama1','Nama Outlet 1'],['distributor','Distributor Penerima'],['status','Status']].filter(([k])=>!d[k]).map(x=>x[1]);
+  if(miss.length){m.style.color='#B5502A';m.textContent='Wajib diisi: '+miss.join(', ');return;}
+  if(d.kode2&&!d.nama2){m.style.color='#B5502A';m.textContent='Kode Dist 2 diisi, Nama Outlet 2 juga wajib.';return;}
+  try{
+    const ref=db.collection('app_data').doc('toko_'+d.ts.toString(36)+Math.random().toString(36).slice(2,6));
+    const cref=db.collection('app_data').doc('so_counter');
+    const base=(typeof WOW_SO_MAX!=='undefined'?WOW_SO_MAX:0);
+    const n=await db.runTransaction(async tx=>{
+      const c=await tx.get(cref);
+      const cur=Math.max(base,c.exists?(c.data().n||0):0)+1;
+      tx.set(cref,{n:cur});
+      tx.set(ref,{...d,so:TP_SO_PREFIX+cur,soNo:cur});
+      return cur;
+    });
+    m.style.color='var(--green)';m.textContent='✓ Tersimpan: '+d.nama1+' ('+TP_SO_PREFIX+n+')';
+    ['tp-kode1','tp-nama1','tp-kode2','tp-nama2'].forEach(i=>tpEl(i).value='');
+    tpEl('tp-so').value=TP_SO_PREFIX+(n+1);
+    tpLoadList();
+  }catch(e){m.style.color='#B5502A';m.textContent='Gagal menyimpan: '+(e.message||e);}
+}
+async function tpLoadList(){
+  const box=tpEl('tp-list');
+  try{
+    const s=await db.collection('app_data').where('type','==','toko').get();
+    const rows=[];s.forEach(d=>rows.push({id:d.id,...d.data()}));
+    rows.sort((a,b)=>(b.ts||0)-(a.ts||0));
+    box.innerHTML=rows.length?rows.slice(0,30).map(r=>'<div class="tp-row"><div><b>'+tpEsc(r.nama1)+'</b>'+(r.nama2?' / '+tpEsc(r.nama2):'')+'<br><span>'+tpEsc(r.so||'')+' · '+tpEsc(r.pic)+' · '+tpEsc(r.kab)+' · '+tpEsc(r.distributor)+' · '+tpEsc(r.status)+(r.kode1?' · '+tpEsc(r.kode1):'')+(r.kode2?' / '+tpEsc(r.kode2):'')+'</span></div><button onclick="tpDelete(\''+r.id+'\')">Hapus</button></div>').join(''):'Belum ada input.';
+  }catch(e){box.textContent='Gagal memuat: '+(e.message||e);}
+}
+async function tpDelete(id){
+  if(!confirm('Hapus input ini?'))return;
+  try{await db.collection('app_data').doc(id).delete();}catch(e){alert('Gagal menghapus: '+(e.message||e));}
+  tpLoadList();
+}

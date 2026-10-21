@@ -23932,7 +23932,20 @@ function wowStoreInputChanged(){
   }
   wowCheck(1);
 }
-function openWow(){ showScreen('s-wow'); Promise.all([loadWowCustomStores(),loadWowVisitedStores()]).then(()=>{ wowFillStore(); }); initWow(); }
+async function loadWowAddedStores(){
+  try{
+    if(typeof db==='undefined')return;
+    const snap=await db.collection('app_data').where('type','==','toko').get();
+    snap.forEach(d=>{
+      const v=d.data();if(!v.nama1||!v.pic)return;
+      if(WOW_TOKO_MASTER.some(t=>t._id===d.id))return;
+      const o={name:v.nama1,pic:v.pic,kab:v.kab||'',_id:d.id};
+      if(v.nama2&&v.nama2.toUpperCase()!==v.nama1.toUpperCase())o.pair=v.nama2;
+      WOW_TOKO_MASTER.push(o);
+    });
+  }catch(e){console.warn('toko tambahan gagal dimuat',e);}
+}
+function openWow(){ showScreen('s-wow'); Promise.all([loadWowCustomStores(),loadWowVisitedStores(),loadWowAddedStores()]).then(()=>{ wowFillStore(); }); initWow(); }
 function wowGetItems(){
   const ns=SPG_INDOGROSIR_GROUPS[0].items.map(n=>({name:n,section:'NS'}));
   const hilo=SPG_INDOGROSIR_GROUPS[1].items.concat(SPG_INDOGROSIR_GROUPS[2].items).map(n=>({name:n,section:'HI LO'}));
