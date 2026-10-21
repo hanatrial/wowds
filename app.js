@@ -24020,6 +24020,13 @@ function wowHideSuggest(){
 function wowHideSuggestDelayed(){
   setTimeout(wowHideSuggest,150);
 }
+function wowKabUI(mode,kab){
+  const q=document.getElementById('wow-kab-q'),ask=document.getElementById('wow-kab-ask'),ed=document.getElementById('wow-kab-edit'),dn=document.getElementById('wow-kab-done');
+  ask.classList.add('hidden');ed.classList.add('hidden');dn.classList.add('hidden');
+  if(mode==='ask'){q.innerHTML='Kabupaten saat ini: <b>'+kab+'</b><br>Kabupaten ini mau diubah?';ask.classList.remove('hidden');}
+  else if(mode==='edit'){q.textContent=WOW._kabHad?'Pilih kabupaten yang benar':'Kabupaten belum ada, wajib diisi';ed.classList.remove('hidden');}
+  else{q.textContent='Kabupaten';dn.innerHTML='✓ Kabupaten: <b>'+kab+'</b> <a href="#" onclick="wowKabEdit();return false">ubah</a>';dn.classList.remove('hidden');}
+}
 function wowKabShow(entry,val){
   const box=document.getElementById('wow-kabbox');if(!box)return;
   WOW.kabOk=false;WOW.area='';
@@ -24029,20 +24036,17 @@ function wowKabShow(entry,val){
   if(entry.kab&&!list.includes(entry.kab))list.push(entry.kab);
   ks.innerHTML='<option value="">— Pilih kabupaten —</option>'+list.map(n=>'<option value="'+n.replace(/"/g,'&quot;')+'">'+n+'</option>').join('');
   ks.value=entry.kab||'';
-  const b=document.getElementById('wow-kab-ok');b.textContent='Ya, benar';b.classList.remove('done');
+  WOW._kabHad=entry.kab||'';
   box.classList.remove('hidden');
+  if(entry.kab)wowKabUI('ask',entry.kab);else wowKabUI('edit');
 }
-function wowKabChanged(){
-  WOW.kabOk=false;WOW.area='';
-  const b=document.getElementById('wow-kab-ok');b.textContent='Ya, benar';b.classList.remove('done');
-  wowCheck(1);
-}
+function wowKabKeep(){ WOW.area=WOW._kabHad;WOW.kabOk=true;wowKabUI('done',WOW.area);wowCheck(1); }
+function wowKabEdit(){ WOW.kabOk=false;WOW.area='';wowKabUI('edit');wowCheck(1); }
+function wowKabChanged(){ WOW.kabOk=false;WOW.area='';wowCheck(1); }
 function wowKabConfirm(){
   const v=document.getElementById('wow-kab2').value;
   if(!v){alert('Pilih kabupaten dulu.');return;}
-  WOW.area=v;WOW.kabOk=true;
-  const b=document.getElementById('wow-kab-ok');b.textContent='✓ Kabupaten dikonfirmasi';b.classList.add('done');
-  wowCheck(1);
+  WOW.area=v;WOW.kabOk=true;wowKabUI('done',v);wowCheck(1);
 }
 function wowGoTo(step){
   WOW.step=step;
