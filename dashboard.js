@@ -4751,8 +4751,12 @@ function renderWowSales(){
   const kabArr=Object.entries(perKab).map(([k,rs])=>{const e=wsAgg(rs,n);const sv1=idxY1.reduce((s,i)=>s+e.sv[i],0),sv0=sameY0.reduce((s,i)=>s+e.sv[i],0);const l3=[n-3,n-2,n-1];const pa=l3.reduce((s,i)=>s+e.hilo[i]+e.ns[i],0);return {k,toko:rs.length,sv1,sv0,g:sv0?(sv1/sv0-1)*100:null,le:rs.length?pa/3/rs.length:null,e};});
   const kabTop=kabArr.slice().sort((a,b)=>b.sv1-a.sv1).slice(0,12);
   const secKab='<div class="ins-card"><h4>Omzet '+Y1+' per kabupaten · 12 teratas</h4>'+wowInsBars(kabTop.map(x=>({l:x.k,v:x.sv1,s:x.toko+' toko',t:wsRp(x.sv1,true)+' <small>'+wsPct(x.g)+'</small>',warn:x.g!=null&&x.g<0})))+'</div>';
-  const leKab=kabArr.filter(x=>x.le!=null&&x.toko>=3).sort((a,b)=>a.le-b.le);
-  const leKabCard='<div class="ins-card"><h4>Line/EA per kabupaten · 3 bulan terakhir</h4>'+(leKab.length?'<p class="ins-note">Terendah dan tertinggi (kabupaten dengan minimal 3 toko).</p>'+wowInsBars(leKab.slice(0,6).concat(leKab.length>12?leKab.slice(-6):leKab.slice(6)).map(x=>({l:x.k,v:x.le,s:x.toko+' toko',t:wsNum(x.le,2),warn:leKab.indexOf(x)<6})),Math.max.apply(null,leKab.map(x=>x.le))):'<div class="ins-empty">Belum cukup data.</div>')+'</div>';
+  const leKabBrand=(judul,fn)=>{
+    const l3=[n-3,n-2,n-1];
+    const arr=kabArr.filter(x=>x.toko>=3).map(x=>({k:x.k,toko:x.toko,le:l3.reduce((t,i)=>t+fn(x.e,i),0)/3/x.toko})).sort((p,q)=>p.le-q.le);
+    return '<div class="ins-card"><h4>'+judul+' per kabupaten · 3 bulan terakhir</h4>'+(arr.length?'<p class="ins-note">Terendah dan tertinggi (kabupaten dengan minimal 3 toko).</p>'+wowInsBars(arr.slice(0,6).concat(arr.length>12?arr.slice(-6):arr.slice(6)).map(x=>({l:x.k,v:x.le,s:x.toko+' toko',t:wsNum(x.le,2),warn:arr.indexOf(x)<6})),Math.max.apply(null,arr.map(x=>x.le).concat([0.01]))):'<div class="ins-empty">Belum cukup data.</div>')+'</div>';
+  };
+  const leKabCard=leKabBrand('Line/EA',(e,i)=>e.hilo[i]+e.ns[i])+leKabBrand('Line/EA NS',(e,i)=>e.ns[i])+leKabBrand('Line/EA HILO',(e,i)=>e.hilo[i]);
   // Line/EA per PIC
   let leP='';
   if(!modePic){
