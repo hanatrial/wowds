@@ -1436,8 +1436,8 @@ function wowRenameItems(v){if(!v||!v.items)return v;const o={};Object.entries(v.
 const WOW_STORE_RENAME={
   'FERDYYAJADSKOLAKA':'FERDI JAYA / ENSA NO. 09 RT. 02 RW. 07',   // 27 = kandidat 2
   'IYYO':'NYOMAN/KAWANGKOAN BARU',                                  // 28 = kandidat 1
-  'IYO':'NYOMAN/KAWANGKOAN BARU'
-  // 29 "Mar" = kandidat 3 -> teksnya belum ada; tambahkan 'MAR':'<nama kandidat 3>' di sini.
+  'IYO':'NYOMAN/KAWANGKOAN BARU',
+  'MAR':'MARPAM / JL. POROS BONE - SENGKANG'                        // 29 = kandidat 2
 };
 const wowStoreKey=n=>String(n==null?'':n).toUpperCase().replace(/[^A-Z0-9]/g,'');
 // nama kandidat -> nama persis di Database (kalau di sheet ditulis full, termasuk kolom kandidat)
