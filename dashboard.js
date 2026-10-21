@@ -3065,8 +3065,9 @@ function renderWow(wowF){
   const picF=document.getElementById('wow-pic-filter')?.value||'';
   if(picF)wowF=wowF.filter(r=>picF==='none'?(r.picValidated==null):String(r.picValidated)===picF);
   const rows=doSort(wowF);
-  const totVisit=wowF.length;
-  const avgAv=wowF.length?Math.round(wowF.reduce((s,r)=>s+((r.avail+r.unavail)>0?r.avail/(r.avail+r.unavail)*100:0),0)/wowF.length):0;
+  const wowK=wowF.filter(r=>wowStatusEff(r)!=='Cancel'); // KPI tanpa toko Cancel
+  const totVisit=wowK.length;
+  const avgAv=wowK.length?Math.round(wowK.reduce((s,r)=>s+((r.avail+r.unavail)>0?r.avail/(r.avail+r.unavail)*100:0),0)/wowK.length):0;
   const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
   set('ds-wow-total',totVisit||'—');
   set('ds-wow-av',totVisit?avgAv+'%':'—');
@@ -3131,7 +3132,7 @@ function renderWow(wowF){
     </tr>`;
   }).join(''):`<tr><td colspan="12"><div class="empty-state">Tidak ada data Validasi Display WOW.</div></td></tr>`;
   const tf=document.getElementById('tfoot-wow');
-  if(tf)tf.textContent=`${rows.length} kunjungan`;
+  if(tf)tf.textContent=`${rows.length} kunjungan`+(rows.length>wowK.length?` · ${rows.length-wowK.length} kunjungan ke toko Cancel tidak dihitung di KPI`:'');
   if(_expandedWowVid){const tr=document.querySelector(`tr[data-vid="${_expandedWowVid}"]`);if(tr)toggleWowDetail(tr,_expandedWowVid);}
 }
 const WOW_MDS_SHORT_TO_FULL_DS={
@@ -4282,14 +4283,14 @@ function wowInsHeat(p){return p==null?'hx':p<5?'h0':p<=15?'h1':p<=30?'h2':p<=45?
 function wowInsLast(list){const m=new Map();(list||[]).slice().sort((a,b)=>a.timestamp-b.timestamp).forEach(r=>{m.set(r.store,r);});return [...m.values()];}
 function renderWowInsight(rows){
   const box=document.getElementById('wow-insight');if(!box)return;
-  rows=wowInsLast(rows);
+  rows=wowInsLast(rows).filter(r=>wowStatusEff(r)!=='Cancel'); // Cancel tidak dihitung
   const picList=typeof WOW_PIC_KAB!=='undefined'?Object.keys(WOW_PIC_KAB).sort():[];
   const gf=(document.getElementById('f-mds')||{}).value||'';
   if(gf){INS_MODE='pic';INS_PIC=gf;}else INS_MODE='all';
   const modePic=INS_MODE==='pic';
   const rowsAll=rows;
   if(modePic)rows=rows.filter(r=>r.mds===INS_PIC);
-  const WM=typeof WOW_TOKO_MASTER!=='undefined'?(modePic?WOW_TOKO_MASTER.filter(t=>t.pic===INS_PIC):WOW_TOKO_MASTER):[];
+  const WM=typeof WOW_TOKO_MASTER!=='undefined'?(modePic?WOW_TOKO_MASTER.filter(t=>t.pic===INS_PIC&&t.st!=='Cancel'):WOW_TOKO_MASTER.filter(t=>t.st!=='Cancel')):[];
   const PK=typeof WOW_PIC_KAB!=='undefined'?(modePic?{[INS_PIC]:WOW_PIC_KAB[INS_PIC]||[]}:WOW_PIC_KAB):{};
   const modeBar='<div class="ins-mode"><button class="'+(modePic?'':'on')+'" onclick="wowInsMode(\'all\')">Sulawesi keseluruhan</button><button class="'+(modePic?'on':'')+'" onclick="wowInsMode(\'pic\')">Per PIC</button>'+(modePic?'<select onchange="wowInsPicSet(this.value)">'+picList.map(p=>'<option'+(p===INS_PIC?' selected':'')+'>'+wowInsEsc(p)+'</option>').join('')+'</select>':'')+'</div>';
 
@@ -4604,9 +4605,11 @@ function renderWowSales(){
   const gf=(document.getElementById('f-mds')||{}).value||'',gk=(document.getElementById('f-area')||{}).value||'',gs=((document.getElementById('f-store')||{}).value||'').trim().toLowerCase();
   if(gf){INS_MODE='pic';INS_PIC=gf;}else INS_MODE='all';
   const modePic=INS_MODE==='pic';
-  const modeBar='<div class="ins-mode"><button class="'+(modePic?'':'on')+'" onclick="wowInsMode(\'all\')">Sulawesi keseluruhan</button><button class="'+(modePic?'on':'')+'" onclick="wowInsMode(\'pic\')">Per PIC</button>'+(modePic?'<select onchange="wowInsPicSet(this.value)">'+picList.map(p=>'<option'+(p===INS_PIC?' selected':'')+'>'+wsEsc(p)+'</option>').join('')+'</select>':'')+'<span class="ws-note">Filter periode di atas tidak berlaku; tab ini selalu menampilkan seluruh bulan.</span></div>';
+  const modeBar='<div class="ins-mode"><button class="'+(modePic?'':'on')+'" onclick="wowInsMode(\'all\')">Sulawesi keseluruhan</button><button class="'+(modePic?'on':'')+'" onclick="wowInsMode(\'pic\')">Per PIC</button>'+(modePic?'<select onchange="wowInsPicSet(this.value)">'+picList.map(p=>'<option'+(p===INS_PIC?' selected':'')+'>'+wsEsc(p)+'</option>').join('')+'</select>':'')+'<span class="ws-note">Filter periode di atas tidak berlaku (seluruh bulan). '+WOW_SALES.r.filter(r=>r[1]&&r[3]==='Cancel'&&(!gf||r[1]===gf)).length+' toko berstatus Cancel tidak dihitung.</span></div>';
   // pilih baris
   let rows=WOW_SALES.r.filter(r=>r[1]&&!/^(aa|ccsad)$/i.test(r[0]));
+  const cancelDiabaikan=rows.filter(r=>r[3]==='Cancel').length;
+  rows=rows.filter(r=>r[3]!=='Cancel');
   if(modePic)rows=rows.filter(r=>r[1]===INS_PIC);
   if(gk)rows=rows.filter(r=>wsKabOf(r)===gk);
   if(gs)rows=rows.filter(r=>String(r[0]).toLowerCase().includes(gs)||String(r[4]).toLowerCase().includes(gs));
@@ -4730,12 +4733,7 @@ function renderWowSales(){
   const card=(t,body,wide)=>'<div class="ins-card'+(wide?' ins-wide':'')+'"><h4>'+t+'</h4>'+body+'</div>';
   box.innerHTML=modeBar+kpis+tkHtml+'<div class="ins-grid">'
     +card('Tren omzet bulanan · '+Y0+' vs '+Y1,trenOmzet,true)
-    +card('Omzet per bulan · '+n+' bulan',barsAll,true)
-    +card('Pertumbuhan omzet YoY per bulan · '+Y1,yoyBars)
-    +card('Pola musiman omzet',seaBars)
     +card('Tren Line/EA (PA ÷ toko bertransaksi)',leLine,true)
-    +card('PA per bulan · HILO + NS',paStack)
-    +card('Toko bertransaksi (EA) per bulan',eaBars)
-    +secPic+secKab+leP+leKabCard+hm+donut+konsen+avCard+tTop+tTurun+tMati+tCanc
+    +leP+leKabCard+avCard+tMati
     +'</div>';
 }
