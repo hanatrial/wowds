@@ -13,8 +13,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
-<link rel="stylesheet" href="dashboard.css?v=36">
-<link rel="stylesheet" href="lite.css?v=36">
+<link rel="stylesheet" href="dashboard.css?v=37">
+<link rel="stylesheet" href="lite.css?v=37">
 </head>
 <body>
 <div id="pin-screen">
@@ -43,6 +43,7 @@
   <div class="main-nav">
     <div class="nav-tab wow" id="ntab-wow" onclick="switchTab('wow')">🪧 Display WOW <span class="nav-badge" id="nb-wow">—</span></div>
     <div class="nav-tab wow" id="ntab-insight" onclick="switchTab('insight')">💡 Insight</div>
+    <div class="nav-tab wow" id="ntab-sales" onclick="switchTab('sales')">💰 Penjualan</div>
   </div>
   <div class="main">
     <div class="filter-shell"><div class="filter-inner">
@@ -85,6 +86,8 @@
       <span class="freset" onclick="clearFilters()">✕ Reset</span>
     </div></div>
 
+    <!-- PENJUALAN SECTION -->
+    <div id="sec-sales" style="display:none"><div id="wow-sales" class="ins"><div class="ins-empty">Memuat data penjualan…</div></div></div>
     <!-- INSIGHT SECTION -->
     <div id="sec-insight" style="display:none"><div id="wow-insight" class="ins"></div></div>
     <!-- DISPLAY WOW SECTION -->
@@ -153,7 +156,7 @@
 <label>Nama Outlet 2 <i>(opsional)</i><input id="tp-nama2" autocomplete="off"><small class="tp-h">Dist 2 = SHI, BSP, dan JUPE MDO</small></label>
 <label>Status<select id="tp-status"><option value="">— Pilih —</option><option>New</option><option>Cancel</option><option>Existing</option></select></label>
 </div><div class="tp-fotos"><label class="tp-foto"><span>Foto Pajangan 1 <i>(wajib)</i></span><input type="file" accept="image/*" id="tp-foto0" onchange="tpFoto(0)"><img id="tp-prev0" class="tp-prev hidden" alt=""></label><label class="tp-foto"><span>Foto Pajangan 2 <i>(opsional)</i></span><input type="file" accept="image/*" id="tp-foto1" onchange="tpFoto(1)"><img id="tp-prev1" class="tp-prev hidden" alt=""></label><label class="tp-foto"><span>Foto Pajangan 3 <i>(opsional)</i></span><input type="file" accept="image/*" id="tp-foto2" onchange="tpFoto(2)"><img id="tp-prev2" class="tp-prev hidden" alt=""></label></div><div class="tp-msg" id="tp-msg"></div><button class="tp-save" onclick="saveToko()">Simpan</button><div class="tp-list-h">Input terakhir</div><div id="tp-list" class="tp-list">Memuat…</div></div></div></div>
-<script src="wow_toko_master.js?v=36"></script>
-<script src="dashboard.js?v=36"></script>
+<script src="wow_toko_master.js?v=37"></script>
+<script src="dashboard.js?v=37"></script>
 </body>
 </html>

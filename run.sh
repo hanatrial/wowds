@@ -82,7 +82,7 @@ if [ -f .wow-berubah ]; then
   ADA_PERUBAHAN=1
   log "  data diperbarui: $(cat .wow-berubah)"
 fi
-if ! git diff --quiet -- wow_toko_master.js; then
+if ! git diff --quiet -- wow_toko_master.js wow_penjualan.js; then
   ADA_PERUBAHAN=1
 fi
 
@@ -93,8 +93,8 @@ if [ "$ADA_PERUBAHAN" -eq 0 ] && [ "$BELUM_TERKIRIM" -eq 0 ] && [ "$MODE" != "--
 fi
 
 # commit hanya kalau memang ada beda nyata yang belum di-commit
-if ! git diff --quiet -- wow_toko_master.js; then
-  git add wow_toko_master.js
+if ! git diff --quiet -- wow_toko_master.js wow_penjualan.js; then
+  git add wow_toko_master.js wow_penjualan.js
   if git -c user.name="hanatrial" -c user.email="hanatrial@users.noreply.github.com" \
       commit -q -m "Update database WOW $(date '+%F')"; then
     log "  commit dibuat: Update database WOW $(date '+%F')"

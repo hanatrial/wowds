@@ -18,6 +18,8 @@ const GID_KAB = '1403688639';      // tab "Database Kabupaten"
 const FILE = path.join(__dirname, '..', 'wow_toko_master.js');
 const JANJI = path.join(__dirname, '..', '.wow-berubah'); // penanda "ada data berubah, belum di-push"
 const DRY = process.argv.includes('--dry');
+const GID_PJ = '681014340';        // tab "Database Penjualan"
+const FILE_PJ = path.join(__dirname, '..', 'wow_penjualan.js');
 
 const norm = (s) => String(s == null ? '' : s).replace(/\s+/g, ' ').trim();
 
@@ -76,7 +78,56 @@ function bacaLama() {
   }
 }
 
+/* Tab "Database Penjualan": per bulan 3 kolom berurutan (PA HILO, PA NS, Sales Value Netto SO).
+   Baris judul: [tahun][bulan][label]. Hasil: wow_penjualan.js (dimuat dashboard saat tab Penjualan dibuka). */
+async function tarikPenjualan() {
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${GID_PJ}`;
+  const res = await fetch(url, { redirect: 'follow' });
+  if (!res.ok) throw new Error('Unduh tab Penjualan gagal: HTTP ' + res.status);
+  const teks = await res.text();
+  if (/^\s*<(!doctype|html)/i.test(teks)) throw new Error('Tab Penjualan tidak bisa diunduh (Sheet tidak publik / GID salah)');
+  const rows = parseCsv(teks);
+  const hi = rows.findIndex((r) => norm(r[1]) === 'PIC');
+  if (hi < 2) throw new Error('Tab Penjualan: baris judul (PIC) tidak ketemu');
+  const H = rows[hi], Mrow = rows[hi - 1], Yrow = rows[hi - 2];
+  const BLN = { january: 1, february: 2, march: 3, april: 4, may: 5, june: 6, july: 7, august: 8, september: 9, october: 10, november: 11, december: 12,
+    januari: 1, februari: 2, maret: 3, mei: 5, juni: 6, juli: 7, agustus: 8, oktober: 10, desember: 12 };
+  const num = (x) => { const v = parseFloat(String(x == null ? '' : x).replace(/,/g, '')); return isNaN(v) ? 0 : v; };
+  let year = '', mon = 0;
+  const cols = [];
+  for (let i = 10; i < H.length; i++) {
+    if (norm(Yrow[i])) year = norm(Yrow[i]);
+    if (norm(Mrow[i])) mon = BLN[norm(Mrow[i]).toLowerCase()] || mon;
+    const lb = norm(H[i]).toUpperCase();
+    const k = lb === 'PA HILO' ? 0 : lb === 'PA NS' ? 1 : /SALES VALUE/.test(lb) ? 2 : -1;
+    if (k < 0 || !year || !mon) continue;
+    cols.push({ i, k, ym: year + '-' + String(mon).padStart(2, '0') });
+  }
+  const bulan = [...new Set(cols.map((c) => c.ym))].sort();
+  if (bulan.length < 12) throw new Error('Tab Penjualan: bulan terlalu sedikit (' + bulan.length + ') — dibatalkan');
+  const idx = Object.fromEntries(bulan.map((b, j) => [b, j]));
+  const data = [];
+  for (const r of rows.slice(hi + 1)) {
+    const pic = norm(r[1]); if (!pic) continue;
+    const n1 = norm(r[5]), n2 = norm(r[6]); const nama = n1 || n2; if (!nama) continue;
+    const arr = [0, 1, 2].map(() => Array(bulan.length).fill(0));
+    cols.forEach((c) => { arr[c.k][idx[c.ym]] = Math.round(num(r[c.i])); });
+    data.push([nama, pic, norm(r[7]), norm(r[9]), n1 && n2 && n1.toUpperCase() !== n2.toUpperCase() ? n2 : '', arr[0], arr[1], arr[2], norm(r[2])]);
+  }
+  if (data.length < 400) throw new Error('Tab Penjualan: baris terlalu sedikit (' + data.length + ') — dibatalkan');
+  const isi = '/* otomatis dari tab "Database Penjualan": [nama, PIC, KAB sheet, Status, pasangan, PA HILO[], PA NS[], Sales Netto SO[], SO code] per bulan di m */\nconst WOW_SALES = ' + JSON.stringify({ m: bulan, r: data }) + ';\n';
+  const lama = fs.existsSync(FILE_PJ) ? fs.readFileSync(FILE_PJ, 'utf8') : '';
+  console.log('Penjualan: ' + bulan[0] + ' … ' + bulan[bulan.length - 1] + ' (' + bulan.length + ' bulan), ' + data.length + ' toko');
+  if (isi === lama) { console.log('Penjualan: tidak ada perubahan.'); return; }
+  if (DRY) { console.log('(--dry) penjualan berubah, tidak ditulis.'); return; }
+  fs.writeFileSync(FILE_PJ, isi);
+  console.log('Ditulis: wow_penjualan.js');
+}
+
 (async () => {
+
+  // penjualan terpisah dari master: kalau gagal, master tetap diproses
+  try { await tarikPenjualan(); } catch (e) { console.error('PERINGATAN penjualan: ' + e.message); }
   const rowsToko = await ambilCsv(GID_TOKO, 'Database', ['PIC', 'Nama Outlet Distr 1 (BCP, TBP, BCP ASO MDO)', 'Nama Outlet Distri2 (BSP, SHI, BSP JUPE MDO)', 'Kode Distri 1 (BCP, TBP, BCP ASO MDO)', 'Kode Distr 2 (BSP, SHI, BSP JUPE MDO)', 'KAB', 'Status Sewa']);
   const rowsKab = await ambilCsv(GID_KAB, 'Database Kabupaten', ['Nama Kabupaten/Kota', 'PIC']);
   console.log(`Sheet: ${rowsToko.length} baris Database, ${rowsKab.length} baris Database Kabupaten`);

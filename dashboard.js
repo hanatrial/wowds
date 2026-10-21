@@ -1403,7 +1403,7 @@ const WOW_ITEM_RENAME={"HI LO DRINK THAI TEA PLS 8RX10SX15G":"HI LO DRINK THAI T
 function wowRenameItems(v){if(!v||!v.items)return v;const o={};Object.entries(v.items).forEach(([k,x])=>{o[WOW_ITEM_RENAME[k]||k]=x;});return {...v,items:o};}
 function switchTab(t){
   TAB=t;
-  ['rka','beli','stock','pjmds','formula','ned','spg','wow','insight'].forEach(x=>{
+  ['rka','beli','stock','pjmds','formula','ned','spg','wow','insight','sales'].forEach(x=>{
     const el=document.getElementById('ntab-'+x);
     if(el){el.classList.toggle('on',x===t);el.classList.toggle(x,true);}
   });
@@ -1416,6 +1416,7 @@ function switchTab(t){
   const sg=document.getElementById('sec-spg');if(sg)sg.style.display=t==='spg'?'block':'none';
   const sw=document.getElementById('sec-wow');if(sw)sw.style.display=t==='wow'?'block':'none';
   const si=document.getElementById('sec-insight');if(si)si.style.display=t==='insight'?'block':'none';
+  const ssl=document.getElementById('sec-sales');if(ssl)ssl.style.display=t==='sales'?'block':'none';
   render();
 }
 function switchSubTab(main,sub){
@@ -1529,6 +1530,8 @@ function render(){
     else renderWow(wowF);
   }else if(TAB==='insight'){
     renderWowInsight(wowF);
+  }else if(TAB==='sales'){
+    renderWowSales();
   }
 }
 
@@ -4481,4 +4484,258 @@ async function exportEvalToko(){
   const ws=XLSX.utils.aoa_to_sheet(aoa);ws['!cols']=[{wch:14},{wch:24},{wch:56},{wch:10}];
   const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Perlu dievaluasi');
   XLSX.writeFile(wb,'toko_perlu_dievaluasi_'+new Date().toISOString().slice(0,10)+'.xlsx');
+}
+
+
+// ═══ PENJUALAN (insight omzet & Line/EA) ═══
+const WS_BLN=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+let WS_LISTS={};
+function wsEnsure(cb){
+  if(typeof WOW_SALES!=='undefined'){cb();return;}
+  const el=document.getElementById('wow-sales');if(el)el.innerHTML='<div class="ins-empty">Memuat data penjualan…</div>';
+  const sc=document.createElement('script');sc.src='wow_penjualan.js?v='+Math.floor(Date.now()/600000);
+  sc.onload=cb;sc.onerror=()=>{if(el)el.innerHTML='<div class="ins-empty">Gagal memuat wow_penjualan.js.</div>';};
+  document.head.appendChild(sc);
+}
+function wsRp(v,short){
+  v=+v||0;const a=Math.abs(v),sg=v<0?'-':'';
+  if(a>=1e9)return sg+(a/1e9).toFixed(2).replace('.',',')+' M';
+  if(a>=1e6)return sg+(short?Math.round(a/1e6):(a/1e6).toFixed(1).replace('.',','))+' jt';
+  if(a>=1e3)return sg+Math.round(a/1e3)+' rb';
+  return sg+Math.round(a);
+}
+function wsPct(v){return v==null||!isFinite(v)?'—':(v>0?'+':'')+(Math.round(v*10)/10).toString().replace('.',',')+'%';}
+function wsNum(v,d){return v==null||!isFinite(v)?'—':(Math.round(v*Math.pow(10,d||1))/Math.pow(10,d||1)).toString().replace('.',',');}
+function wsMl(ym){const p=ym.split('-');return WS_BLN[+p[1]-1]+(p[0]?' '+p[0].slice(2):'');}
+
+// ── SVG ringan ──
+function wsSvgLine(o){
+  const Wd=640,H=o.h||230,pl=50,pr=14,pt=16,pb=28,n=o.labels.length;
+  let mx=0;o.series.forEach(se=>se.vals.forEach(v=>{if(v!=null&&v>mx)mx=v;}));mx=mx||1;
+  const X=i=>pl+(Wd-pl-pr)*(n===1?0.5:i/(n-1)),Y=v=>pt+(H-pt-pb)*(1-v/mx);
+  let g='';
+  for(let k=0;k<=4;k++){const v=mx*k/4,y=Y(v);g+='<line x1="'+pl+'" x2="'+(Wd-pr)+'" y1="'+y+'" y2="'+y+'" class="ws-g"/><text x="'+(pl-6)+'" y="'+(y+3)+'" class="ws-ay">'+(o.fmt?o.fmt(v):Math.round(v))+'</text>';}
+  const every=o.every||(n>14?2:1);
+  o.labels.forEach((l,i)=>{if(i%every===0)g+='<text x="'+X(i)+'" y="'+(H-8)+'" class="ws-ax">'+l+'</text>';});
+  let paths='';
+  o.series.forEach(se=>{
+    let d='',pen=false;
+    se.vals.forEach((v,i)=>{if(v==null){pen=false;return;}d+=(pen?'L':'M')+X(i).toFixed(1)+' '+Y(v).toFixed(1)+' ';pen=true;});
+    paths+='<path d="'+d+'" fill="none" stroke="'+se.color+'" stroke-width="'+(se.w||2.2)+'"'+(se.dash?' stroke-dasharray="5 4"':'')+' stroke-linejoin="round" stroke-linecap="round"/>';
+    if(!se.dash&&!se.nodots)se.vals.forEach((v,i)=>{if(v!=null)paths+='<circle cx="'+X(i).toFixed(1)+'" cy="'+Y(v).toFixed(1)+'" r="2.6" fill="'+se.color+'"><title>'+wsEsc(se.name)+' · '+o.labels[i]+': '+(o.fmt?o.fmt(v):v)+'</title></circle>';});
+  });
+  const leg='<div class="ws-leg">'+o.series.map(se=>'<span><i style="background:'+se.color+(se.dash?';opacity:.6':'')+'"></i>'+wsEsc(se.name)+'</span>').join('')+'</div>';
+  return leg+'<svg viewBox="0 0 '+Wd+' '+H+'" class="ws-svg" preserveAspectRatio="xMidYMid meet">'+g+paths+'</svg>';
+}
+function wsSvgBars(o){
+  const Wd=640,H=o.h||220,pl=50,pr=10,pt=18,pb=28,n=o.labels.length;
+  const mx=Math.max.apply(null,o.vals.map(v=>Math.abs(v||0)).concat([1]));
+  const hasNeg=o.vals.some(v=>v<0);
+  const y0=hasNeg?pt+(H-pt-pb)/2:H-pb,sc=(hasNeg?(H-pt-pb)/2:(H-pt-pb))/mx;
+  const bw=(Wd-pl-pr)/n,gap=Math.min(6,bw*0.25);
+  let g='';
+  for(let k=0;k<=4;k++){const v=(hasNeg?-mx+2*mx*k/4:mx*k/4),y=y0-v*sc;g+='<line x1="'+pl+'" x2="'+(Wd-pr)+'" y1="'+y+'" y2="'+y+'" class="ws-g"/><text x="'+(pl-6)+'" y="'+(y+3)+'" class="ws-ay">'+(o.fmt?o.fmt(v):Math.round(v))+'</text>';}
+  const every=o.every||(n>14?2:1);
+  o.vals.forEach((v,i)=>{
+    v=v||0;const x=pl+i*bw+gap/2,hh=Math.abs(v)*sc,y=v>=0?y0-hh:y0;
+    g+='<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+(bw-gap).toFixed(1)+'" height="'+Math.max(hh,v?1:0).toFixed(1)+'" rx="2" fill="'+((o.colors&&o.colors[i])||'#235347')+'"><title>'+o.labels[i]+': '+(o.fmt?o.fmt(v):v)+'</title></rect>';
+    if(n<=12)g+='<text x="'+(x+(bw-gap)/2).toFixed(1)+'" y="'+(v>=0?y-4:y+hh+10).toFixed(1)+'" class="ws-av">'+(o.fmt?o.fmt(v):v)+'</text>';
+    if(i%every===0)g+='<text x="'+(x+(bw-gap)/2).toFixed(1)+'" y="'+(H-8)+'" class="ws-ax">'+o.labels[i]+'</text>';
+  });
+  return (o.legend||'')+'<svg viewBox="0 0 '+Wd+' '+H+'" class="ws-svg" preserveAspectRatio="xMidYMid meet">'+g+'</svg>';
+}
+function wsSvgStack(o){
+  const Wd=640,H=o.h||220,pl=50,pr=10,pt=14,pb=28,n=o.labels.length;
+  const mx=Math.max.apply(null,o.a.map((v,i)=>(v||0)+(o.b[i]||0)).concat([1]));
+  const sc=(H-pt-pb)/mx,bw=(Wd-pl-pr)/n,gap=Math.min(6,bw*0.25);
+  let g='';
+  for(let k=0;k<=4;k++){const v=mx*k/4,y=H-pb-v*sc;g+='<line x1="'+pl+'" x2="'+(Wd-pr)+'" y1="'+y+'" y2="'+y+'" class="ws-g"/><text x="'+(pl-6)+'" y="'+(y+3)+'" class="ws-ay">'+Math.round(v)+'</text>';}
+  o.labels.forEach((l,i)=>{
+    const x=pl+i*bw+gap/2,ha=(o.a[i]||0)*sc,hb=(o.b[i]||0)*sc;
+    g+='<rect x="'+x.toFixed(1)+'" y="'+(H-pb-ha).toFixed(1)+'" width="'+(bw-gap).toFixed(1)+'" height="'+ha.toFixed(1)+'" fill="'+o.ca+'"><title>'+o.na+' '+l+': '+o.a[i]+'</title></rect>';
+    g+='<rect x="'+x.toFixed(1)+'" y="'+(H-pb-ha-hb).toFixed(1)+'" width="'+(bw-gap).toFixed(1)+'" height="'+hb.toFixed(1)+'" rx="2" fill="'+o.cb+'"><title>'+o.nb+' '+l+': '+o.b[i]+'</title></rect>';
+    if(i%(n>14?2:1)===0)g+='<text x="'+(x+(bw-gap)/2).toFixed(1)+'" y="'+(H-8)+'" class="ws-ax">'+l+'</text>';
+  });
+  const leg='<div class="ws-leg"><span><i style="background:'+o.ca+'"></i>'+o.na+'</span><span><i style="background:'+o.cb+'"></i>'+o.nb+'</span></div>';
+  return leg+'<svg viewBox="0 0 '+Wd+' '+H+'" class="ws-svg" preserveAspectRatio="xMidYMid meet">'+g+'</svg>';
+}
+function wsDonut(parts){
+  const tot=parts.reduce((a,p)=>a+p.v,0)||1,R=42,C=2*Math.PI*R;let off=0,s='';
+  parts.forEach(p=>{const L=C*p.v/tot;s+='<circle r="'+R+'" cx="60" cy="60" fill="none" stroke="'+p.color+'" stroke-width="22" stroke-dasharray="'+L.toFixed(2)+' '+(C-L).toFixed(2)+'" stroke-dashoffset="'+(-off).toFixed(2)+'" transform="rotate(-90 60 60)"><title>'+wsEsc(p.label)+': '+wsRp(p.v)+'</title></circle>';off+=L;});
+  const leg=parts.map(p=>'<div class="ws-dl"><i style="background:'+p.color+'"></i><span>'+wsEsc(p.label)+'</span><b>'+Math.round(p.v/tot*100)+'%</b><em>'+wsRp(p.v)+'</em></div>').join('');
+  return '<div class="ws-donut"><svg viewBox="0 0 120 120" width="120" height="120">'+s+'</svg><div>'+leg+'</div></div>';
+}
+function wsSpark(vals){
+  const w=96,h=24,n=vals.length,mx=Math.max.apply(null,vals.concat([1]));
+  const d=vals.map((v,i)=>(i?'L':'M')+(i*(w-2)/(n-1)+1).toFixed(1)+' '+(h-2-(h-4)*v/mx).toFixed(1)).join(' ');
+  return '<svg viewBox="0 0 '+w+' '+h+'" width="'+w+'" height="'+h+'" class="ws-sp"><path d="'+d+'" fill="none" stroke="#235347" stroke-width="1.6"/></svg>';
+}
+function wsEsc(x){return wowInsEsc(x);}
+function wsYoyCls(p){return p==null?'hx':p<-20?'h0':p<0?'h1':p<=10?'h2':p<=30?'h3':'h4';}
+
+// ── data ──
+let _wsMasterKab=null;
+function wsKabOf(r){
+  if(!_wsMasterKab&&typeof WOW_TOKO_MASTER!=='undefined'){_wsMasterKab=new Map();WOW_TOKO_MASTER.forEach(t=>{_wsMasterKab.set((t.pic+'|'+String(t.name).trim().toUpperCase()),t.kab||'');});}
+  return (_wsMasterKab&&_wsMasterKab.get(r[1]+'|'+String(r[0]).trim().toUpperCase()))||r[2]||'';
+}
+function wsAgg(rows,n){
+  const o={sv:Array(n).fill(0),hilo:Array(n).fill(0),ns:Array(n).fill(0),ea:Array(n).fill(0)};
+  rows.forEach(r=>{for(let i=0;i<n;i++){o.hilo[i]+=r[5][i];o.ns[i]+=r[6][i];o.sv[i]+=r[7][i];if(r[7][i]>0)o.ea[i]++;}});
+  return o;
+}
+const wsSum=(a,i0,i1)=>{let s=0;for(let i=i0;i<i1;i++)s+=a[i]||0;return s;};
+function wsExport(kind){
+  const l=WS_LISTS[kind]||[];if(!l.length){alert('Tidak ada data untuk diexport.');return;}
+  ensureXlsx().then(()=>{
+    const head={top:['Nama PIC','Nama MDS','Nama Toko','Kabupaten','Status','Omzet periode','Omzet rata-rata/bulan'],turun:['Nama PIC','Nama MDS','Nama Toko','Kabupaten','Status','Omzet tahun lalu','Omzet sekarang','Selisih','Perubahan %'],mati:['Nama PIC','Nama MDS','Nama Toko','Kabupaten','Status','Omzet terakhir ada','Bulan terakhir transaksi'],cancel:['Nama PIC','Nama MDS','Nama Toko','Kabupaten','Omzet periode','Bulan terakhir transaksi']}[kind];
+    const ws=XLSX.utils.aoa_to_sheet([head].concat(l));ws['!cols']=head.map((x,i)=>({wch:i===2?52:i===3?22:16}));
+    const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,kind);
+    XLSX.writeFile(wb,'penjualan_'+kind+'_'+new Date().toISOString().slice(0,10)+'.xlsx');
+  }).catch(()=>alert('Gagal memuat pustaka Excel (XLSX). Cek koneksi lalu coba lagi.'));
+}
+function wsBtn(kind,label){return '<button class="ins-exp" onclick="wsExport(\''+kind+'\')">⬇ Export Excel · '+label+' ('+(WS_LISTS[kind]||[]).length+')</button>';}
+
+function renderWowSales(){
+  const box=document.getElementById('wow-sales');if(!box)return;
+  if(typeof WOW_SALES==='undefined'){wsEnsure(renderWowSales);return;}
+  const M=WOW_SALES.m,n=M.length;
+  const picList=Object.keys(typeof WOW_PIC_KAB!=='undefined'?WOW_PIC_KAB:{}).sort();
+  const gf=(document.getElementById('f-mds')||{}).value||'',gk=(document.getElementById('f-area')||{}).value||'',gs=((document.getElementById('f-store')||{}).value||'').trim().toLowerCase();
+  if(gf){INS_MODE='pic';INS_PIC=gf;}else INS_MODE='all';
+  const modePic=INS_MODE==='pic';
+  const modeBar='<div class="ins-mode"><button class="'+(modePic?'':'on')+'" onclick="wowInsMode(\'all\')">Sulawesi keseluruhan</button><button class="'+(modePic?'on':'')+'" onclick="wowInsMode(\'pic\')">Per PIC</button>'+(modePic?'<select onchange="wowInsPicSet(this.value)">'+picList.map(p=>'<option'+(p===INS_PIC?' selected':'')+'>'+wsEsc(p)+'</option>').join('')+'</select>':'')+'<span class="ws-note">Filter periode di atas tidak berlaku; tab ini selalu menampilkan seluruh bulan.</span></div>';
+  // pilih baris
+  let rows=WOW_SALES.r.filter(r=>r[1]&&!/^(aa|ccsad)$/i.test(r[0]));
+  if(modePic)rows=rows.filter(r=>r[1]===INS_PIC);
+  if(gk)rows=rows.filter(r=>wsKabOf(r)===gk);
+  if(gs)rows=rows.filter(r=>String(r[0]).toLowerCase().includes(gs)||String(r[4]).toLowerCase().includes(gs));
+  if(!rows.length){box.innerHTML=modeBar+'<div class="ins-empty">Tidak ada toko pada filter ini.</div>';return;}
+
+  const A=wsAgg(rows,n);
+  const yrs=M.map(m=>m.slice(0,4));const Y1=yrs[n-1],Y0=String(+Y1-1);
+  const i1a=yrs.indexOf(Y1),i0a=yrs.indexOf(Y0);              // awal tahun terbaru / sebelumnya
+  const nm1=n-i1a;                                             // jumlah bulan tahun terbaru yang ada
+  const idxY0=[],idxY1=[];M.forEach((m,i)=>{if(m.slice(0,4)===Y0)idxY0.push(i);if(m.slice(0,4)===Y1)idxY1.push(i);});
+  const sameY0=idxY1.map(i=>M.indexOf(Y0+M[i].slice(4))).filter(i=>i>=0);   // bulan sama tahun lalu
+  const tot0=idxY0.reduce((s,i)=>s+A.sv[i],0),tot1=idxY1.reduce((s,i)=>s+A.sv[i],0),tot0s=sameY0.reduce((s,i)=>s+A.sv[i],0);
+  const avg0=idxY0.length?tot0/idxY0.length:0,avg1=idxY1.length?tot1/idxY1.length:0,avg0s=sameY0.length?tot0s/sameY0.length:0;
+  const yoy=tot0s?(tot1/tot0s-1)*100:null,dAvg=avg0?(avg1/avg0-1)*100:null;
+  const last=n-1,prevYear=M.indexOf(Y0+M[last].slice(4));
+  const lineEa=(i,k)=>A.ea[i]?(k==='h'?A.hilo[i]:k==='n'?A.ns[i]:A.hilo[i]+A.ns[i])/A.ea[i]:null;
+  const leLast=lineEa(last),lePrev=prevYear>=0?lineEa(prevYear):null;
+  const lblM=M.map(wsMl);
+  const kpi=(t,v,sm,cls)=>'<div class="ins-kpi"><span>'+t+'</span><b'+(cls?' class="'+cls+'"':'')+'>'+v+'</b><small>'+sm+'</small></div>';
+  const kpis='<div class="ins-kpis ws-k4">'
+    +kpi('Rata-rata omzet / bulan '+Y0,wsRp(avg0),idxY0.length+' bulan · total '+wsRp(tot0))
+    +kpi('Rata-rata omzet / bulan '+Y1,wsRp(avg1),idxY1.length+' bulan (sampai '+lblM[last]+') · '+wsPct(dAvg)+' vs rata-rata '+Y0,dAvg!=null&&dAvg<0?'ws-neg':'')
+    +kpi('Omzet '+idxY1.length+' bulan '+Y1,wsRp(tot1),wsPct(yoy)+' vs periode sama '+Y0+' ('+wsRp(tot0s)+')',yoy!=null&&yoy<0?'ws-neg':'')
+    +kpi('Line/EA '+lblM[last],wsNum(leLast,2),'PA ÷ toko bertransaksi ('+A.ea[last]+' toko)'+(lePrev!=null?' · '+wsPct((leLast/lePrev-1)*100)+' vs '+lblM[prevYear]:''))
+    +'</div>';
+
+  // takeaways
+  const bestI=idxY1.reduce((b,i)=>A.sv[i]>A.sv[b]?i:b,idxY1[0]),worstI=idxY1.reduce((b,i)=>A.sv[i]<A.sv[b]?i:b,idxY1[0]);
+  const perPic={};rows.forEach(r=>{const p=perPic[r[1]]||(perPic[r[1]]={sv1:0,sv0:0,rows:[]});p.rows.push(r);idxY1.forEach(i=>p.sv1+=r[7][i]);sameY0.forEach(i=>p.sv0+=r[7][i]);});
+  const picArr=Object.entries(perPic).map(([k,v])=>({k,sv1:v.sv1,sv0:v.sv0,g:v.sv0?(v.sv1/v.sv0-1)*100:null,rows:v.rows}));
+  const topPic=picArr.slice().sort((a,b)=>b.sv1-a.sv1)[0];
+  const tks=[
+    '<b>Omzet '+Y1+'</b> '+wsRp(tot1)+' ('+wsPct(yoy)+' vs periode sama '+Y0+'). Bulan tertinggi '+lblM[bestI]+' ('+wsRp(A.sv[bestI])+'), terendah '+lblM[worstI]+' ('+wsRp(A.sv[worstI])+').',
+    modePic?'<b>Line/EA '+wsEsc(INS_PIC)+'</b> '+wsNum(leLast,2)+' di '+lblM[last]+' (HILO '+wsNum(lineEa(last,'h'),2)+', NS '+wsNum(lineEa(last,'n'),2)+').':'<b>PIC terbesar</b> '+wsEsc(topPic.k)+' dengan '+wsRp(topPic.sv1)+' ('+Math.round(topPic.sv1/(tot1||1)*100)+'% omzet), pertumbuhan '+wsPct(topPic.g)+'.',
+    '<b>Toko bertransaksi</b> '+A.ea[last]+' dari '+rows.length+' toko di '+lblM[last]+' ('+Math.round(A.ea[last]/rows.length*100)+'%). Line/EA '+wsNum(leLast,2)+'.'
+  ];
+  const tkHtml='<div class="ins-tks">'+tks.map((t,i)=>'<div class="ins-tk"><em>0'+(i+1)+'</em><p>'+t+'</p></div>').join('')+'</div>';
+
+  // ── grafik tren ──
+  const mkYear=(yr)=>WS_BLN.map((b,mi)=>{const ix=M.indexOf(yr+'-'+String(mi+1).padStart(2,'0'));return ix>=0?A.sv[ix]:null;});
+  const trenOmzet=wsSvgLine({labels:WS_BLN,fmt:v=>wsRp(v,true),series:[
+    {name:'Omzet '+Y0,color:'#8EB69B',vals:mkYear(Y0)},
+    {name:'Omzet '+Y1,color:'#0B2B26',vals:mkYear(Y1)},
+    {name:'Rata-rata '+Y0,color:'#8EB69B',dash:1,vals:WS_BLN.map(()=>avg0)},
+    {name:'Rata-rata '+Y1,color:'#0B2B26',dash:1,vals:WS_BLN.map((b,mi)=>M.indexOf(Y1+'-'+String(mi+1).padStart(2,'0'))>=0?avg1:null)}
+  ]});
+  const barsAll=wsSvgBars({labels:lblM,vals:A.sv,fmt:v=>wsRp(v,true),colors:M.map(m=>m.slice(0,4)===Y1?'#0B2B26':'#8EB69B'),legend:'<div class="ws-leg"><span><i style="background:#8EB69B"></i>'+Y0+'</span><span><i style="background:#0B2B26"></i>'+Y1+'</span></div>'});
+  const yoyM=idxY1.map(i=>{const j=M.indexOf(Y0+M[i].slice(4));return j>=0&&A.sv[j]?(A.sv[i]/A.sv[j]-1)*100:null;});
+  const yoyBars=wsSvgBars({labels:idxY1.map(i=>lblM[i]),vals:yoyM.map(v=>v==null?0:v),fmt:v=>Math.round(v)+'%',colors:yoyM.map(v=>v==null||v>=0?'#4F8A6B':'#E8833A'),h:200});
+  const leSer=[{name:'Total',color:'#0B2B26',vals:M.map((m,i)=>lineEa(i))},{name:'HILO',color:'#B5D334',vals:M.map((m,i)=>lineEa(i,'h'))},{name:'NS',color:'#E8833A',vals:M.map((m,i)=>lineEa(i,'n'))}];
+  const leLine=wsSvgLine({labels:lblM,series:leSer,fmt:v=>wsNum(v,1)});
+  const paStack=wsSvgStack({labels:lblM,a:A.ns,b:A.hilo,na:'PA NS',nb:'PA HILO',ca:'#235347',cb:'#B5D334'});
+  const eaBars=wsSvgBars({labels:lblM,vals:A.ea,fmt:v=>Math.round(v),colors:M.map(m=>m.slice(0,4)===Y1?'#235347':'#8EB69B'),h:200,legend:'<div class="ws-leg"><span>Toko bertransaksi (EA) per bulan dari '+rows.length+' toko</span></div>'});
+  // musiman: rata-rata omzet per bulan-kalender
+  const sea=WS_BLN.map((b,mi)=>{const v=[];[Y0,Y1].forEach(y=>{const ix=M.indexOf(y+'-'+String(mi+1).padStart(2,'0'));if(ix>=0)v.push(A.sv[ix]);});return v.length?v.reduce((a,x)=>a+x,0)/v.length:null;});
+  const seaAvg=sea.filter(v=>v!=null).reduce((a,x)=>a+x,0)/(sea.filter(v=>v!=null).length||1);
+  const seaBars=wsSvgBars({labels:WS_BLN,vals:sea.map(v=>v==null?0:v/seaAvg*100),fmt:v=>Math.round(v),colors:sea.map(v=>v==null?'#EEF3EF':v/seaAvg>=1?'#4F8A6B':'#F7E3A6'),h:200,legend:'<div class="ws-leg"><span>Indeks musiman (100 = rata-rata bulanan '+Y0+'–'+Y1+')</span></div>'});
+
+  // ── per PIC (Sulawesi) / per kabupaten ──
+  let secPic='';
+  if(!modePic){
+    const arr=picArr.slice().sort((a,b)=>b.sv1-a.sv1);
+    secPic='<div class="ins-card"><h4>Omzet '+Y1+' per PIC</h4>'+wowInsBars(arr.map(x=>({l:x.k,v:x.sv1,t:wsRp(x.sv1,true)+' <small>'+wsPct(x.g)+'</small>',warn:x.g!=null&&x.g<0})))+'</div>';
+    const arr2=picArr.map(x=>{const e=wsAgg(x.rows,n);return {k:x.k,avg1:idxY1.length?idxY1.reduce((s,i)=>s+e.sv[i],0)/idxY1.length:0,avg0:idxY0.length?idxY0.reduce((s,i)=>s+e.sv[i],0)/idxY0.length:0};}).sort((a,b)=>b.avg1-a.avg1);
+    const mx2=Math.max.apply(null,arr2.map(x=>Math.max(x.avg0,x.avg1)).concat([1]));
+    secPic+='<div class="ins-card"><h4>Rata-rata omzet / bulan per PIC · '+Y0+' vs '+Y1+'</h4><div class="bc"><div class="bc-key"><span class="k1" style="background:#8EB69B"></span>'+Y0+' <span class="k2" style="background:#0B2B26"></span>'+Y1+'</div>'+arr2.map(x=>'<div class="bc-row bc-dual"><span class="bc-l">'+wsEsc(x.k)+'</span><span class="bc-d"><span class="bc-t"><i style="width:'+Math.max(2,Math.round(x.avg0/mx2*80))+'%;background:#8EB69B"></i><b>'+wsRp(x.avg0,true)+'</b></span><span class="bc-t"><i style="width:'+Math.max(2,Math.round(x.avg1/mx2*80))+'%;background:#0B2B26"></i><b>'+wsRp(x.avg1,true)+'</b></span></span></div>').join('')+'</div></div>';
+  }
+  // per kabupaten
+  const perKab={};rows.forEach(r=>{const k=wsKabOf(r)||'(kabupaten kosong)';(perKab[k]=perKab[k]||[]).push(r);});
+  const kabArr=Object.entries(perKab).map(([k,rs])=>{const e=wsAgg(rs,n);const sv1=idxY1.reduce((s,i)=>s+e.sv[i],0),sv0=sameY0.reduce((s,i)=>s+e.sv[i],0);const l3=[n-3,n-2,n-1];const pa=l3.reduce((s,i)=>s+e.hilo[i]+e.ns[i],0),ea=l3.reduce((s,i)=>s+e.ea[i],0);return {k,toko:rs.length,sv1,sv0,g:sv0?(sv1/sv0-1)*100:null,le:ea?pa/ea:null,e};});
+  const kabTop=kabArr.slice().sort((a,b)=>b.sv1-a.sv1).slice(0,12);
+  const secKab='<div class="ins-card"><h4>Omzet '+Y1+' per kabupaten · 12 teratas</h4>'+wowInsBars(kabTop.map(x=>({l:x.k,v:x.sv1,s:x.toko+' toko',t:wsRp(x.sv1,true)+' <small>'+wsPct(x.g)+'</small>',warn:x.g!=null&&x.g<0})))+'</div>';
+  const leKab=kabArr.filter(x=>x.le!=null&&x.toko>=3).sort((a,b)=>a.le-b.le);
+  const leKabCard='<div class="ins-card"><h4>Line/EA per kabupaten · 3 bulan terakhir</h4>'+(leKab.length?'<p class="ins-note">Terendah dan tertinggi (kabupaten dengan minimal 3 toko).</p>'+wowInsBars(leKab.slice(0,6).concat(leKab.length>12?leKab.slice(-6):leKab.slice(6)).map(x=>({l:x.k,v:x.le,s:x.toko+' toko',t:wsNum(x.le,2),warn:leKab.indexOf(x)<6})),Math.max.apply(null,leKab.map(x=>x.le))):'<div class="ins-empty">Belum cukup data.</div>')+'</div>';
+  // Line/EA per PIC
+  let leP='';
+  if(!modePic){
+    const arr=picArr.map(x=>{const e=wsAgg(x.rows,n);const l3=[n-3,n-2,n-1];const ea=l3.reduce((s,i)=>s+e.ea[i],0);return {k:x.k,h:ea?l3.reduce((s,i)=>s+e.hilo[i],0)/ea:0,nn:ea?l3.reduce((s,i)=>s+e.ns[i],0)/ea:0};}).sort((a,b)=>(a.h+a.nn)-(b.h+b.nn));
+    const mx3=Math.max.apply(null,arr.map(x=>Math.max(x.h,x.nn)).concat([1]));
+    leP='<div class="ins-card"><h4>Line/EA per PIC · 3 bulan terakhir</h4><div class="bc"><div class="bc-key"><span class="k1"></span>NS <span class="k2"></span>HILO</div>'+arr.map(x=>'<div class="bc-row bc-dual"><span class="bc-l">'+wsEsc(x.k)+'</span><span class="bc-d"><span class="bc-t"><i style="width:'+Math.max(2,Math.round(x.nn/mx3*80))+'%"></i><b>'+wsNum(x.nn,2)+'</b></span><span class="bc-t"><i class="h" style="width:'+Math.max(2,Math.round(x.h/mx3*80))+'%"></i><b>'+wsNum(x.h,2)+'</b></span></span></div>').join('')+'</div></div>';
+  }
+  // ── heatmap YoY (PIC x bulan) / (kabupaten x bulan) ──
+  const hmGroups=modePic?kabArr.filter(x=>x.toko>=1).sort((a,b)=>b.sv1-a.sv1).slice(0,15).map(x=>({k:x.k,e:x.e})):picArr.map(x=>({k:x.k,e:wsAgg(x.rows,n)})).sort((a,b)=>picList.indexOf(a.k)-picList.indexOf(b.k));
+  const hmRows=hmGroups.map(g=>'<tr><th>'+wsEsc(g.k)+'</th>'+idxY1.map(i=>{const j=M.indexOf(Y0+M[i].slice(4));const v=j>=0&&g.e.sv[j]>0?(g.e.sv[i]/g.e.sv[j]-1)*100:null;return '<td class="'+wsYoyCls(v)+'" title="'+lblM[i]+': '+wsRp(g.e.sv[i])+' vs '+wsRp(j>=0?g.e.sv[j]:0)+'">'+(v==null?'·':(v>0?'+':'')+Math.round(v)+'%')+'</td>';}).join('')+'</tr>').join('');
+  const hm='<div class="ins-card ins-wide"><h4>Heatmap pertumbuhan omzet (YoY) · '+(modePic?'per kabupaten':'per PIC')+'</h4><p class="ins-note">Omzet tiap bulan '+Y1+' dibanding bulan yang sama '+Y0+'. Titik = tidak ada pembanding.</p><div class="ins-hm"><table><thead><tr><th>'+(modePic?'Kabupaten':'PIC')+'</th>'+idxY1.map(i=>'<th>'+lblM[i]+'</th>').join('')+'</tr></thead><tbody>'+hmRows+'</tbody></table></div><div class="ins-legend"><span class="h0">&lt;-20%</span><span class="h1">-20 s/d 0%</span><span class="h2">0 s/d +10%</span><span class="h3">+10 s/d +30%</span><span class="h4">&gt;+30%</span></div></div>';
+
+  // ── status & konsentrasi ──
+  const st={Existing:0,New:0,Cancel:0,Lain:0};rows.forEach(r=>{const v=idxY1.reduce((s,i)=>s+r[7][i],0);st[st[r[3]]!=null?r[3]:'Lain']+=v;});
+  const donut='<div class="ins-card"><h4>Kontribusi omzet '+Y1+' menurut status toko</h4>'+wsDonut([{label:'Existing',v:st.Existing,color:'#235347'},{label:'New',v:st.New,color:'#B5D334'},{label:'Cancel',v:st.Cancel,color:'#F2C94C'}].concat(st.Lain>0?[{label:'Lainnya',v:st.Lain,color:'#8A9A93'}]:[]))+'<p class="ins-note" style="margin-top:8px">Toko Cancel tetap menyumbang omzet — lihat daftar di bawah.</p></div>';
+  const sums=rows.map(r=>({r,v:idxY1.reduce((s,i)=>s+r[7][i],0)})).sort((a,b)=>b.v-a.v);
+  const tv=sums.reduce((a,x)=>a+x.v,0)||1;
+  const t10=sums.slice(0,10).reduce((a,x)=>a+x.v,0),t20=sums.slice(0,Math.ceil(rows.length*0.2)).reduce((a,x)=>a+x.v,0),b50=sums.slice(Math.floor(rows.length*0.5)).reduce((a,x)=>a+x.v,0);
+  const konsen='<div class="ins-card"><h4>Konsentrasi omzet '+Y1+'</h4>'+wowInsBars([{l:'10 toko teratas',v:t10/tv*100,t:Math.round(t10/tv*100)+'% <small>'+wsRp(t10,true)+'</small>'},{l:'20% toko teratas ('+Math.ceil(rows.length*0.2)+')',v:t20/tv*100,t:Math.round(t20/tv*100)+'% <small>'+wsRp(t20,true)+'</small>'},{l:'50% toko terbawah',v:b50/tv*100,t:Math.round(b50/tv*100)+'% <small>'+wsRp(b50,true)+'</small>',warn:true}],100)+'<p class="ins-note" style="margin-top:8px">'+sums.filter(x=>x.v===0).length+' dari '+rows.length+' toko tanpa omzet sama sekali di '+Y1+'.</p></div>';
+
+  // ── AV vs omzet ──
+  const avBy=new Map();
+  if(typeof WOW_ALL!=='undefined'){const lastV={};WOW_ALL.slice().sort((a,b)=>a.timestamp-b.timestamp).forEach(r=>{lastV[String(r.store).trim().toUpperCase()]=r;});Object.entries(lastV).forEach(([k,r])=>{const av=wowInsAv(r.items);avBy.set(k,av.NS[0]+av.HILO[0]+av.TS[0]);});}
+  const bk=[{n:'AV < 15',lo:0,hi:15},{n:'AV 15–29',lo:15,hi:30},{n:'AV ≥ 30',lo:30,hi:1e9}].map(b=>({...b,rs:[]}));let belum=[];
+  rows.forEach(r=>{const v=avBy.get(String(r[0]).trim().toUpperCase());if(v==null){belum.push(r);return;}const b=bk.find(x=>v>=x.lo&&v<x.hi);if(b)b.rs.push(r);});
+  const avRows=bk.concat([{n:'Belum divisit (data AV tidak ada)',rs:belum}]).filter(b=>b.rs.length).map(b=>{const e=wsAgg(b.rs,n);const avgO=b.rs.length&&idxY1.length?idxY1.reduce((s,i)=>s+e.sv[i],0)/idxY1.length/b.rs.length:0;const l3=[n-3,n-2,n-1];const ea=l3.reduce((s,i)=>s+e.ea[i],0);const le=ea?l3.reduce((s,i)=>s+e.hilo[i]+e.ns[i],0)/ea:null;return {n:b.n,toko:b.rs.length,avgO,le};});
+  const mxAv=Math.max.apply(null,avRows.map(x=>x.avgO).concat([1]));
+  const avCard='<div class="ins-card"><h4>Display (AV) vs omzet</h4><p class="ins-note">Rata-rata omzet per toko per bulan '+Y1+', menurut AV total visit terakhir (NS+HILO+TS item ada).</p>'+wowInsBars(avRows.map(x=>({l:x.n,s:x.toko+' toko',v:x.avgO,t:wsRp(x.avgO,true)+' <small>Line/EA '+wsNum(x.le,2)+'</small>',warn:x.n==='AV < 15'})),mxAv)+'</div>';
+
+  // ── daftar toko + export ──
+  const mdsOf=(nm)=>{if(typeof WOW_ALL==='undefined')return '';const u=String(nm).trim().toUpperCase();for(let i=0;i<WOW_ALL.length;i++){if(String(WOW_ALL[i].store).trim().toUpperCase()===u&&WOW_ALL[i].mdsAsli)return WOW_ALL[i].mdsAsli;}return '';};
+  const lastTx=r=>{for(let i=n-1;i>=0;i--)if(r[7][i]>0)return lblM[i];return '';};
+  const rowFor=r=>[r[1],mdsOf(r[0]),r[0],wsKabOf(r),r[3]];
+  const topL=sums.slice(0,10);
+  WS_LISTS.top=sums.filter(x=>x.v>0).slice(0,200).map(x=>rowFor(x.r).concat([x.v,idxY1.length?Math.round(x.v/idxY1.length):0]));
+  const turun=rows.map(r=>{const a=sameY0.reduce((s,i)=>s+r[7][i],0),b2=idxY1.reduce((s,i)=>s+r[7][i],0);return {r,a,b:b2,d:b2-a};}).filter(x=>x.a>0&&x.d<0).sort((x,y)=>x.d-y.d);
+  WS_LISTS.turun=turun.slice(0,200).map(x=>rowFor(x.r).concat([x.a,x.b,x.d,Math.round((x.b/x.a-1)*1000)/10]));
+  const mati=rows.filter(r=>r[3]!=='Cancel'&&[n-3,n-2,n-1].every(i=>r[7][i]===0)&&r[7].some(v=>v>0)).map(r=>({r,last:lastTx(r),tot:r[7].reduce((a,x)=>a+x,0)})).sort((a,b)=>b.tot-a.tot);
+  WS_LISTS.mati=mati.slice(0,300).map(x=>rowFor(x.r).concat([x.tot,x.last]));
+  const canc=rows.filter(r=>r[3]==='Cancel').map(r=>({r,v:idxY1.reduce((s,i)=>s+r[7][i],0)})).filter(x=>x.v>0).sort((a,b)=>b.v-a.v);
+  WS_LISTS.cancel=canc.slice(0,300).map(x=>[x.r[1],mdsOf(x.r[0]),x.r[0],wsKabOf(x.r),x.v,lastTx(x.r)]);
+  const tTop='<div class="ins-card ins-wide"><h4>10 toko omzet terbesar · '+Y1+'</h4>'+wowInsTable(['Toko','PIC','Kabupaten','Status','Omzet','Tren '+n+' bulan'],topL.map(x=>[wsEsc(x.r[0]),wsEsc(x.r[1]),wsEsc(wsKabOf(x.r)||'—'),wsEsc(x.r[3]),'<b>'+wsRp(x.v)+'</b>',wsSpark(x.r[7])]))+wsBtn('top','toko omzet terbesar')+'</div>';
+  const tTurun='<div class="ins-card"><h4>Toko turun paling dalam vs periode sama '+Y0+'</h4>'+wowInsTable(['Toko','PIC','Selisih'],turun.slice(0,10).map(x=>[wsEsc(x.r[0]),wsEsc(x.r[1]),'<span class="ins-w">'+wsRp(x.d)+'</span> <small>'+wsPct((x.b/x.a-1)*100)+'</small>']),'Tidak ada toko yang turun.')+wsBtn('turun','toko turun')+'</div>';
+  const tMati='<div class="ins-card"><h4>Toko tanpa transaksi 3 bulan terakhir</h4><p class="ins-note">Pernah jual, tidak termasuk status Cancel. Diurut dari omzet historis terbesar.</p>'+wowInsTable(['Toko','PIC','Terakhir'],mati.slice(0,10).map(x=>[wsEsc(x.r[0]),wsEsc(x.r[1]),wsEsc(x.last||'—')]),'Tidak ada.')+wsBtn('mati','toko tanpa transaksi')+'</div>';
+  const tCanc='<div class="ins-card ins-wide"><h4>Toko Cancel yang masih ada omzet · '+Y1+'</h4><div class="ins-big"><b class="w">'+canc.length+'</b><span>toko berstatus Cancel masih bertransaksi, total '+wsRp(canc.reduce((a,x)=>a+x.v,0))+'</span></div>'+wowInsTable(['Toko','PIC','Kabupaten','Omzet'],canc.slice(0,8).map(x=>[wsEsc(x.r[0]),wsEsc(x.r[1]),wsEsc(wsKabOf(x.r)||'—'),wsRp(x.v)]),'Tidak ada.')+wsBtn('cancel','toko Cancel yang masih jualan')+'</div>';
+
+  const card=(t,body,wide)=>'<div class="ins-card'+(wide?' ins-wide':'')+'"><h4>'+t+'</h4>'+body+'</div>';
+  box.innerHTML=modeBar+kpis+tkHtml+'<div class="ins-grid">'
+    +card('Tren omzet bulanan · '+Y0+' vs '+Y1,trenOmzet,true)
+    +card('Omzet per bulan · '+n+' bulan',barsAll,true)
+    +card('Pertumbuhan omzet YoY per bulan · '+Y1,yoyBars)
+    +card('Pola musiman omzet',seaBars)
+    +card('Tren Line/EA (PA ÷ toko bertransaksi)',leLine,true)
+    +card('PA per bulan · HILO + NS',paStack)
+    +card('Toko bertransaksi (EA) per bulan',eaBars)
+    +secPic+secKab+leP+leKabCard+hm+donut+konsen+avCard+tTop+tTurun+tMati+tCanc
+    +'</div>';
 }
