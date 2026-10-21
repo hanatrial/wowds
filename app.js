@@ -23680,7 +23680,7 @@ function rkaNext(){
   if(R.step===0){
     const area=document.getElementById('rka-area-sel').value;
     const mds=document.getElementById('rka-mds-sel').value;
-    if(!mdsInRoster(area,mds)){ alert('Pilih nama MDS dari daftar (tidak bisa mengetik nama sendiri).'); return; }
+    if(!WOW_PIC.includes(mds)){ alert('Pilih PIC dari daftar.'); return; }
     R.area=area; R.mds=mds;
   }
   if(R.step===1){
@@ -23902,7 +23902,7 @@ function initWow(){
   const as=document.getElementById('wow-area-sel');
   as.innerHTML='<option value="">— Pilih Area —</option>';
   AREAS.forEach(n=>{ const o=document.createElement('option'); o.value=n; o.textContent=n; as.appendChild(o); });
-  document.getElementById('wow-mds-sel').innerHTML='<option value="">— Pilih Area dulu —</option>';
+  wowFillMds();
   document.getElementById('wow-store-input').value='';
   document.getElementById('wow-store-pasangan').value='';
   document.getElementById('wow-store-pasangan-wrap').classList.add('hidden');
@@ -23911,12 +23911,13 @@ function initWow(){
   dt.value=new Date().toISOString().slice(0,10);
   wowGoTo(0);
 }
+const WOW_PIC=["BINCHA","FATUR","HENDRY","IAN","IMAD","LAYWITH","PANCA","VILO","WAFI"];
 function wowFillMds(){
-  const area=document.getElementById('wow-area-sel').value;
   const ms=document.getElementById('wow-mds-sel');
-  ms.innerHTML='<option value="">— Pilih MDS —</option>';
-  (MDS_BY_AREA[area]||[]).forEach(n=>{ const o=document.createElement('option'); o.value=n; o.textContent=n; ms.appendChild(o); });
-  if(!area) ms.innerHTML='<option value="">— Pilih Area dulu —</option>';
+  if(ms.options.length<=1){
+    ms.innerHTML='<option value="">— Pilih PIC —</option>';
+    WOW_PIC.forEach(n=>{ const o=document.createElement('option'); o.value=n; o.textContent=n; ms.appendChild(o); });
+  }
   wowCheck(0);
 }
 const WOW_MDS_SHORT_TO_FULL={
@@ -23925,7 +23926,7 @@ const WOW_MDS_SHORT_TO_FULL={
 let WOW_STORE_NAMES=[];
 function wowFillStore(){
   const area=document.getElementById('wow-area-sel')?document.getElementById('wow-area-sel').value:'';
-  const mds=document.getElementById('wow-mds-sel')?document.getElementById('wow-mds-sel').value:'';
+  const mds='';
   const shortMap=WOW_MDS_SHORT_TO_FULL[area];
   let pool=WOW_TOKO_MASTER;
   if(area){
@@ -24038,7 +24039,7 @@ function wowNext(){
   if(WOW.step===0){
     const area=document.getElementById('wow-area-sel').value;
     const mds=document.getElementById('wow-mds-sel').value;
-    if(!mdsInRoster(area,mds)){ alert('Pilih nama MDS dari daftar (tidak bisa mengetik nama sendiri).'); return; }
+    if(!WOW_PIC.includes(mds)){ alert('Pilih PIC dari daftar.'); return; }
     WOW.area=area;
     WOW.date=document.getElementById('wow-date-input').value;
     WOW.mds=mds;
@@ -24252,7 +24253,7 @@ function beliNext(){
   if(B.step===0){
     const area=document.getElementById('beli-area-sel').value;
     const mds=document.getElementById('beli-mds-sel').value;
-    if(!mdsInRoster(area,mds)){ alert('Pilih nama MDS dari daftar (tidak bisa mengetik nama sendiri).'); return; }
+    if(!WOW_PIC.includes(mds)){ alert('Pilih PIC dari daftar.'); return; }
     B.area=area; B.mds=mds;
   }
   if(B.step===1){

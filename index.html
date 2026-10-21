@@ -44,19 +44,19 @@
       <!-- Step 0: Area / MDS / Tanggal -->
       <div class="step-section active" id="wow-s0">
         <div class="s-title">Info Kunjungan</div>
-        <div class="s-sub">Area, MDS, dan tanggal visit</div>
+        <div class="s-sub">Area, PIC, dan tanggal visit</div>
         <div class="field">
           <label class="f-label">Nama Area</label>
-          <select class="f-input sel" id="wow-area-sel" onchange="wowFillMds();wowFillStore()">
+          <select class="f-input sel" id="wow-area-sel" onchange="wowFillStore();wowCheck(0)">
             <option value="">— Pilih Area —</option>
           </select>
         </div>
         <div class="field">
-          <label class="f-label">Nama MDS</label>
+          <label class="f-label">PIC</label>
           <select class="f-input sel" id="wow-mds-sel" onchange="wowCheck(0);wowFillStore()">
             <option value="">— Pilih Area dulu —</option>
           </select>
-          <div style="font-size:11px;color:var(--t3);margin-top:6px">MDS harus dipilih dari daftar. Nama di luar daftar tidak bisa disubmit.</div>
+          <div style="font-size:11px;color:var(--t3);margin-top:6px">PIC dipilih dari daftar.</div>
         </div>
         <div class="field">
           <label class="f-label">Tanggal Visit</label>
@@ -157,7 +157,7 @@
     </div>
     <div class="summ-card">
       <div class="summ-row"><span class="summ-k">Area</span><span class="summ-v" id="wow-sm-area"></span></div>
-      <div class="summ-row"><span class="summ-k">MDS</span><span class="summ-v" id="wow-sm-mds"></span></div>
+      <div class="summ-row"><span class="summ-k">PIC</span><span class="summ-v" id="wow-sm-mds"></span></div>
       <div class="summ-row"><span class="summ-k">Toko</span><span class="summ-v" id="wow-sm-store"></span></div>
       <div class="summ-row hidden" id="wow-sm-pasangan-row"><span class="summ-k">Toko Pasangan</span><span class="summ-v" id="wow-sm-pasangan"></span></div>
       <div class="summ-row"><span class="summ-k">Tanggal</span><span class="summ-v" id="wow-sm-date"></span></div>
