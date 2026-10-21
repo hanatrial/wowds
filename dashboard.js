@@ -4279,7 +4279,7 @@ async function tpLoadList(){
     const s=await db.collection('app_data').where('type','==','toko').get();
     const rows=[];s.forEach(d=>rows.push({id:d.id,...d.data()}));
     rows.sort((a,b)=>(b.ts||0)-(a.ts||0));
-    box.innerHTML=rows.length?rows.slice(0,30).map(r=>'<div class="tp-row"><div class="tp-main">'+(r.photoData?'<img class="tp-thumb" src="'+r.photoData+'" alt="">':'')+'<div><b>'+tpEsc(r.nama1||r.nama2||r.kode1||r.kode2)+'</b>'+(r.nama1&&r.nama2?' / '+tpEsc(r.nama2):(!r.nama1&&r.nama2?' <i>(Dist 2)</i>':''))+'<br><span>'+tpEsc(r.so||'')+' · '+tpEsc(r.pic)+' · '+tpEsc(r.kab)+' · '+tpEsc(r.distributor)+' · '+tpEsc(r.status)+(r.kode1?' · '+tpEsc(r.kode1):'')+(r.kode2?' / '+tpEsc(r.kode2):'')+(r.photoData?' · '+(1+(r.photoData2?1:0)+(r.photoData3?1:0))+' foto':'')+'</span></div></div><button onclick="tpDelete(\''+r.id+'\')">Hapus</button></div>').join(''):'Belum ada input.';
+    box.innerHTML=rows.length?rows.slice(0,30).map(r=>'<div class="tp-row"><div class="tp-main">'+(r.photoData?'<img class="tp-thumb" src="'+r.photoData+'" alt="">':'')+'<div><b>'+tpEsc(r.nama1||r.nama2||r.kode1||r.kode2)+'</b>'+(r.nama1&&r.nama2?' / '+tpEsc(r.nama2):(!r.nama1&&r.nama2?' <i>(Dist 2)</i>':''))+'<br><span>'+tpEsc(r.pic)+' · '+tpEsc(r.kab)+' · '+tpEsc(r.distributor)+' · '+tpEsc(r.status)+(r.kode1?' · '+tpEsc(r.kode1):'')+(r.kode2?' / '+tpEsc(r.kode2):'')+(r.photoData?' · '+(1+(r.photoData2?1:0)+(r.photoData3?1:0))+' foto':'')+'</span></div></div><button onclick="tpDelete(\''+r.id+'\')">Hapus</button></div>').join(''):'Belum ada input.';
   }catch(e){box.textContent='Gagal memuat: '+(e.message||e);}
 }
 async function tpDelete(id){
