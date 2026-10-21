@@ -220,3 +220,24 @@ body::before,body::after{display:none!important;}
 .wl-i em{font-style:normal;font-size:11px;color:var(--t3);white-space:nowrap;}
 .wl-e,.wl-n{font-size:12px;color:var(--t3);padding:10px 14px;}
 .wl-n{padding-top:4px;}
+
+/* Toko Belum Divisit: tabel rapi + chip status */
+.wu-bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px;}
+.wu-bar .fi{width:260px;}
+.wu-chips{display:flex;gap:8px;flex-wrap:wrap;}
+.wu-chip{border:1px solid var(--border);background:#fff;border-radius:999px;padding:6px 12px;font:inherit;font-size:12px;font-weight:600;color:var(--t2);cursor:pointer;}
+.wu-chip b{margin-left:4px;color:var(--text);}
+.wu-chip.on{border-color:var(--primary);box-shadow:0 0 0 1px var(--primary)!important;}
+.wu-chip.st-Cancel,.wu-pill.st-Cancel{background:#F7E3A6;border-color:#E6C65A;color:#5A4500;}
+.wu-chip.st-New,.wu-pill.st-New{background:#DAF1DE;border-color:#8EB69B;color:#0B2B26;}
+.wu-chip.st-Existing,.wu-pill.st-Existing{background:#EEF3EF;border-color:#D4DDD6;color:#235347;}
+.wu-pill{display:inline-block;border:1px solid var(--border);border-radius:999px;padding:3px 12px;font-size:11px;font-weight:600;}
+.wu-wrap{overflow-x:auto;}
+.wu-t{width:100%;border-collapse:collapse;table-layout:fixed;min-width:760px;}
+.wu-t th{text-align:left;font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);padding:10px 12px;border-bottom:1px solid var(--border);cursor:default;white-space:nowrap;}
+.wu-t th.c-toko,.wu-t th.c-pic,.wu-t th.c-kab{cursor:pointer;}
+.wu-t td{font-size:13px;color:var(--text);padding:11px 12px;border-bottom:1px solid var(--border2);vertical-align:middle;word-break:break-word;}
+.wu-t td b{font-weight:600;}
+.wu-t .c-toko{width:34%;} .wu-t .c-pas{width:24%;color:var(--t2);} .wu-t .c-pic{width:11%;} .wu-t .c-kab{width:19%;} .wu-t .c-st{width:12%;}
+.wu-t tbody tr:hover{background:var(--bg2);}
+.wu-nil{color:var(--t3);font-size:12px;}
