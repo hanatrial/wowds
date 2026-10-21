@@ -4632,11 +4632,34 @@ function wsEsc(x){return wowInsEsc(x);}
 function wsYoyCls(p){return p==null?'hx':p<0?'h0':p<=10?'h2':p<=30?'h3':'h4';}
 
 // ── data ──
-let _wsMasterKab=null;
-function wsKabOf(r){
-  if(!_wsMasterKab&&typeof WOW_TOKO_MASTER!=='undefined'){_wsMasterKab=new Map();WOW_TOKO_MASTER.forEach(t=>{_wsMasterKab.set((t.pic+'|'+String(t.name).trim().toUpperCase()),t.kab||'');});}
-  return (_wsMasterKab&&_wsMasterKab.get(r[1]+'|'+String(r[0]).trim().toUpperCase()))||r[2]||'';
+// ── Kabupaten tunggal untuk semua tab: kunjungan terakhir (kabupaten yang dikonfirmasi di form) > Sheet "Database" > kolom KAB data penjualan ──
+let _kbV=null,_kbSig='',_wsMasterKab=null;
+function wowKabCanon(k){
+  k=String(k||'').trim();if(!k)return '';
+  if(typeof WOW_PIC_KAB==='undefined')return k;
+  if(!wowKabCanon._m){wowKabCanon._m=new Map();Object.values(WOW_PIC_KAB).flat().forEach(x=>wowKabCanon._m.set(String(x).toLowerCase().replace(/[^a-z0-9]/g,''),x));}
+  return wowKabCanon._m.get(k.toLowerCase().replace(/[^a-z0-9]/g,''))||k;
 }
+function wowKabBest(pic,name,pair,fallback){
+  const L=(typeof WOW_ALL!=='undefined'&&WOW_ALL)||[];
+  const sig=L.length+'|'+(L.length?L[L.length-1].id||'':'');
+  if(!_kbV||_kbSig!==sig){
+    _kbSig=sig;_kbV=new Map();
+    L.slice().sort((x,y)=>new Date(x.timestamp)-new Date(y.timestamp)).forEach(r=>{
+      const k=wowKabCanon(r.area);if(!k)return;
+      [r.store,r.storePasangan].forEach(n=>{if(n)_kbV.set(String(n).trim().toUpperCase(),k);});
+    });
+  }
+  if(!_wsMasterKab&&typeof WOW_TOKO_MASTER!=='undefined'){
+    _wsMasterKab=new Map();
+    WOW_TOKO_MASTER.forEach(t=>{const k=wowKabCanon(t.kab);[t.name,t.pair].forEach(n=>{if(n)_wsMasterKab.set(t.pic+'|'+String(n).trim().toUpperCase(),k);});});
+  }
+  const ns=[name,pair].filter(Boolean).map(x=>String(x).trim().toUpperCase());
+  for(const n of ns){const v=_kbV.get(n);if(v)return v;}
+  for(const n of ns){const m=_wsMasterKab&&_wsMasterKab.get(pic+'|'+n);if(m)return m;}
+  return wowKabCanon(fallback);
+}
+function wsKabOf(r){return wowKabBest(r[1],r[0],r[4],r[2]);}
 function wsAgg(rows,n){
   const o={sv:Array(n).fill(0),hilo:Array(n).fill(0),ns:Array(n).fill(0),ea:Array(n).fill(0)};
   rows.forEach(r=>{for(let i=0;i<n;i++){o.hilo[i]+=r[5][i];o.ns[i]+=r[6][i];o.sv[i]+=r[7][i];if(r[7][i]>0)o.ea[i]++;}});
@@ -4971,7 +4994,8 @@ function wrItems(){
   const gf=(document.getElementById('f-mds')||{}).value||'',gk=(document.getElementById('f-area')||{}).value||'',gs=((document.getElementById('f-store')||{}).value||'').trim().toLowerCase();
   if(!gf||typeof WOW_TOKO_MASTER==='undefined')return [];
   const lastV={};WOW_ALL.slice().sort((a,b)=>a.timestamp-b.timestamp).forEach(r=>{lastV[String(r.store).trim().toUpperCase()]=r;});
-  let l=WOW_TOKO_MASTER.filter(t=>t.pic===gf&&(!gk||t.kab===gk)&&(!gs||String(t.name).toLowerCase().includes(gs)||String(t.pair||'').toLowerCase().includes(gs)||String(t.so||'').toLowerCase().includes(gs)));
+  const mk=WOW_TOKO_MASTER.filter(t=>t.pic===gf).map(t=>({...t,kab:wowKabBest(t.pic,t.name,t.pair,t.kab)}));
+  let l=mk.filter(t=>t.pic===gf&&(!gk||t.kab===gk)&&(!gs||String(t.name).toLowerCase().includes(gs)||String(t.pair||'').toLowerCase().includes(gs)||String(t.so||'').toLowerCase().includes(gs)));
   if(REAL_HIDE_CANCEL)l=l.filter(t=>t.st!=='Cancel');
   return l.map(t=>({t,v:lastV[String(t.name).trim().toUpperCase()]||(t.pair?lastV[String(t.pair).trim().toUpperCase()]:null)||null})).sort((a,b)=>(b.v?1:0)-(a.v?1:0)||String(a.t.kab||'').localeCompare(String(b.t.kab||''))||a.t.name.localeCompare(b.t.name));
 }
