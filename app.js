@@ -23938,11 +23938,11 @@ async function loadWowAddedStores(){
     if(typeof db==='undefined')return;
     const snap=await db.collection('app_data').where('type','==','toko').get();
     snap.forEach(d=>{
-      const v=d.data();const nm=v.nama1||v.nama2;if(!nm||!v.pic)return;
+      const v=d.data();const nm=v.nama1||v.nama2||v.kode1||v.kode2;if(!nm||!v.pic)return;
       if(WOW_TOKO_MASTER.some(t=>t._id===d.id))return;
       const o={name:nm,pic:v.pic,kab:v.kab||'',_id:d.id};
       if(v.status)o.st=v.status;
-      if(!v.nama1)o.s2=1;
+      if(!v.nama1&&v.nama2)o.s2=1;
       else if(v.nama2&&v.nama2.toUpperCase()!==v.nama1.toUpperCase())o.pair=v.nama2;
       WOW_TOKO_MASTER.push(o);
     });
