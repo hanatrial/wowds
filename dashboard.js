@@ -5000,15 +5000,17 @@ function wsTicks(mx,n){const o=[];for(let k=0;k<=n;k++)o.push(mx*k/n);return o;}
 // kuadran bubble: pts [{x,y,r,l,c}] ; garis kuadran di (qx,qy)
 function wsSvgBubble(o){
   const Wd=680,H=380,pl=56,pr=18,pt=18,pb=46,pts=o.pts;
-  const mxX=Math.max.apply(null,pts.map(p=>p.x).concat([1]))*1.12,mxY=Math.max.apply(null,pts.map(p=>p.y).concat([1]))*1.15;
-  const X=v=>pl+(Wd-pl-pr)*v/mxX,Y=v=>H-pb-(H-pt-pb)*v/mxY;
+  // sumbu mengikuti sebaran data (tidak mulai dari 0) supaya gelembung tidak menumpuk
+  const rng=(a,p)=>{const lo=Math.min.apply(null,a),hi=Math.max.apply(null,a),d=(hi-lo)||Math.max(Math.abs(hi),1)*0.2;return [Math.max(0,lo-d*p),hi+d*p];};
+  const [mnX,mxX]=rng(pts.map(p=>p.x).concat([o.qx]),0.25),[mnY,mxY]=rng(pts.map(p=>p.y).concat([o.qy]),0.3);
+  const X=v=>pl+(Wd-pl-pr)*(v-mnX)/(mxX-mnX),Y=v=>H-pb-(H-pt-pb)*(v-mnY)/(mxY-mnY);
   const rmax=Math.max.apply(null,pts.map(p=>p.r).concat([1]));
   let g='';
-  wsTicks(mxY,4).forEach(v=>{g+='<line x1="'+pl+'" x2="'+(Wd-pr)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" class="ws-g"/><text x="'+(pl-6)+'" y="'+(Y(v)+3)+'" class="ws-ay">'+wsNum(v,1)+'</text>';});
-  wsTicks(mxX,5).forEach(v=>{g+='<line y1="'+pt+'" y2="'+(H-pb)+'" x1="'+X(v)+'" x2="'+X(v)+'" class="ws-g"/><text x="'+X(v)+'" y="'+(H-pb+14)+'" class="ws-ax">'+Math.round(v)+'</text>';});
+  wsTicks(mxY-mnY,4).forEach(t=>{const v=mnY+t;g+='<line x1="'+pl+'" x2="'+(Wd-pr)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" class="ws-g"/><text x="'+(pl-6)+'" y="'+(Y(v)+3)+'" class="ws-ay">'+wsNum(v,1)+'</text>';});
+  wsTicks(mxX-mnX,5).forEach(t=>{const v=mnX+t;g+='<line y1="'+pt+'" y2="'+(H-pb)+'" x1="'+X(v)+'" x2="'+X(v)+'" class="ws-g"/><text x="'+X(v)+'" y="'+(H-pb+14)+'" class="ws-ax">'+wsNum(v,0)+'</text>';});
   g+='<line x1="'+X(o.qx)+'" x2="'+X(o.qx)+'" y1="'+pt+'" y2="'+(H-pb)+'" stroke="#4F8A6B" stroke-width="1.6"/><line x1="'+pl+'" x2="'+(Wd-pr)+'" y1="'+Y(o.qy)+'" y2="'+Y(o.qy)+'" stroke="#4F8A6B" stroke-width="1.6"/>';
   g+='<text x="'+(pl+6)+'" y="'+(pt+14)+'" class="ws-q">1 · '+o.q1+'</text><text x="'+(Wd-pr-6)+'" y="'+(pt+14)+'" class="ws-q" text-anchor="end">3 · '+o.q3+'</text><text x="'+(pl+6)+'" y="'+(H-pb-8)+'" class="ws-q">2 · '+o.q2+'</text><text x="'+(Wd-pr-6)+'" y="'+(H-pb-8)+'" class="ws-q" text-anchor="end">4 · '+o.q4+'</text>';
-  pts.slice().sort((a,b)=>b.r-a.r).forEach(p=>{const r=8+22*Math.sqrt(p.r/rmax);g+='<circle cx="'+X(p.x).toFixed(1)+'" cy="'+Y(p.y).toFixed(1)+'" r="'+r.toFixed(1)+'" fill="'+p.c+'" fill-opacity=".72" stroke="#fff" stroke-width="1.2"><title>'+wsEsc(p.l)+' · '+o.xl+' '+wsNum(p.x,1)+' · '+o.yl+' '+wsNum(p.y,2)+' · '+p.t+'</title></circle><text x="'+(X(p.x)+r+4).toFixed(1)+'" y="'+(Y(p.y)+3).toFixed(1)+'" class="ws-bl">'+wsEsc(p.l)+'</text>';});
+  pts.slice().sort((a,b)=>b.r-a.r).forEach(p=>{const r=6+15*Math.sqrt(p.r/rmax);g+='<circle cx="'+X(p.x).toFixed(1)+'" cy="'+Y(p.y).toFixed(1)+'" r="'+r.toFixed(1)+'" fill="'+p.c+'" fill-opacity=".72" stroke="#fff" stroke-width="1.2"><title>'+wsEsc(p.l)+' · '+o.xl+' '+wsNum(p.x,1)+' · '+o.yl+' '+wsNum(p.y,2)+' · '+p.t+'</title></circle><text x="'+(X(p.x)+r+4).toFixed(1)+'" y="'+(Y(p.y)+3).toFixed(1)+'" class="ws-bl">'+wsEsc(p.l)+'</text>';});
   g+='<text x="'+((pl+Wd-pr)/2)+'" y="'+(H-6)+'" class="ws-ax" style="font-weight:600">'+o.xl+'</text><text transform="rotate(-90)" x="'+(-(pt+H-pb)/2)+'" y="14" class="ws-ax" style="font-weight:600">'+o.yl+'</text>';
   return '<svg viewBox="0 0 '+Wd+' '+H+'" class="ws-svg">'+g+'</svg>';
 }
