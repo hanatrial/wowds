@@ -175,8 +175,11 @@ function bacaLama() {
   }
 
   // ── bandingkan ───────────────────────────────────────────────────────────
+  // nomor SO terakhir di sheet (dipakai popup Input PIC/Toko di dashboard untuk SO Group Code berikutnya)
+  const soMax = Math.max(0, ...rowsToko.map((r) => { const m = String(r['SO Group Code'] || '').match(/(\d+)\s*$/); return m ? +m[1] : 0; }));
   const isiBaru =
     'const WOW_TOKO_MASTER = ' + JSON.stringify(urutan) + ';\n' +
+    'const WOW_SO_MAX = ' + soMax + ';\n' +
     'const WOW_PIC_KAB = ' + JSON.stringify(picKabRapi) + ';\n';
   const isiLama = fs.existsSync(FILE) ? fs.readFileSync(FILE, 'utf8') : '';
 
