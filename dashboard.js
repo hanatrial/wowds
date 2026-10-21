@@ -4263,6 +4263,23 @@ function renderWowInsight(rows){
   const nol=items.filter(x=>x.p===0).sort((a,b)=>b.n-a.n);
   const penuh=items.filter(x=>x.p===100).sort((a,b)=>b.n-a.n);
   const secNol='<div class="ins-card"><h4>Item yang tidak pernah ada ('+nol.length+')</h4>'+(nol.length?'<div class="ins-chips">'+nol.slice(0,30).map(x=>'<span>'+wowInsEsc(x.k)+' <em>0/'+x.n+'</em></span>').join('')+'</div>':'<div class="ins-empty">Tidak ada.</div>')+'<h4 style="margin-top:14px">Item yang selalu ada ('+penuh.length+')</h4>'+(penuh.length?'<div class="ins-chips">'+penuh.slice(0,30).map(x=>'<span>'+wowInsEsc(x.k)+' <em>'+x.n+'/'+x.n+'</em></span>').join('')+'</div>':'<div class="ins-empty">Tidak ada.</div>')+'</div>';
+  // 6b. HILO Matcha: sudah ada / belum di toko (visit terakhir tiap toko)
+  const isMatcha=k=>brandOf(k)==='HILO'&&/MATCHA/i.test(k);
+  const mt={ada:[],tdk:[],blm:0};const mPic={};
+  Object.values(lastBy).forEach(r=>{
+    const ks=Object.keys(r.items||{}).filter(isMatcha);
+    if(!ks.length){mt.blm++;return;}
+    const ada=ks.some(k=>r.items[k]===true);
+    (ada?mt.ada:mt.tdk).push(r);
+    const g=mPic[r.mds||'—']||(mPic[r.mds||'—']={ada:0,tdk:0});ada?g.ada++:g.tdk++;
+  });
+  const mTot=mt.ada.length+mt.tdk.length;const mP=wowInsPct(mt.ada.length,mTot);
+  const matchaPic=Object.entries(mPic).map(([k,g])=>({k,ada:g.ada,n:g.ada+g.tdk,p:wowInsPct(g.ada,g.ada+g.tdk)})).sort((a,b)=>a.p-b.p);
+  const secMatcha='<div class="ins-card ins-wide"><h4>HILO Matcha · sudah ada atau belum</h4>'
+    +(mTot?'<p class="ins-note"><b>'+mt.ada.length+'</b> dari '+mTot+' toko sudah ada HILO Matcha ('+mP+'%) · <b>'+mt.tdk.length+'</b> toko belum ada'+(mt.blm?' · '+mt.blm+' toko visit terakhirnya belum mencatat item ini':'')+'. Berdasarkan visit terakhir tiap toko.</p>'
+      +wowInsTable(['PIC','Sudah ada','Toko dicek','Persen'],matchaPic.map(x=>[wowInsEsc(x.k),x.ada,x.n,cell(x.p)]))
+      +'<details style="margin-top:10px"><summary>Toko yang belum ada HILO Matcha ('+mt.tdk.length+')</summary><div class="ins-list">'+mt.tdk.slice(0,120).map(r=>wowInsEsc(r.store)+' <em style="color:var(--t3)">· '+wowInsEsc(r.mds)+' · '+wowInsEsc(r.area)+'</em>').join('<br>')+(mt.tdk.length>120?'<br>… +'+(mt.tdk.length-120)+' lagi':'')+'</div></details>'
+    :'<div class="ins-empty">Belum ada visit yang mencatat HILO Matcha.</div>')+'</div>';
   // 7. kabupaten yang belum ada (database toko + visit)
   let secKabKosong='';
   if(typeof WOW_TOKO_MASTER!=='undefined'){
@@ -4273,5 +4290,5 @@ function renderWowInsight(rows){
     const visitKosong=rows.filter(r=>!r.area).length;
     secKabKosong='<div class="ins-card ins-wide"><h4>Kabupaten yang belum ada</h4><p class="ins-note">'+kosongM.length+' dari '+WOW_TOKO_MASTER.length+' toko di database belum punya kabupaten'+(visitKosong?'; '+visitKosong+' visit tercatat tanpa kabupaten':'')+'. Konfirmasi kabupaten saat input akan melengkapinya.</p>'+wowInsTable(['PIC','Toko tanpa kabupaten','Daftar'],tabel,'Semua toko sudah punya kabupaten.')+'</div>';
   }
-  box.innerHTML=html+'<div class="ins-grid">'+secKosong+secPic+secKab+secTk+secNol+secKabKosong+'</div>';
+  box.innerHTML=html+'<div class="ins-grid">'+secMatcha+secKosong+secPic+secKab+secTk+secNol+secKabKosong+'</div>';
 }
