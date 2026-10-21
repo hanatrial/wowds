@@ -273,3 +273,6 @@ body::before,body::after{display:none!important;}
 .ws-hmg td b{display:block;font-size:14px;}
 .ws-hmg td small{display:block;font-size:10px;font-weight:400;opacity:.8;margin-top:1px;}
 .ws-hmg tbody th small{display:block;font-size:10px;font-weight:400;color:var(--t3);}
+
+.hm-belum{display:block;font-size:10px;font-weight:600;color:#C0562A;letter-spacing:0;text-transform:none;}
+.ins-hm tbody th small{display:block;font-size:10px;font-weight:400;color:var(--t3);}
