@@ -175,7 +175,7 @@ async function tarikPenjualan() {
     const pic = norm(r['PIC']);
     const kab = norm(r['KAB']);
     const status = norm(r['Status Sewa']);
-    const k1 = norm(r['Kode Distri 1 (BCP, TBP, BCP ASO MDO)']), k2 = norm(r['Kode Distr 2 (BSP, SHI, BSP JUPE MDO)']), dd = norm(r['DISTRIBUTOR REWARD DISPLAY']);
+    const so = norm(r['SO Group Code']), dd = norm(r['DISTRIBUTOR REWARD DISPLAY']);
     const sudah = peta.get(name);
     if (sudah) {
       // nama kembar: menangkan baris yang masih "Existing"
@@ -183,14 +183,13 @@ async function tarikPenjualan() {
       if (lamaExisting || status !== 'Existing') continue;
       sudah.pic = pic || sudah.pic;
       sudah.kab = kab || sudah.kab;
-      sudah.k1 = k1 || sudah.k1; sudah.k2 = k2 || sudah.k2; sudah.d = dd || sudah.d;
+      sudah.so = so || sudah.so; sudah.d = dd || sudah.d;
       statusPer.set(name, status);
       continue;
     }
     const e = { name, pic };
     if (kab) e.kab = kab;
-    if (k1) e.k1 = k1;
-    if (k2) e.k2 = k2;
+    if (so) e.so = so;
     if (dd) e.d = dd;
     peta.set(name, e);
     statusPer.set(name, status);
@@ -211,6 +210,7 @@ async function tarikPenjualan() {
   // Toko yang ada di file tapi tidak (lagi) ada di sheet TIDAK disimpan.
   // Daftar aplikasi = isi Sheet + toko popup (digabung saat aplikasi dibuka),
   // jadi tidak ada sisa/duplikat lama (permintaan 21 Okt 2026).
+  for (const e of urutan) { delete e.k1; delete e.k2; } // kode distributor tidak dipakai lagi
   const adaDiSheet = new Set(urutan.map((e) => e.name));
   const dibuang = lama.toko.filter((t) => t.name && !adaDiSheet.has(t.name));
   if (dibuang.length) {
