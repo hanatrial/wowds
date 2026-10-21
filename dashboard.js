@@ -4197,9 +4197,11 @@ async function saveToko(){
   const v=id=>tpEl(id).value.trim();
   const d={type:'toko',pic:v('tp-pic'),kab:v('tp-kab'),kode1:v('tp-kode1'),nama1:v('tp-nama1'),kode2:v('tp-kode2'),nama2:v('tp-nama2'),distributor:v('tp-dist'),status:v('tp-status'),ts:Date.now()};
   const m=tpEl('tp-msg');
-  const miss=[['pic','PIC'],['kab','Kabupaten'],['nama1','Nama Outlet 1'],['distributor','Distributor Penerima'],['status','Status']].filter(([k])=>!d[k]).map(x=>x[1]);
+  const miss=[['pic','PIC'],['kab','Kabupaten'],['distributor','Distributor Penerima'],['status','Status']].filter(([k])=>!d[k]).map(x=>x[1]);
   if(miss.length){m.style.color='#B5502A';m.textContent='Wajib diisi: '+miss.join(', ');return;}
   if(!TP_FOTO[0]){m.style.color='#B5502A';m.textContent='Foto Pajangan 1 wajib diisi.';return;}
+  if(!d.nama1&&!d.nama2){m.style.color='#B5502A';m.textContent='Isi minimal Nama Outlet 1 (Dist 1) atau Nama Outlet 2 (Dist 2).';return;}
+  if(d.kode1&&!d.nama1){m.style.color='#B5502A';m.textContent='Kode Dist 1 diisi, Nama Outlet 1 juga wajib.';return;}
   if(d.kode2&&!d.nama2){m.style.color='#B5502A';m.textContent='Kode Dist 2 diisi, Nama Outlet 2 juga wajib.';return;}
   try{
     const ref=db.collection('app_data').doc('toko_'+d.ts.toString(36)+Math.random().toString(36).slice(2,6));
@@ -4212,7 +4214,7 @@ async function saveToko(){
       tx.set(ref,{...d,so:TP_SO_PREFIX+cur,soNo:cur,photoData:TP_FOTO[0],...(TP_FOTO[1]?{photoData2:TP_FOTO[1]}:{}),...(TP_FOTO[2]?{photoData3:TP_FOTO[2]}:{})});
       return cur;
     });
-    m.style.color='var(--green)';m.textContent='✓ Tersimpan: '+d.nama1+' ('+TP_SO_PREFIX+n+')';
+    m.style.color='var(--green)';m.textContent='✓ Tersimpan: '+(d.nama1||d.nama2)+' ('+TP_SO_PREFIX+n+')';
     ['tp-kode1','tp-nama1','tp-kode2','tp-nama2'].forEach(i=>tpEl(i).value='');tpResetFoto();
     tpEl('tp-so').value=TP_SO_PREFIX+(n+1);
     tpLoadList();
@@ -4224,7 +4226,7 @@ async function tpLoadList(){
     const s=await db.collection('app_data').where('type','==','toko').get();
     const rows=[];s.forEach(d=>rows.push({id:d.id,...d.data()}));
     rows.sort((a,b)=>(b.ts||0)-(a.ts||0));
-    box.innerHTML=rows.length?rows.slice(0,30).map(r=>'<div class="tp-row"><div class="tp-main">'+(r.photoData?'<img class="tp-thumb" src="'+r.photoData+'" alt="">':'')+'<div><b>'+tpEsc(r.nama1)+'</b>'+(r.nama2?' / '+tpEsc(r.nama2):'')+'<br><span>'+tpEsc(r.so||'')+' · '+tpEsc(r.pic)+' · '+tpEsc(r.kab)+' · '+tpEsc(r.distributor)+' · '+tpEsc(r.status)+(r.kode1?' · '+tpEsc(r.kode1):'')+(r.kode2?' / '+tpEsc(r.kode2):'')+(r.photoData?' · '+(1+(r.photoData2?1:0)+(r.photoData3?1:0))+' foto':'')+'</span></div></div><button onclick="tpDelete(\''+r.id+'\')">Hapus</button></div>').join(''):'Belum ada input.';
+    box.innerHTML=rows.length?rows.slice(0,30).map(r=>'<div class="tp-row"><div class="tp-main">'+(r.photoData?'<img class="tp-thumb" src="'+r.photoData+'" alt="">':'')+'<div><b>'+tpEsc(r.nama1||r.nama2)+'</b>'+(r.nama1&&r.nama2?' / '+tpEsc(r.nama2):(r.nama1?'':' <i>(Dist 2)</i>'))+'<br><span>'+tpEsc(r.so||'')+' · '+tpEsc(r.pic)+' · '+tpEsc(r.kab)+' · '+tpEsc(r.distributor)+' · '+tpEsc(r.status)+(r.kode1?' · '+tpEsc(r.kode1):'')+(r.kode2?' / '+tpEsc(r.kode2):'')+(r.photoData?' · '+(1+(r.photoData2?1:0)+(r.photoData3?1:0))+' foto':'')+'</span></div></div><button onclick="tpDelete(\''+r.id+'\')">Hapus</button></div>').join(''):'Belum ada input.';
   }catch(e){box.textContent='Gagal memuat: '+(e.message||e);}
 }
 async function tpDelete(id){
