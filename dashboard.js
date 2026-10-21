@@ -3174,8 +3174,9 @@ function renderWowUnvisited(){
   let filtered=q?unvisited.filter(t=>t.name.toLowerCase().includes(q)||(t.pair&&t.pair.toLowerCase().includes(q))||(t.kab&&t.kab.toLowerCase().includes(q))||(t.pic&&t.pic.toLowerCase().includes(q))):unvisited;
   // chip status (hitungan sebelum filter status)
   const cs={New:0,Existing:0,Cancel:0,'':0};filtered.forEach(t=>{cs[t.st||'']=(cs[t.st||'']||0)+1;});
+  const cancelN=cs.Cancel||0; // Cancel tetap di daftar, tapi tidak dihitung belum divisit
   const chips=document.getElementById('wu-chips');
-  if(chips)chips.innerHTML=['New','Existing','Cancel'].map(k=>'<button type="button" class="wu-chip st-'+k+(WU_ST===k?' on':'')+'" onclick="wuSetSt(\''+k+'\')">'+k+' <b>'+(cs[k]||0)+'</b></button>').join('');
+  if(chips)chips.innerHTML=['New','Existing','Cancel'].map(k=>'<button type="button" class="wu-chip st-'+k+(WU_ST===k?' on':'')+'" onclick="wuSetSt(\''+k+'\')">'+k+' <b>'+(cs[k]||0)+'</b>'+(k==='Cancel'?' <small>tidak dihitung</small>':'')+'</button>').join('');
   if(WU_ST)filtered=filtered.filter(t=>(t.st||'')===WU_ST);
   th.innerHTML='<tr><th class="c-toko" onclick="wuSortBy(\'name\')">Nama toko'+wuAr('name')+'</th><th class="c-pas">Toko pasangan</th><th class="c-pic" onclick="wuSortBy(\'mds\')">PIC'+wuAr('mds')+'</th><th class="c-kab" onclick="wuSortBy(\'area\')">Kabupaten'+wuAr('area')+'</th><th class="c-st">Status</th></tr>';
   filtered.sort((a,b)=>{
@@ -3188,7 +3189,10 @@ function renderWowUnvisited(){
   });
   const esc=x=>String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   tb.innerHTML=filtered.length?filtered.map(t=>'<tr><td class="c-toko"><b>'+esc(t.name)+'</b></td><td class="c-pas">'+(t.pair?esc(t.pair):'<span class="wu-nil">—</span>')+'</td><td class="c-pic">'+esc(t.pic||'—')+'</td><td class="c-kab">'+(t.kab?esc(t.kab):'<span class="wu-nil">belum diisi</span>')+'</td><td class="c-st">'+(t.st?'<span class="wu-pill st-'+esc(t.st)+'">'+esc(t.st)+'</span>':'<span class="wu-nil">—</span>')+'</td></tr>').join(''):'<tr><td colspan="5" style="text-align:center;color:var(--t3);padding:32px">Semua toko sudah divisit.</td></tr>';
-  if(tf)tf.textContent=`${filtered.length} toko belum divisit`+((q||WU_ST)?` (dari ${unvisited.length}${WU_ST?', status '+WU_ST:''})`:'')+` · total database ${WOW_TOKO_MASTER.length} toko`;
+  const aktif=WOW_TOKO_MASTER.filter(t=>t.st!=='Cancel').length;
+  if(tf)tf.innerHTML=(WU_ST==='Cancel'
+    ?'<b>'+filtered.length+'</b> toko berstatus Cancel — tampil sebagai keterangan, <b>tidak dihitung</b> sebagai belum divisit'
+    :'<b>'+filtered.filter(t=>t.st!=='Cancel').length+'</b> toko belum divisit'+(WU_ST||!cancelN?'':' · '+cancelN+' toko Cancel di daftar tidak dihitung'))+' · dari '+aktif+' toko aktif (di luar Cancel) di database';
 }
 function updateWowKeterangan(docId,val){
   if(!docId)return;
