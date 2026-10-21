@@ -207,3 +207,16 @@ body::before,body::after{display:none!important;}
 .ins-legend .h0{background:#F2B79B;}.ins-legend .h1{background:#F7E3A6;}.ins-legend .h2{background:#EEF3EF;}.ins-legend .h3{background:#A9CDB5;}.ins-legend .h4{background:#4F8A6B;color:#fff;}
 
 .bc-dual .bc-t{overflow:visible;}
+
+/* daftar toko belum / sudah divisit */
+.wl{margin:14px 0;}
+.wl.hidden{display:none;}
+.wl details{border:1px solid var(--border);border-radius:10px;margin-bottom:10px;background:#fff;}
+.wl summary{padding:10px 14px;font-size:13px;font-weight:600;color:var(--text);cursor:pointer;}
+.wl summary b{color:var(--accent);margin-left:6px;}
+.wl-l{max-height:240px;overflow-y:auto;border-top:1px solid var(--border2);}
+.wl-i{display:flex;justify-content:space-between;gap:10px;align-items:center;width:100%;text-align:left;border:0;border-bottom:1px solid var(--border2);background:#fff;padding:10px 14px;font:inherit;font-size:13px;color:var(--text);cursor:pointer;}
+.wl-i:active{background:var(--a-light);}
+.wl-i em{font-style:normal;font-size:11px;color:var(--t3);white-space:nowrap;}
+.wl-e,.wl-n{font-size:12px;color:var(--t3);padding:10px 14px;}
+.wl-n{padding-top:4px;}

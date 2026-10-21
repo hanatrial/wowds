@@ -23922,6 +23922,7 @@ function wowStoreInputChanged(){
     pasWrap.classList.add('hidden');
   }
   wowKabShow(entry,val);
+  wowRenderLists();
   wowLoadLast(entry?(_sameName(entry.name,val)?entry.name:entry.pair):val,entry&&entry.pair?(_sameName(entry.name,val)?entry.pair:entry.name):'');
   const mapLink=document.getElementById('wow-store-map-link');
   if(entry&&entry.lat!=null&&entry.lng!=null){
@@ -23945,7 +23946,8 @@ async function loadWowAddedStores(){
     });
   }catch(e){console.warn('toko tambahan gagal dimuat',e);}
 }
-function openWow(){ showScreen('s-wow'); Promise.all([loadWowCustomStores(),loadWowVisitedStores(),loadWowAddedStores()]).then(()=>{ wowFillStore(); }); initWow(); }
+function openWow(){ showScreen('s-wow'); Promise.all([loadWowCustomStores(),loadWowVisitedStores(),loadWowAddedStores()]).then(()=>{ wowFillStore(); });
+  loadWowVisitLast(); initWow(); }
 function wowGetItems(){
   const ns=SPG_INDOGROSIR_GROUPS[0].items.map(n=>({name:n,section:'NS'}));
   const hilo=SPG_INDOGROSIR_GROUPS[1].items.concat(SPG_INDOGROSIR_GROUPS[2].items).map(n=>({name:n,section:'HI LO'}));
@@ -24040,6 +24042,49 @@ function wowKabUI(mode,kab){
   else if(mode==='edit'){q.textContent=WOW._kabHad?'Pilih kabupaten yang benar':'Kabupaten belum ada, wajib diisi';ed.classList.remove('hidden');}
   else{q.textContent='Kabupaten';dn.innerHTML='✓ Kabupaten: <b>'+kab+'</b> <a href="#" onclick="wowKabEdit();return false">ubah</a>';dn.classList.remove('hidden');}
 }
+let WOW_VISIT_LAST=new Map();
+async function loadWowVisitLast(){
+  try{
+    const base='https://firestore.googleapis.com/v1/projects/'+FIREBASE_CONFIG.projectId+'/databases/(default)/documents/wow_logs';
+    const mask='mask.fieldPaths=store&mask.fieldPaths=storePasangan&mask.fieldPaths=timestamp&mask.fieldPaths=avail';
+    const m=new Map();let tok='';
+    for(let i=0;i<50;i++){
+      const r=await fetch(base+'?key='+FIREBASE_CONFIG.apiKey+'&pageSize=300&'+mask+(tok?'&pageToken='+encodeURIComponent(tok):''));
+      if(!r.ok)throw new Error('REST '+r.status);
+      const j=await r.json();
+      (j.documents||[]).forEach(d=>{
+        const f=d.fields||{};
+        const av=f.avail&&f.avail.integerValue!=null?+f.avail.integerValue:0;
+        if(!(av>0))return; // AV=0 dianggap belum divisit (sama dengan dashboard)
+        const t=f.timestamp&&f.timestamp.timestampValue?Date.parse(f.timestamp.timestampValue):0;
+        [f.store,f.storePasangan].forEach(x=>{if(x&&x.stringValue){const k=x.stringValue.trim().toUpperCase();if(!m.has(k)||t>m.get(k))m.set(k,t);}});
+      });
+      tok=j.nextPageToken||'';if(!tok)break;
+    }
+    WOW_VISIT_LAST=m;
+    if(WOW.step===1)wowRenderLists();
+  }catch(e){console.warn('daftar visit gagal dimuat',e);}
+}
+function wowRenderLists(){
+  const box=document.getElementById('wow-lists');if(!box)return;
+  const val=(document.getElementById('wow-store-input')||{}).value||'';
+  if(!WOW.mds||(val.trim()&&WOW_STORE_NAMES.includes(val.trim()))){box.classList.add('hidden');return;}
+  const esc=x=>String(x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const now=Date.now();
+  const belum=[],sudah=[];
+  WOW_TOKO_MASTER.filter(t=>t.pic===WOW.mds).forEach(t=>{
+    const a=WOW_VISIT_LAST.get(String(t.name).trim().toUpperCase()),b=t.pair?WOW_VISIT_LAST.get(String(t.pair).trim().toUpperCase()):undefined;
+    const last=Math.max(a||0,b||0);
+    (last?sudah:belum).push({n:t.name,last,st:t.st});
+  });
+  belum.sort((x,y)=>x.n.localeCompare(y.n));
+  sudah.sort((x,y)=>x.last-y.last);
+  const dt=ms=>new Date(ms).toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'});
+  const item=(x,withDate)=>'<button type="button" class="wl-i" data-n="'+esc(x.n)+'" onclick="wowPickStore(this.dataset.n)"><span>'+esc(x.n)+'</span>'+(withDate?'<em>'+dt(x.last)+' · '+Math.max(0,Math.floor((now-x.last)/86400000))+' hari lalu</em>':(x.st==='Cancel'?'<em>Cancel</em>':''))+'</button>';
+  box.innerHTML='<details open><summary>Belum divisit <b>'+belum.length+'</b></summary><div class="wl-l">'+(belum.length?belum.map(x=>item(x,false)).join(''):'<div class="wl-e">Semua toko PIC ini sudah divisit.</div>')+'</div></details>'
+    +'<details><summary>Sudah divisit · kunjungan lagi <b>'+sudah.length+'</b></summary><div class="wl-l">'+(sudah.length?sudah.map(x=>item(x,true)).join(''):'<div class="wl-e">Belum ada yang tercatat.</div>')+'</div><p class="wl-n">Urut dari yang paling lama belum dikunjungi.</p></details>';
+  box.classList.remove('hidden');
+}
 let _wowKabTok=0;
 function wowKabDocId(name){return wowHash(name).replace('wl_','kabfix_');}
 function wowKabSave(kab){
@@ -24079,6 +24124,7 @@ function wowKabConfirm(){
 }
 function wowGoTo(step){
   WOW.step=step;
+  if(step===1)wowRenderLists();
   for(let i=0;i<4;i++){
     const el=document.getElementById('ws'+i);
     el.className='s-item'+(i<step?' done':i===step?' active':'');

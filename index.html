@@ -14,8 +14,8 @@
 <link rel="icon" type="image/svg+xml" href="icon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="app.css?v=28">
-<link rel="stylesheet" href="lite.css?v=28">
+<link rel="stylesheet" href="app.css?v=29">
+<link rel="stylesheet" href="lite.css?v=29">
 </head>
 <body>
 <div id="app">
@@ -79,6 +79,7 @@
         </div>
         <a class="add-trigger hidden" id="wow-store-map-link" target="_blank" rel="noopener" style="display:block;text-decoration:none;color:inherit">📍 Buka lokasi di Google Maps</a>
         <div class="last-visit hidden" id="wow-last"></div>
+        <div class="wl hidden" id="wow-lists"></div>
         <div class="kabbox hidden" id="wow-kabbox"><div class="kb-q" id="wow-kab-q"></div><div id="wow-kab-ask" class="kb-row hidden"><button type="button" class="btn btn-outline" onclick="wowKabKeep()">Tidak, sudah benar</button><button type="button" class="btn btn-outline" onclick="wowKabEdit()">Ya, ubah</button></div><div id="wow-kab-edit" class="hidden"><select class="f-input sel" id="wow-kab2" onchange="wowKabChanged()"></select><button type="button" class="btn btn-outline" id="wow-kab-ok" onclick="wowKabConfirm()">Simpan kabupaten</button></div><div id="wow-kab-done" class="kb-done hidden"></div></div>
         <div class="add-trigger" onclick="toggleBox('wow-store-box')"><span>+</span> Toko tidak ada di daftar?</div>
         <div class="add-box" id="wow-store-box">
@@ -174,12 +175,12 @@
 
 </div><!-- #app -->
 
-<script src="wow_toko_master.js?v=28"></script>
-<script src="app.js?v=28"></script>
+<script src="wow_toko_master.js?v=29"></script>
+<script src="app.js?v=29"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
-<script src="app-init.js?v=28"></script>
+<script src="app-init.js?v=29"></script>
 <script>openWow();</script>
 </body>
 </html>
