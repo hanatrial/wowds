@@ -3065,7 +3065,7 @@ function renderWow(wowF){
   const picF=document.getElementById('wow-pic-filter')?.value||'';
   if(picF)wowF=wowF.filter(r=>picF==='none'?(r.picValidated==null):String(r.picValidated)===picF);
   const rows=doSort(wowF);
-  const wowK=wowF.filter(r=>wowStatusEff(r)!=='Cancel'); // KPI tanpa toko Cancel
+  const wowK=wowF; // tab Display WOW: semua kunjungan dihitung (Cancel hanya dikeluarkan di Insight dan Penjualan)
   const totVisit=wowK.length;
   const avgAv=wowK.length?Math.round(wowK.reduce((s,r)=>s+((r.avail+r.unavail)>0?r.avail/(r.avail+r.unavail)*100:0),0)/wowK.length):0;
   const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
@@ -3132,7 +3132,7 @@ function renderWow(wowF){
     </tr>`;
   }).join(''):`<tr><td colspan="12"><div class="empty-state">Tidak ada data Validasi Display WOW.</div></td></tr>`;
   const tf=document.getElementById('tfoot-wow');
-  if(tf)tf.textContent=`${rows.length} kunjungan`+(rows.length>wowK.length?` · ${rows.length-wowK.length} kunjungan ke toko Cancel tidak dihitung di KPI`:'');
+  if(tf)tf.textContent=`${rows.length} kunjungan`;
   if(_expandedWowVid){const tr=document.querySelector(`tr[data-vid="${_expandedWowVid}"]`);if(tr)toggleWowDetail(tr,_expandedWowVid);}
 }
 const WOW_MDS_SHORT_TO_FULL_DS={
