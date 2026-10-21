@@ -4,7 +4,7 @@
 
    Aturan:
    - spasi ganda dirapikan (sheet sering menulis "TK  MAYA"), huruf tidak diubah
-   - baris tanpa nama outlet dilewati, nama kembar diambil satu (yang "Existing" didahulukan)
+   - nama outlet kosong memakai nama Dist 2 / kode (v2), nama kembar diambil satu (yang "Existing" didahulukan)
    - kolom "pair" dan toko tambahan manual yang sudah ada di file TIDAK dihapus
    - kalau data mencurigakan (baris/​PIC turun drastis), file tidak ditimpa
 
@@ -77,7 +77,7 @@ function bacaLama() {
 }
 
 (async () => {
-  const rowsToko = await ambilCsv(GID_TOKO, 'Database', ['PIC', 'Nama Outlet Distr 1 (BCP, TBP, BCP ASO MDO)', 'KAB', 'Status Sewa']);
+  const rowsToko = await ambilCsv(GID_TOKO, 'Database', ['PIC', 'Nama Outlet Distr 1 (BCP, TBP, BCP ASO MDO)', 'Nama Outlet Distri2 (BSP, SHI, BSP JUPE MDO)', 'Kode Distri 1 (BCP, TBP, BCP ASO MDO)', 'Kode Distr 2 (BSP, SHI, BSP JUPE MDO)', 'KAB', 'Status Sewa']);
   const rowsKab = await ambilCsv(GID_KAB, 'Database Kabupaten', ['Nama Kabupaten/Kota', 'PIC']);
   console.log(`Sheet: ${rowsToko.length} baris Database, ${rowsKab.length} baris Database Kabupaten`);
 
@@ -115,7 +115,11 @@ function bacaLama() {
   const peta = new Map();
   const statusPer = new Map();
   for (const r of rowsToko) {
-    const name = norm(r['Nama Outlet Distr 1 (BCP, TBP, BCP ASO MDO)']);
+    // v2: nama boleh kosong — pakai nama Dist 2, lalu kode, sebagai cadangan
+    const name = norm(r['Nama Outlet Distr 1 (BCP, TBP, BCP ASO MDO)'])
+      || norm(r['Nama Outlet Distri2 (BSP, SHI, BSP JUPE MDO)'])
+      || norm(r['Kode Distri 1 (BCP, TBP, BCP ASO MDO)'])
+      || norm(r['Kode Distr 2 (BSP, SHI, BSP JUPE MDO)']);
     if (!name) continue;
     const pic = norm(r['PIC']);
     const kab = norm(r['KAB']);

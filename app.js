@@ -23937,9 +23937,10 @@ async function loadWowAddedStores(){
   try{
     if(typeof db==='undefined')return;
     const snap=await db.collection('app_data').where('type','==','toko').get();
+    const _kunciToko=s=>String(s==null?'':s).replace(/\s+/g,' ').trim().toUpperCase();
     snap.forEach(d=>{
       const v=d.data();const nm=v.nama1||v.nama2||v.kode1||v.kode2;if(!nm||!v.pic)return;
-      if(WOW_TOKO_MASTER.some(t=>t._id===d.id))return;
+      if(WOW_TOKO_MASTER.some(t=>t._id===d.id||_kunciToko(t.name)===_kunciToko(nm)))return;
       const o={name:nm,pic:v.pic,kab:v.kab||'',_id:d.id};
       if(v.status)o.st=v.status;
       if(!v.nama1&&v.nama2)o.s2=1;
