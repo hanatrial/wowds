@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Validasi Display WOW</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#162C21">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Display WOW">
+<link rel="apple-touch-icon" href="icon.svg">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="app.css?v=1">
+</head>
+<body>
+<div id="app">
+
+<!-- ══════════════════ VALIDASI DISPLAY WOW ══════════════════ -->
+<div id="s-wow" class="screen active">
+  <div class="mod-header">
+    <div class="mod-header-row">
+      <button class="back-btn" id="wow-back-hdr" style="display:none">←</button>
+      <span class="mod-screen-name">Validasi Display WOW</span>
+    </div>
+    <div class="mod-screen-sub">Hanger &amp; Availability Item PLS</div>
+  </div>
+
+  <div class="stepper" id="wow-stepper">
+    <div class="s-item active" id="ws0"><div class="s-dot">1</div><div class="s-lbl">Info</div></div>
+    <div class="s-item"        id="ws1"><div class="s-dot">2</div><div class="s-lbl">Toko</div></div>
+    <div class="s-item"        id="ws2"><div class="s-dot">3</div><div class="s-lbl">Foto</div></div>
+    <div class="s-item"        id="ws3"><div class="s-dot">4</div><div class="s-lbl">Items</div></div>
+  </div>
+
+  <div class="step-wrap" id="wow-wrap">
+    <div class="step-pad">
+
+      <!-- Step 0: Area / MDS / Tanggal -->
+      <div class="step-section active" id="wow-s0">
+        <div class="s-title">Info Kunjungan</div>
+        <div class="s-sub">Area, MDS, dan tanggal visit</div>
+        <div class="field">
+          <label class="f-label">Nama Area</label>
+          <select class="f-input sel" id="wow-area-sel" onchange="wowFillMds();wowFillStore()">
+            <option value="">— Pilih Area —</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="f-label">Nama MDS</label>
+          <select class="f-input sel" id="wow-mds-sel" onchange="wowCheck(0);wowFillStore()">
+            <option value="">— Pilih Area dulu —</option>
+          </select>
+          <div style="font-size:11px;color:var(--t3);margin-top:6px">MDS harus dipilih dari daftar. Nama di luar daftar tidak bisa disubmit.</div>
+        </div>
+        <div class="field">
+          <label class="f-label">Tanggal Visit</label>
+          <input type="date" class="f-input" id="wow-date-input" oninput="wowCheck(0)">
+        </div>
+      </div>
+
+      <!-- Step 1: Store -->
+      <div class="step-section" id="wow-s1">
+        <div class="s-title">Pilih Toko</div>
+        <div class="s-sub">Ketik nama toko — kalau tokonya punya nama pasangan (khusus Makassar &amp; Gorontalo), otomatis terisi</div>
+        <div class="field" style="position:relative">
+          <label class="f-label">Nama Toko</label>
+          <input type="text" class="f-input" id="wow-store-input" placeholder="Ketik / cari nama toko…" autocomplete="off" oninput="wowStoreInputChanged();wowShowSuggest()" onfocus="wowShowSuggest()" onblur="wowHideSuggestDelayed()">
+          <div class="store-suggest hidden" id="wow-store-suggest"></div>
+        </div>
+        <div class="field hidden" id="wow-store-pasangan-wrap">
+          <label class="f-label">Nama Toko (Pasangan)</label>
+          <input type="text" class="f-input" id="wow-store-pasangan" readonly>
+        </div>
+        <a class="add-trigger hidden" id="wow-store-map-link" target="_blank" rel="noopener" style="display:block;text-decoration:none;color:inherit">📍 Buka lokasi di Google Maps</a>
+        <div class="add-trigger" onclick="toggleBox('wow-store-box')"><span>+</span> Toko tidak ada di daftar?</div>
+        <div class="add-box" id="wow-store-box">
+          <div class="field" style="margin-bottom:8px">
+            <label class="f-label">Nama Toko Baru</label>
+            <input type="text" class="f-input" id="wow-store-new" placeholder="Ketik nama toko…" oninput="wowCheck(1)">
+          </div>
+          <button class="save-store-btn" onclick="addNewWowStore()">✓ Simpan Toko</button>
+        </div>
+      </div>
+
+      <!-- Step 2: Photo -->
+      <div class="step-section" id="wow-s2">
+        <div class="s-title">Foto Pajangan Hanger</div>
+        <div class="s-sub">Ambil foto pajangan hanger di toko</div>
+        <div class="photo-zone" id="wow-pzone0" onclick="trigCam('wow-cam0')">
+          <div class="ph-placeholder">
+            <div class="ph-icon">📷</div>
+            <div class="ph-lbl">Ambil Foto</div>
+            <div class="ph-sub">Tap untuk buka kamera</div>
+          </div>
+          <img class="ph-preview" id="wow-pview0" alt="">
+          <div class="ph-upstatus" id="wow-upstatus0">⬆ Uploading...</div>
+          <div class="ph-retake">↺ Ganti Foto</div>
+        </div>
+        <input type="file" id="wow-cam0" accept="image/*" capture="environment" onchange="handleWowPhoto()">
+        <div class="dt-pill hidden" id="wow-dt">📅 <span id="wow-dt-txt"></span></div>
+      </div>
+
+      <!-- Step 3: Items -->
+      <div class="step-section" id="wow-s3">
+        <div class="items-bar">
+          <div class="store-chip" id="wow-store-chip">—</div>
+          <div class="items-count" id="wow-cnt">0 / 0 diperiksa</div>
+        </div>
+        <div id="wow-items"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="bot-bar" id="wow-botbar">
+    <button class="btn btn-s" id="wow-bb" onclick="wowBack()" style="display:none">←</button>
+    <button class="btn btn-p" id="wow-nb" onclick="wowNext()" disabled>Lanjut</button>
+  </div>
+
+  <!-- Success -->
+  <div class="success-wrap" id="wow-suc">
+    <div class="suc-ring">✅</div>
+    <div class="suc-title">Validasi Display Tercatat!</div>
+    <div class="suc-id" id="wow-sid"></div>
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-num g" id="wow-savail">0</div><div class="stat-lbl">Tersedia</div></div>
+      <div class="stat-card"><div class="stat-num r" id="wow-sunavail">0</div><div class="stat-lbl">Tidak Tersedia</div></div>
+      <div class="stat-card"><div class="stat-num" id="wow-sneedsval">0</div><div class="stat-lbl">Perlu Validasi</div></div>
+    </div>
+    <div class="summ-card">
+      <div class="summ-row"><span class="summ-k">Area</span><span class="summ-v" id="wow-sm-area"></span></div>
+      <div class="summ-row"><span class="summ-k">MDS</span><span class="summ-v" id="wow-sm-mds"></span></div>
+      <div class="summ-row"><span class="summ-k">Toko</span><span class="summ-v" id="wow-sm-store"></span></div>
+      <div class="summ-row hidden" id="wow-sm-pasangan-row"><span class="summ-k">Toko Pasangan</span><span class="summ-v" id="wow-sm-pasangan"></span></div>
+      <div class="summ-row"><span class="summ-k">Tanggal</span><span class="summ-v" id="wow-sm-date"></span></div>
+      <div class="summ-row"><span class="summ-k">Status</span><span class="summ-v" id="wow-sm-status" style="font-size:11px">⏳ Menyimpan...</span></div>
+      <div class="summ-row"><span class="summ-k">Foto</span><span class="summ-v" id="wow-sm-foto" style="font-size:11px">—</span></div>
+    </div>
+    <div class="suc-actions">
+      <button class="btn btn-p" style="flex:1" onclick="resetWow()">Kunjungan Baru</button>
+    </div>
+  </div>
+</div><!-- s-wow -->
+
+
+</div><!-- #app -->
+
+<script src="wow_toko_master.js?v=1"></script>
+<script src="app.js?v=1"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
+<script src="app-init.js?v=1"></script>
+<script>openWow();</script>
+</body>
+</html>

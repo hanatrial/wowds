@@ -1,0 +1,19 @@
+{
+  "name": "Validasi Display WOW — Nutrifood Sulawesi",
+  "short_name": "Display WOW",
+  "description": "Input validasi Display WOW (foto pajangan hanger dan ketersediaan item).",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#EDEAE0",
+  "theme_color": "#162C21",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

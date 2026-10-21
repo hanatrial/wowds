@@ -1,0 +1,146 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Display WOW — Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="dashboard.css?v=1">
+</head>
+<body>
+<div id="pin-screen">
+  <div class="pin-shell"><div class="pin-inner">
+    <div class="pin-orb">📊</div>
+    <div class="pin-eye">Nutrifood Sulawesi</div>
+    <div class="pin-title">MDS Visit Dashboard</div>
+    <div class="pin-sub">Masukkan PIN supervisor untuk melanjutkan</div>
+    <input id="pin-input" class="pin-field" type="password" placeholder="••••••••" maxlength="20" onkeydown="if(event.key==='Enter')checkPin()">
+    <div class="pin-err" id="pin-err"></div>
+    <button class="pin-cta" onclick="checkPin()">Masuk →</button>
+  </div></div>
+</div>
+<div id="app">
+  <div class="topbar">
+    <div class="tb-left">
+      <div class="tb-logo">📊</div>
+      <div><div class="tb-title">Display WOW — Dashboard</div><div class="tb-sub">Validasi display · Supervisor View</div></div>
+    </div>
+    <div class="tb-right">
+      <div class="live-pill"><div class="live-dot"></div>Live</div>
+      <div class="tb-date" id="tb-date"></div>
+      <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="Ganti tema">🌙</button>
+    </div>
+  </div>
+  <div class="main-nav">
+    <div class="nav-tab wow" id="ntab-wow" onclick="switchTab('wow')">🪧 Display WOW <span class="nav-badge" id="nb-wow">—</span></div>
+  </div>
+  <div class="main">
+    <div class="filter-shell"><div class="filter-inner">
+      <span class="fl">Periode</span>
+      <select id="f-period-sel" class="month-sel" onchange="setDateFilterSel(this.value)">
+        <option value="today">Hari Ini</option>
+        <option value="week">7 Hari</option>
+        <option value="30d">30 Hari</option>
+        <option value="all" selected>Semua</option>
+        <option value="range">Range Tanggal</option>
+      </select>
+      <span id="f-range-wrap" style="display:none;align-items:center;gap:4px">
+        <input type="date" id="f-date-from" class="fi" style="width:118px" oninput="setRangeDates()">
+        <span class="fl" style="opacity:.4">–</span>
+        <input type="date" id="f-date-to" class="fi" style="width:118px" oninput="setRangeDates()">
+      </span>
+      <div class="fsep"></div>
+      <span class="fl">Bulan</span>
+      <select id="f-month-sel" class="month-sel" onchange="setMonthPill(+this.value||0)">
+        <option value="0">Semua</option>
+        <option value="1">Januari</option>
+        <option value="2">Februari</option>
+        <option value="3">Maret</option>
+        <option value="4">April</option>
+        <option value="5">Mei</option>
+        <option value="6">Juni</option>
+        <option value="7">Juli</option>
+        <option value="8">Agustus</option>
+        <option value="9">September</option>
+        <option value="10">Oktober</option>
+        <option value="11">November</option>
+        <option value="12">Desember</option>
+      </select>
+      <div class="fsep"></div>
+      <select class="fi" id="f-area" style="width:110px" onchange="render()">
+        <option value="">Semua Area</option>
+        <option>Bau Bau</option><option>Bone</option><option>Bulukumba</option><option>Gorontalo</option><option>Kendari</option><option>Luwuk</option><option>Makassar</option><option>Mamuju</option><option>Manado</option><option>Palopo</option><option>Palu</option><option>Pare-Pare</option><option>Poso</option>
+      </select>
+      <input class="fi" id="f-mds" placeholder="MDS…" style="width:100px" oninput="render()">
+      <input class="fi" id="f-store" placeholder="Toko…" style="width:110px" oninput="render()">
+      <input class="fi" id="f-item" placeholder="Item Beli…" style="width:130px" list="item-beli-list" oninput="render()">
+      <datalist id="item-beli-list"></datalist>
+      <span class="freset" onclick="clearFilters()">✕ Reset</span>
+    </div></div>
+
+    <!-- DISPLAY WOW SECTION -->
+    <div id="sec-wow" style="display:none">
+      <div class="bento bento-2">
+        <div class="kpi-shell">
+          <div class="kpi-border" style="--gc:rgba(6,182,212,.9)"></div>
+          <div class="kpi-inner">
+            <div class="kpi-glow" style="background:radial-gradient(circle at 0% 0%,var(--cyan),transparent 70%)"></div>
+            <div class="kpi-label">Total Visit WOW</div>
+            <div class="kpi-val" style="color:var(--cyan)" id="ds-wow-total">—</div>
+            <div class="kpi-sub">kunjungan validasi display</div>
+          </div>
+        </div>
+        <div class="kpi-shell">
+          <div class="kpi-border" style="--gc:rgba(16,185,129,.9)"></div>
+          <div class="kpi-inner">
+            <div class="kpi-glow" style="background:radial-gradient(circle at 100% 0%,var(--green),transparent 70%)"></div>
+            <div class="kpi-label">Avg AV%</div>
+            <div class="kpi-val" style="color:var(--green)" id="ds-wow-av">—</div>
+            <div class="kpi-sub">product availability item PLS</div>
+          </div>
+        </div>
+      </div>
+      <div class="sub-nav">
+        <div class="sub-tab on wow" id="stab-wow-report" onclick="switchSubTab('wow','report')">📋 Report</div>
+        <div class="sub-tab wow" id="stab-wow-unvisited" onclick="switchSubTab('wow','unvisited')">🏪 Toko Belum Divisit</div>
+      </div>
+      <div id="wow-report-wrap">
+        <div class="panel-shell"><div class="panel-body">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px">
+            <select class="fi" id="wow-pic-filter" onchange="render()">
+              <option value="">Validasi PIC: Semua</option>
+              <option value="true">✓ Sudah valid</option>
+              <option value="false">✗ Tidak valid</option>
+              <option value="perlu">Perlu Validasi</option>
+              <option value="none">Belum divalidasi</option>
+            </select>
+            <button class="exp-btn" onclick="exportWowValidasiExcel()">⬇ Export Excel Validasi (MDS · Area · Toko)</button>
+          </div>
+          <table><thead id="table-head-wow"></thead><tbody id="table-body-wow"></tbody></table>
+          <div class="tfoot-row" id="tfoot-wow"></div>
+        </div></div>
+      </div>
+      <div id="wow-unvisited-wrap" style="display:none">
+        <div class="panel-shell"><div class="panel-body">
+          <input class="fi" id="wow-unvisited-search" placeholder="Cari nama toko / area…" style="width:220px;margin-bottom:12px" oninput="renderWowUnvisited()">
+          <table><thead id="table-head-wow-unvisited"></thead><tbody id="table-body-wow-unvisited"></tbody></table>
+          <div class="tfoot-row" id="tfoot-wow-unvisited"></div>
+        </div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="wow_toko_master.js?v=1"></script>
+<script src="dashboard.js?v=1"></script>
+</body>
+</html>
