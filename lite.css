@@ -59,3 +59,5 @@ body::before,body::after{display:none!important;}
 [class*="kpi"],[class*="card"]{background-color:var(--bg2)!important;}
 /* tanpa tambah toko baru */
 #wow-store-box,[onclick*="wow-store-box"]{display:none!important;}
+/* tanpa pilih area */
+.field:has(#wow-area-sel){display:none!important;}

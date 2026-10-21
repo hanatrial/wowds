@@ -24021,7 +24021,7 @@ function wowCheck(step){
     const area=document.getElementById('wow-area-sel').value;
     const sel=document.getElementById('wow-mds-sel').value;
     const date=document.getElementById('wow-date-input').value;
-    ok=area!==''&&sel!==''&&date!=='';
+    ok=sel!==''&&date!=='';
   } else if(step===1){
     const val=document.getElementById('wow-store-input').value.trim();
     ok=val!=='';
@@ -24040,13 +24040,16 @@ function wowNext(){
     const area=document.getElementById('wow-area-sel').value;
     const mds=document.getElementById('wow-mds-sel').value;
     if(!WOW_PIC.includes(mds)){ alert('Pilih PIC dari daftar.'); return; }
-    WOW.area=area;
+    WOW.area='';
     WOW.date=document.getElementById('wow-date-input').value;
     WOW.mds=mds;
   }
   if(WOW.step===1){
     WOW.store=document.getElementById('wow-store-input').value.trim();
     WOW.storePasangan=document.getElementById('wow-store-pasangan').value.trim();
+    const _nm=WOW.store.toUpperCase();
+    const _t=(typeof WOW_TOKO_MASTER!=='undefined'?WOW_TOKO_MASTER:[]).find(t=>t.name&&t.name.trim().toUpperCase()===_nm);
+    WOW.area=_t?(_t.formArea||_t.area||''):'';
   }
   if(WOW.step===3){
     wowGetItems().forEach((_,i)=>{ if(WOW.items[i]===undefined||WOW.items[i]===null) WOW.items[i]=false; });
