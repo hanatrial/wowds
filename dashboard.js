@@ -1078,8 +1078,14 @@ function loadAll(){
     render();
   }).catch(e=>console.error('spg_daily_logs FAILED',e.code,e.message));
   // ringan: baca lewat REST tanpa kolom foto; foto diambil saat baris dibuka
-  if(has('sec-wow')||has('sec-insight')||has('sec-real'))wowLoadLogs().then(list=>{
+  if(has('sec-wow')||has('sec-insight')||has('sec-real'))Promise.all([wowLoadLogs(),wowLoadPending().catch(e=>{console.warn('pending gagal',e.message);return null;})]).then(([list])=>{
     WOW_ALL=list.map(v=>({...wowRenameVisit(wowRenameItems(v)),photoData:true}));
+    _kbV=null;WOW_ALL.forEach(r=>{
+      r.areaVisit=r.area;r.mdsLog=r.mds;
+      const t=wowMasterOf(r.store)||wowMasterOf(r.storePasangan);
+      if(t&&t.pic)r.mds=t.pic;else r.yatim=true; // toko tidak ada di master: tidak ikut perhitungan Insight
+      const k=wowKabMaster(r.mds,r.store,r.storePasangan);if(k)r.area=k;
+    });
     WOW_ALL.sort((a,b)=>b.timestamp-a.timestamp);
     render();
   }).catch(e=>console.error('wow_logs FAILED',e.message));
@@ -3283,7 +3289,7 @@ function wowStatusOf(store){
   if(!_wowStMap){_wowStMap=new Map();WOW_TOKO_MASTER.forEach(t=>{if(!t.st)return;[t.name,t.pair].filter(Boolean).forEach(n=>{const k=n.trim().toUpperCase();if(!_wowStMap.has(k)||t.st==='Existing')_wowStMap.set(k,t.st);});});}
   return _wowStMap.get(String(store).trim().toUpperCase())||'';
 }
-function wowStatusEff(r){return (!r.statusSynced&&r.statusToko)||wowStatusOf(r.store)||wowStatusOf(r.storePasangan)||'';}
+function wowStatusEff(r){const m=wowStatusOf(r.store)||wowStatusOf(r.storePasangan);return (r.statusToko&&!r.statusSynced)?r.statusToko:(m||r.statusToko||'');} // perubahan manual berlaku sampai ikut masuk Sheet (statusSynced), sesudah itu Sheet jadi acuan
 function updateWowStatus(docId,val){
   if(!docId)return;
   const r=WOW_ALL.find(x=>x._docId===docId);
@@ -4334,7 +4340,7 @@ function wowInsHeat(p){return p==null?'hx':p<5?'h0':p<=15?'h1':p<=30?'h2':p<=45?
 function wowInsLast(list){const m=new Map();(list||[]).slice().sort((a,b)=>a.timestamp-b.timestamp).forEach(r=>{m.set(r.store,r);});return [...m.values()];}
 function renderWowInsight(rows){
   const box=document.getElementById('wow-insight');if(!box)return;
-  rows=wowInsLast(rows).filter(r=>wowStatusEff(r)!=='Cancel'); // Cancel tidak dihitung
+  rows=wowInsLast(rows).filter(r=>!r.yatim&&wowStatusEff(r)!=='Cancel'); // Cancel dan kunjungan toko yang tidak ada di master tidak dihitung
   const picList=typeof WOW_PIC_KAB!=='undefined'?Object.keys(WOW_PIC_KAB).sort():[];
   const gf=(document.getElementById('f-mds')||{}).value||'';
   if(gf){INS_MODE='pic';INS_PIC=gf;}else INS_MODE='all';
@@ -4632,7 +4638,7 @@ function wsEsc(x){return wowInsEsc(x);}
 function wsYoyCls(p){return p==null?'hx':p<0?'h0':p<=10?'h2':p<=30?'h3':'h4';}
 
 // ── data ──
-// ── Kabupaten tunggal untuk semua tab: kunjungan terakhir (kabupaten yang dikonfirmasi di form) > Sheet "Database" > kolom KAB data penjualan ──
+// ── Kabupaten tunggal untuk semua tab: Sheet "Database" > kabupaten di kunjungan terakhir > kolom KAB data penjualan ──
 let _kbV=null,_kbSig='',_wsMasterKab=null;
 function wowKabCanon(k){
   k=String(k||'').trim();if(!k)return '';
@@ -4640,7 +4646,13 @@ function wowKabCanon(k){
   if(!wowKabCanon._m){wowKabCanon._m=new Map();Object.values(WOW_PIC_KAB).flat().forEach(x=>wowKabCanon._m.set(String(x).toLowerCase().replace(/[^a-z0-9]/g,''),x));}
   return wowKabCanon._m.get(k.toLowerCase().replace(/[^a-z0-9]/g,''))||k;
 }
-function wowKabBest(pic,name,pair,fallback){
+let _wowPend=null,_wowMasterBy=null;
+function wowMasterOf(name){
+  if(!name||typeof WOW_TOKO_MASTER==='undefined')return null;
+  if(!_wowMasterBy){_wowMasterBy=new Map();WOW_TOKO_MASTER.forEach(t=>{[t.name,t.pair].filter(Boolean).forEach(n=>{const k=String(n).trim().toUpperCase();if(!_wowMasterBy.has(k))_wowMasterBy.set(k,t);});});}
+  return _wowMasterBy.get(String(name).trim().toUpperCase())||null;
+}
+function wowKabBest(pic,name,pair,fallback,so){
   const L=(typeof WOW_ALL!=='undefined'&&WOW_ALL)||[];
   const sig=L.length+'|'+(L.length?L[L.length-1].id||'':'');
   if(!_kbV||_kbSig!==sig){
@@ -4655,11 +4667,46 @@ function wowKabBest(pic,name,pair,fallback){
     WOW_TOKO_MASTER.forEach(t=>{const k=wowKabCanon(t.kab);[t.name,t.pair].forEach(n=>{if(n)_wsMasterKab.set(t.pic+'|'+String(n).trim().toUpperCase(),k);});});
   }
   const ns=[name,pair].filter(Boolean).map(x=>String(x).trim().toUpperCase());
-  for(const n of ns){const v=_kbV.get(n);if(v)return v;}
+  if(_wowPend)for(const n of ns){const p=_wowPend.kab.get(n);if(p)return p;}
+  if(so&&typeof WOW_TOKO_MASTER!=='undefined'){if(!wowKabBest._so){wowKabBest._so=new Map();WOW_TOKO_MASTER.forEach(t=>{if(t.so&&t.kab)wowKabBest._so.set(t.so,wowKabCanon(t.kab));});}const k=wowKabBest._so.get(so);if(k)return k;}
   for(const n of ns){const m=_wsMasterKab&&_wsMasterKab.get(pic+'|'+n);if(m)return m;}
+  for(const n of ns){const v=_kbV.get(n);if(v)return v;}
   return wowKabCanon(fallback);
 }
-function wsKabOf(r){return wowKabBest(r[1],r[0],r[4],r[2]);}
+async function wowRunQuery(q){
+  const r=await fetch('https://firestore.googleapis.com/v1/projects/'+FS_PROJECT+'/databases/(default)/documents:runQuery?key='+FS_KEY,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({structuredQuery:q})});
+  if(!r.ok)throw new Error('runQuery '+r.status);
+  return (await r.json()).filter(x=>x.document).map(x=>fsDoc(x.document));
+}
+async function wowLoadPending(){
+  const sel=a=>({fields:a.map(fieldPath=>({fieldPath}))});
+  const [kf,tk]=await Promise.all([
+    wowRunQuery({from:[{collectionId:'app_data'}],where:{fieldFilter:{field:{fieldPath:'synced'},op:'EQUAL',value:{booleanValue:false}}},select:sel(['store','pic','kab'])}),
+    wowRunQuery({from:[{collectionId:'app_data'}],where:{fieldFilter:{field:{fieldPath:'type'},op:'EQUAL',value:{stringValue:'toko'}}},select:sel(['pic','kab','nama1','nama2','kode1','kode2','status'])})
+  ]);
+  const P={kab:new Map()};
+  kf.forEach(d=>{if(d.store&&d.kab)P.kab.set(String(d.store).trim().toUpperCase(),wowKabCanon(d.kab));});
+  // toko popup yang belum ada di Sheet ikut ke daftar toko (dibuang otomatis begitu sudah ada di master dari Sheet)
+  const ada=new Set();WOW_TOKO_MASTER.forEach(t=>[t.name,t.pair].filter(Boolean).forEach(n=>ada.add(String(n).replace(/\s+/g,' ').trim().toUpperCase())));
+  tk.forEach(v=>{
+    const nm=v.nama1||v.nama2||v.kode1||v.kode2;if(!nm||!v.pic)return;
+    const k=String(nm).replace(/\s+/g,' ').trim().toUpperCase();if(ada.has(k))return;
+    const o={name:nm,pic:v.pic,kab:v.kab||'',_popup:1};
+    if(v.status)o.st=v.status;
+    if(!v.nama1&&v.nama2)o.s2=1;else if(v.nama2&&String(v.nama2).toUpperCase()!==String(v.nama1).toUpperCase())o.pair=v.nama2;
+    WOW_TOKO_MASTER.push(o);ada.add(k);
+  });
+  _wowPend=P;_wowMasterBy=null;_wsMasterKab=null;_wowStMap=null;
+  return P;
+}
+function wowKabMaster(pic,name,pair){
+  wowKabBest(pic,name,pair,'');
+  const ns=[name,pair].filter(Boolean).map(x=>String(x).trim().toUpperCase());
+  if(_wowPend)for(const n of ns){const p=_wowPend.kab.get(n);if(p)return p;}
+  for(const n of ns){const m=_wsMasterKab&&_wsMasterKab.get(pic+'|'+n);if(m)return m;}
+  return '';
+}
+function wsKabOf(r){return wowKabBest(r[1],r[0],r[4],r[2],r[8]);}
 function wsAgg(rows,n){
   const o={sv:Array(n).fill(0),hilo:Array(n).fill(0),ns:Array(n).fill(0),ea:Array(n).fill(0)};
   rows.forEach(r=>{for(let i=0;i<n;i++){o.hilo[i]+=r[5][i];o.ns[i]+=r[6][i];o.sv[i]+=r[7][i];if(r[7][i]>0)o.ea[i]++;}});
