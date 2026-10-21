@@ -3361,27 +3361,29 @@ function wowValidasiRows(){
 }
 async function exportWowValidasiExcel(){
   const rows=wowValidasiRows();
-  if(!rows.length){alert('Tidak ada data Validasi Display WOW untuk filter ini.');return;}
   try{await ensureXlsx();}catch(e){alert('Gagal memuat pustaka Excel (XLSX). Cek koneksi lalu coba lagi.');return;}
-  // Satu baris per toko: status = penandaan validasi terakhir yang tersimpan.
-  const byStore=new Map();
-  rows.slice().sort((a,b)=>a.timestamp-b.timestamp).forEach(r=>{
-    const area=(r.area||'').trim()||'—';
-    const store=(r.store||'').trim()||'—';
-    const key=area.toUpperCase()+'|'+store.toUpperCase();
-    const e=byStore.get(key)||{mds:(r.mds||'').trim()||'—',area,store,status:null};
-    if(r.mds)e.mds=r.mds.trim();
-    if(r.picValidated!=null)e.status=r.picValidated;
-    byStore.set(key,e);
+  // SEMUA toko master (Sheet + popup), satu baris per toko. Toko yang belum divisit = "Belum Divalidasi".
+  // Status validasi = penandaan terakhir dari semua kunjungan toko itu (tidak terpengaruh filter bulan/tanggal).
+  const gf=(document.getElementById('f-mds')||{}).value||'',gk=(document.getElementById('f-area')||{}).value||'';
+  const lastVal=new Map(),nVisit=new Map(),lastTs=new Map();
+  WOW_ALL.slice().sort((x,y)=>x.timestamp-y.timestamp).forEach(r=>{
+    const t=wowMasterOf(r.store)||wowMasterOf(r.storePasangan);if(!t)return;
+    const k=t.pic+'|'+t.name;
+    nVisit.set(k,(nVisit.get(k)||0)+1);lastTs.set(k,r.timestamp);
+    if(r.picValidated!=null)lastVal.set(k,r.picValidated);
   });
-  const stores=[...byStore.values()].sort((a,b)=>a.area.localeCompare(b.area)||a.mds.localeCompare(b.mds)||a.store.localeCompare(b.store));
+  const stores=WOW_TOKO_MASTER.map(t=>{
+    const k=t.pic+'|'+t.name,sd=wowSides(t.name,t.pair);
+    return {mds:t.pic,area:wowKabBest(t.pic,t.name,t.pair,t.kab,t.so)||'(kabupaten kosong)',store:sd[0]||sd[1]||t.name,pasangan:(sd[0]&&sd[1])?sd[1]:'',so:t.so||'',sewa:t.st||'',status:lastVal.has(k)?lastVal.get(k):null,visit:nVisit.get(k)||0,last:lastTs.get(k)||null};
+  }).filter(x=>(!gf||x.mds===gf)&&(!gk||x.area===gk)).sort((a,b)=>a.area.localeCompare(b.area)||a.mds.localeCompare(b.mds)||a.store.localeCompare(b.store));
+  if(!stores.length){alert('Tidak ada toko untuk filter ini.');return;}
   const ST=['Sudah Valid','Tidak Valid','Perlu Validasi','Belum Divalidasi'];
 
-  const aoaStore=[['MDS','Area','Toko','Keterangan Validasi']]
-    .concat(stores.map(s=>[s.mds,s.area,s.store,wowValidasiLabel(s.status)]));
+  const aoaStore=[['PIC','Kabupaten','SO Group Code','Toko','Toko Pasangan','Status Sewa','Jumlah Visit','Visit Terakhir','Keterangan Validasi']]
+    .concat(stores.map(s=>[s.mds,s.area,s.so,s.store,s.pasangan,s.sewa,s.visit,s.last?s.last.toLocaleDateString('id-ID'):'Belum divisit',wowValidasiLabel(s.status)]));
   const wsStore=XLSX.utils.aoa_to_sheet(aoaStore);
-  wsStore['!cols']=[{wch:26},{wch:14},{wch:52},{wch:18}];
-  wsStore['!autofilter']={ref:`A1:D${aoaStore.length}`};
+  wsStore['!cols']=[{wch:14},{wch:22},{wch:18},{wch:52},{wch:40},{wch:12},{wch:12},{wch:14},{wch:18}];
+  wsStore['!autofilter']={ref:`A1:I${aoaStore.length}`};
 
   const byArea=new Map();
   stores.forEach(s=>{
