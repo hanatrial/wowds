@@ -1,0 +1,214 @@
+/* Tarik "Database" + "Database Kabupaten" dari Google Sheet WOW DS → wow_toko_master.js
+   (dipakai dashboard.html: WOW_TOKO_MASTER = daftar toko + PIC, WOW_PIC_KAB = PIC → kabupaten).
+   Dijalankan terjadwal oleh run.sh (08.00 WITA, Senin–Sabtu).
+
+   Aturan:
+   - spasi ganda dirapikan (sheet sering menulis "TK  MAYA"), huruf tidak diubah
+   - baris tanpa nama outlet dilewati, nama kembar diambil satu (yang "Existing" didahulukan)
+   - kolom "pair" dan toko tambahan manual yang sudah ada di file TIDAK dihapus
+   - kalau data mencurigakan (baris/​PIC turun drastis), file tidak ditimpa
+
+   Pakai: node scripts/wow-db.js [--dry]   (--dry = cek saja, tidak menulis) */
+const fs = require('fs');
+const path = require('path');
+
+const SHEET_ID = '1uSwNeozmwTrfQuR40-D-L4zYXj-OAI8-Uy7tasIqmkY';
+const GID_TOKO = '0';             // tab "Database" (tab pertama)
+const GID_KAB = '1403688639';      // tab "Database Kabupaten"
+const FILE = path.join(__dirname, '..', 'wow_toko_master.js');
+const DRY = process.argv.includes('--dry');
+
+const norm = (s) => String(s == null ? '' : s).replace(/\s+/g, ' ').trim();
+
+/* CSV dari Google (export?format=csv) — tanpa pustaka luar. */
+function parseCsv(teks) {
+  const out = [];
+  let baris = [], sel = '', kutip = false;
+  for (let i = 0; i < teks.length; i++) {
+    const c = teks[i];
+    if (kutip) {
+      if (c === '"') {
+        if (teks[i + 1] === '"') { sel += '"'; i++; } else kutip = false;
+      } else sel += c;
+    } else if (c === '"') kutip = true;
+    else if (c === ',') { baris.push(sel); sel = ''; }
+    else if (c === '\n' || c === '\r') {
+      if (c === '\r' && teks[i + 1] === '\n') i++;
+      baris.push(sel); out.push(baris); baris = []; sel = '';
+    } else sel += c;
+  }
+  if (sel !== '' || baris.length) { baris.push(sel); out.push(baris); }
+  return out.filter((b) => b.some((x) => String(x).trim() !== ''));
+}
+
+/* CSV → array objek, pakai baris pertama sebagai nama kolom. */
+function keObjek(rows, wajib, namaTab) {
+  if (!rows.length) throw new Error(`Tab "${namaTab}" kosong`);
+  const kol = rows[0].map((h) => norm(h));
+  for (const k of wajib) {
+    if (!kol.includes(k)) throw new Error(`Tab "${namaTab}" tidak punya kolom "${k}" — tab/GID berubah?`);
+  }
+  return rows.slice(1).map((r) => {
+    const o = {};
+    kol.forEach((k, i) => { if (k) o[k] = r[i] == null ? '' : r[i]; });
+    return o;
+  });
+}
+
+async function ambilCsv(gid, namaTab, wajib) {
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${gid}`;
+  const res = await fetch(url, { redirect: 'follow' });
+  if (!res.ok) throw new Error(`Unduh tab "${namaTab}" gagal: HTTP ${res.status}`);
+  const teks = await res.text();
+  if (/^\s*<(!doctype|html)/i.test(teks)) throw new Error(`Tab "${namaTab}" tidak bisa diunduh (Sheet tidak publik / GID salah)`);
+  return keObjek(parseCsv(teks), wajib, namaTab);
+}
+
+function bacaLama() {
+  try {
+    const src = fs.readFileSync(FILE, 'utf8');
+    const toko = JSON.parse(src.slice(src.indexOf('['), src.indexOf('];') + 1));
+    const kab = JSON.parse(src.slice(src.indexOf('WOW_PIC_KAB = ') + 14).replace(/;\s*$/, ''));
+    return { toko, kab };
+  } catch (e) {
+    return { toko: [], kab: {} };
+  }
+}
+
+(async () => {
+  const rowsToko = await ambilCsv(GID_TOKO, 'Database', ['PIC', 'Nama Outlet Distr 1 (BCP, TBP, BCP ASO MDO)', 'KAB', 'Status Sewa']);
+  const rowsKab = await ambilCsv(GID_KAB, 'Database Kabupaten', ['Nama Kabupaten/Kota', 'PIC']);
+  console.log(`Sheet: ${rowsToko.length} baris Database, ${rowsKab.length} baris Database Kabupaten`);
+
+  // ── PIC → kabupaten ──────────────────────────────────────────────────────
+  const picKab = {};
+  for (const r of rowsKab) {
+    const pic = norm(r['PIC']);
+    const kab = norm(r['Nama Kabupaten/Kota']);
+    if (!pic || !kab) continue;
+    (picKab[pic] = picKab[pic] || []).push(kab);
+  }
+  for (const pic of Object.keys(picKab)) {
+    picKab[pic] = [...new Set(picKab[pic])].sort((a, b) => a.localeCompare(b));
+  }
+  // urutan PIC: pertahankan urutan lama biar diff-nya kecil, PIC baru ditaruh di belakang
+  const lama = bacaLama();
+  const picLama = Object.keys(lama.kab || {});
+  const picUrut = [
+    ...picLama.filter((p) => picKab[p]),
+    ...Object.keys(picKab).filter((p) => !picLama.includes(p)).sort((a, b) => a.localeCompare(b)),
+  ];
+  const picKabRapi = {};
+  for (const pic of picUrut) picKabRapi[pic] = picKab[pic];
+
+  // ── daftar toko ──────────────────────────────────────────────────────────
+  const pairLama = new Map(lama.toko.filter((t) => t.pair).map((t) => [t.name, t.pair]));
+  const extraLama = new Map(); // kolom lain yang mungkin ditambahkan manual
+  for (const t of lama.toko) {
+    for (const k of Object.keys(t)) {
+      if (!['name', 'pic', 'kab', 'pair'].includes(k)) extraLama.set(t.name, t);
+    }
+  }
+
+  const urutan = [];
+  const peta = new Map();
+  const statusPer = new Map();
+  for (const r of rowsToko) {
+    const name = norm(r['Nama Outlet Distr 1 (BCP, TBP, BCP ASO MDO)']);
+    if (!name) continue;
+    const pic = norm(r['PIC']);
+    const kab = norm(r['KAB']);
+    const status = norm(r['Status Sewa']);
+    const sudah = peta.get(name);
+    if (sudah) {
+      // nama kembar: menangkan baris yang masih "Existing"
+      const lamaExisting = statusPer.get(name) === 'Existing';
+      if (lamaExisting || status !== 'Existing') continue;
+      sudah.pic = pic || sudah.pic;
+      sudah.kab = kab || sudah.kab;
+      statusPer.set(name, status);
+      continue;
+    }
+    const e = { name, pic };
+    if (kab) e.kab = kab;
+    peta.set(name, e);
+    statusPer.set(name, status);
+    urutan.push(e);
+  }
+
+  // pertahankan kolom pair / kolom tambahan dari file lama
+  for (const e of urutan) {
+    const pair = pairLama.get(e.name);
+    if (pair) e.pair = pair;
+    const extra = extraLama.get(e.name);
+    if (extra) for (const k of Object.keys(extra)) if (!(k in e)) e[k] = extra[k];
+  }
+
+  // toko yang ada di file tapi tidak (lagi) ada di sheet → jangan hilang.
+  // Ditaruh kembali di posisi lamanya (sesudah tetangga terdekat yang masih ada),
+  // supaya diff-nya kecil dan urutan daftar tidak berubah-ubah.
+  const adaDiSheet = new Set(urutan.map((e) => e.name));
+  const manual = lama.toko.filter((t) => t.name && !adaDiSheet.has(t.name));
+  for (let i = 0; i < lama.toko.length; i++) {
+    const t = lama.toko[i];
+    if (!t.name || adaDiSheet.has(t.name)) continue;
+    let pos = 0;
+    for (let j = i - 1; j >= 0; j--) {
+      const idx = urutan.findIndex((e) => e.name === lama.toko[j].name);
+      if (idx >= 0) { pos = idx + 1; break; }
+    }
+    // lewati toko manual lain yang sudah disisipkan di titik yang sama
+    while (pos < urutan.length && !adaDiSheet.has(urutan[pos].name)) pos++;
+    urutan.splice(pos, 0, t);
+  }
+  if (manual.length) console.log(`Toko manual (tidak ada di sheet, tetap disimpan): ${manual.length}`);
+
+  // ── pengaman ─────────────────────────────────────────────────────────────
+  if (urutan.length < 400) throw new Error(`Toko cuma ${urutan.length} (batas minimal 400) — dibatalkan`);
+  if (picUrut.length < 8) throw new Error(`PIC cuma ${picUrut.length} (batas minimal 8) — dibatalkan`);
+  for (const pic of picUrut) {
+    if (!picKabRapi[pic].length) throw new Error(`PIC ${pic} tanpa kabupaten — dibatalkan`);
+  }
+  if (lama.toko.length && urutan.length < lama.toko.length * 0.9) {
+    throw new Error(`Toko turun drastis (${lama.toko.length} → ${urutan.length}) — dibatalkan`);
+  }
+
+  // ── bandingkan ───────────────────────────────────────────────────────────
+  const isiBaru =
+    'const WOW_TOKO_MASTER = ' + JSON.stringify(urutan) + ';\n' +
+    'const WOW_PIC_KAB = ' + JSON.stringify(picKabRapi) + ';\n';
+  const isiLama = fs.existsSync(FILE) ? fs.readFileSync(FILE, 'utf8') : '';
+
+  const namaLama = new Set(lama.toko.map((t) => t.name));
+  const namaBaru = new Set(urutan.map((e) => e.name));
+  const tambah = [...namaBaru].filter((n) => !namaLama.has(n));
+  const buang = [...namaLama].filter((n) => !namaBaru.has(n));
+  const picTokoLama = new Map(lama.toko.map((t) => [t.name, t.pic]));
+  const gantiPic = urutan.filter((e) => picTokoLama.has(e.name) && picTokoLama.get(e.name) !== e.pic);
+  const kabLama = new Map(lama.toko.map((t) => [t.name, t.kab || '']));
+  const gantiKab = urutan.filter((e) => kabLama.has(e.name) && kabLama.get(e.name) !== (e.kab || ''));
+  const kabMapBeda = JSON.stringify(lama.kab) !== JSON.stringify(picKabRapi);
+
+  console.log(`Toko: ${lama.toko.length} → ${urutan.length} (tambah ${tambah.length}, hilang ${buang.length})`);
+  console.log(`PIC: ${Object.keys(lama.kab).length} → ${picUrut.length}${kabMapBeda ? ' (peta kabupaten berubah)' : ''}`);
+  console.log(`PIC toko berubah: ${gantiPic.length} · kabupaten toko berubah: ${gantiKab.length}`);
+  if (tambah.length) console.log('  + ' + tambah.slice(0, 10).join('\n  + ') + (tambah.length > 10 ? `\n  + … ${tambah.length - 10} lagi` : ''));
+  if (buang.length) console.log('  - ' + buang.slice(0, 10).join('\n  - ') + (buang.length > 10 ? `\n  - … ${buang.length - 10} lagi` : ''));
+  if (gantiPic.length) console.log('  ~ ' + gantiPic.slice(0, 10).map((e) => `${e.name}: ${picTokoLama.get(e.name)} → ${e.pic}`).join('\n  ~ '));
+  if (gantiKab.length) console.log('  ~ ' + gantiKab.slice(0, 10).map((e) => `${e.name}: ${kabLama.get(e.name) || '-'} → ${e.kab || '-'}`).join('\n  ~ '));
+
+  const berubah = isiBaru !== isiLama;
+  if (!berubah) {
+    console.log('Tidak ada perubahan — file dibiarkan.');
+    return;
+  }
+  if (DRY) {
+    console.log('(--dry) ada perubahan, tidak ditulis.');
+    return;
+  }
+  fs.writeFileSync(FILE, isiBaru);
+  console.log('Ditulis: wow_toko_master.js');
+})().catch((e) => {
+  console.error('GAGAL: ' + e.message);
+  process.exit(1);
+});
