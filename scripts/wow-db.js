@@ -5,7 +5,7 @@
    Aturan:
    - spasi ganda dirapikan (sheet sering menulis "TK  MAYA"), huruf tidak diubah
    - nama outlet kosong memakai nama Dist 2 / kode (v2), nama kembar diambil satu (yang "Existing" didahulukan)
-   - kolom "pair" dan toko tambahan manual yang sudah ada di file TIDAK dihapus
+   - kolom "pair"/tambahan dipertahankan, tapi toko yang tidak ada di sheet dibuang (daftar = Sheet + popup)
    - kalau data mencurigakan (baris/​PIC turun drastis), file tidak ditimpa
 
    Pakai: node scripts/wow-db.js [--dry]   (--dry = cek saja, tidak menulis) */
@@ -208,24 +208,15 @@ async function tarikPenjualan() {
     if (extra) for (const k of Object.keys(extra)) if (!(k in e)) e[k] = extra[k];
   }
 
-  // toko yang ada di file tapi tidak (lagi) ada di sheet → jangan hilang.
-  // Ditaruh kembali di posisi lamanya (sesudah tetangga terdekat yang masih ada),
-  // supaya diff-nya kecil dan urutan daftar tidak berubah-ubah.
+  // Toko yang ada di file tapi tidak (lagi) ada di sheet TIDAK disimpan.
+  // Daftar aplikasi = isi Sheet + toko popup (digabung saat aplikasi dibuka),
+  // jadi tidak ada sisa/duplikat lama (permintaan 21 Okt 2026).
   const adaDiSheet = new Set(urutan.map((e) => e.name));
-  const manual = lama.toko.filter((t) => t.name && !adaDiSheet.has(t.name));
-  for (let i = 0; i < lama.toko.length; i++) {
-    const t = lama.toko[i];
-    if (!t.name || adaDiSheet.has(t.name)) continue;
-    let pos = 0;
-    for (let j = i - 1; j >= 0; j--) {
-      const idx = urutan.findIndex((e) => e.name === lama.toko[j].name);
-      if (idx >= 0) { pos = idx + 1; break; }
-    }
-    // lewati toko manual lain yang sudah disisipkan di titik yang sama
-    while (pos < urutan.length && !adaDiSheet.has(urutan[pos].name)) pos++;
-    urutan.splice(pos, 0, t);
+  const dibuang = lama.toko.filter((t) => t.name && !adaDiSheet.has(t.name));
+  if (dibuang.length) {
+    const contoh = dibuang.slice(0, 5).map((t) => t.name).join(', ');
+    console.log(`Toko tidak ada di sheet (dibuang): ${dibuang.length}${contoh ? ' — ' + contoh + (dibuang.length > 5 ? '…' : '') : ''}`);
   }
-  if (manual.length) console.log(`Toko manual (tidak ada di sheet, tetap disimpan): ${manual.length}`);
 
   // ── pengaman ─────────────────────────────────────────────────────────────
   if (urutan.length < 400) throw new Error(`Toko cuma ${urutan.length} (batas minimal 400) — dibatalkan`);
