@@ -24027,6 +24027,15 @@ function wowKabUI(mode,kab){
   else if(mode==='edit'){q.textContent=WOW._kabHad?'Pilih kabupaten yang benar':'Kabupaten belum ada, wajib diisi';ed.classList.remove('hidden');}
   else{q.textContent='Kabupaten';dn.innerHTML='✓ Kabupaten: <b>'+kab+'</b> <a href="#" onclick="wowKabEdit();return false">ubah</a>';dn.classList.remove('hidden');}
 }
+let _wowKabTok=0;
+function wowKabDocId(name){return wowHash(name).replace('wl_','kabfix_');}
+function wowKabSave(kab){
+  try{
+    if(typeof db==='undefined'||!WOW.store0)return;
+    const e=WOW._kabEntry||{};
+    db.collection('app_data').doc(wowKabDocId(WOW.store0)).set({store:WOW.store0,pic:WOW.mds||'',kab:kab,kabSheet:e.kab||'',ts:Date.now(),synced:false}).catch(x=>console.warn('simpan kabupaten gagal',x));
+  }catch(x){console.warn(x);}
+}
 function wowKabShow(entry,val){
   const box=document.getElementById('wow-kabbox');if(!box)return;
   WOW.kabOk=false;WOW.area='';
@@ -24036,17 +24045,24 @@ function wowKabShow(entry,val){
   if(entry.kab&&!list.includes(entry.kab))list.push(entry.kab);
   ks.innerHTML='<option value="">— Pilih kabupaten —</option>'+list.map(n=>'<option value="'+n.replace(/"/g,'&quot;')+'">'+n+'</option>').join('');
   ks.value=entry.kab||'';
-  WOW._kabHad=entry.kab||'';
+  WOW._kabHad=entry.kab||'';WOW._kabEntry=entry;WOW.store0=val;
   box.classList.remove('hidden');
   if(entry.kab)wowKabUI('ask',entry.kab);else wowKabUI('edit');
+  const tok=++_wowKabTok;
+  if(typeof db!=='undefined')db.collection('app_data').doc(wowKabDocId(val)).get().then(d=>{
+    if(tok!==_wowKabTok||WOW.kabOk||!d||!d.exists)return;
+    const k=d.data().kab;if(!k)return;
+    if(!list.includes(k)){list.push(k);ks.innerHTML='<option value="">— Pilih kabupaten —</option>'+list.map(n=>'<option value="'+n.replace(/"/g,'&quot;')+'">'+n+'</option>').join('');}
+    ks.value=k;WOW._kabHad=k;wowKabUI('ask',k);
+  }).catch(()=>{});
 }
-function wowKabKeep(){ WOW.area=WOW._kabHad;WOW.kabOk=true;wowKabUI('done',WOW.area);wowCheck(1); }
+function wowKabKeep(){ WOW.area=WOW._kabHad;WOW.kabOk=true;wowKabUI('done',WOW.area);if(WOW._kabEntry&&WOW.area!==(WOW._kabEntry.kab||''))wowKabSave(WOW.area);wowCheck(1); }
 function wowKabEdit(){ WOW.kabOk=false;WOW.area='';wowKabUI('edit');wowCheck(1); }
 function wowKabChanged(){ WOW.kabOk=false;WOW.area='';wowCheck(1); }
 function wowKabConfirm(){
   const v=document.getElementById('wow-kab2').value;
   if(!v){alert('Pilih kabupaten dulu.');return;}
-  WOW.area=v;WOW.kabOk=true;wowKabUI('done',v);wowCheck(1);
+  WOW.area=v;WOW.kabOk=true;wowKabUI('done',v);wowKabSave(v);wowCheck(1);
 }
 function wowGoTo(step){
   WOW.step=step;
