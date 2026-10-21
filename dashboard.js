@@ -1432,14 +1432,29 @@ const WOW_ITEM_RENAME={"HI LO DRINK THAI TEA PLS 8RX10SX15G":"HI LO DRINK THAI T
 function wowRenameItems(v){if(!v||!v.items)return v;const o={};Object.entries(v.items).forEach(([k,x])=>{o[WOW_ITEM_RENAME[k]||k]=x;});return {...v,items:o};}
 // nama toko lama di data visit -> nama resmi di Database (PIC/Toko), supaya visit lama ikut terbaca.
 // kunci = nama huruf besar tanpa spasi/tanda baca, jadi beda spasi/titik tidak bikin gagal cocok.
+// Kandidat 2 (belum ada di Database) dibiarkan memakai nama kandidatnya sendiri.
 const WOW_STORE_RENAME={
-  'FERDYYAJADSKOLAKA':'TIGA JAYA',
-  'IYYO':'NYOMAN/KAWANGKOAN BARU',
-  'IYO':'NYOMAN/KAWANGKOAN BARU',
-  'MAR':'MARPAM / JL. POROS BONE - SENGKANG'
+  'FERDYYAJADSKOLAKA':'FERDI JAYA / ENSA NO. 09 RT. 02 RW. 07',   // 27 = kandidat 2
+  'IYYO':'NYOMAN/KAWANGKOAN BARU',                                  // 28 = kandidat 1
+  'IYO':'NYOMAN/KAWANGKOAN BARU'
+  // 29 "Mar" = kandidat 3 -> teksnya belum ada; tambahkan 'MAR':'<nama kandidat 3>' di sini.
 };
 const wowStoreKey=n=>String(n==null?'':n).toUpperCase().replace(/[^A-Z0-9]/g,'');
-function wowRenameStore(n){return WOW_STORE_RENAME[wowStoreKey(n)]||n;}
+// nama kandidat -> nama persis di Database (kalau di sheet ditulis full, termasuk kolom kandidat)
+let _wowStoreAlias=null;
+function wowStoreAlias(){
+  if(_wowStoreAlias)return _wowStoreAlias;
+  const a={};
+  Object.values(WOW_STORE_RENAME).forEach(v=>{a[wowStoreKey(v)]=v;});
+  if(typeof WOW_TOKO_MASTER!=='undefined')WOW_TOKO_MASTER.forEach(t=>{if(t.name)a[wowStoreKey(t.name)]=t.name;});
+  _wowStoreAlias=a;
+  return a;
+}
+function wowRenameStore(n){
+  if(n==null||n==='')return n;
+  const k=wowStoreKey(n);
+  return WOW_STORE_RENAME[k]||wowStoreAlias()[k]||n;
+}
 function wowRenameVisit(v){
   const o={...v,store:wowRenameStore(v.store)};
   if(o.storePasangan)o.storePasangan=wowRenameStore(o.storePasangan);
