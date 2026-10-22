@@ -14,7 +14,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <link rel="stylesheet" href="dashboard.css?v=67">
-<link rel="stylesheet" href="lite.css?v=67">
+<link rel="stylesheet" href="lite.css?v=70">
 </head>
 <body>
 <div id="pin-screen">
@@ -163,8 +163,9 @@
 <label>Kode Dist 2 <i>(isi salah satu kode)</i><input id="tp-kode2" autocomplete="off"><small class="tp-h">Dist 2 = SHI, BSP, dan JUPE MDO</small></label>
 <label>Nama Outlet 2 <i>(opsional)</i><input id="tp-nama2" autocomplete="off"><small class="tp-h">Dist 2 = SHI, BSP, dan JUPE MDO</small></label>
 </div><div class="tp-fotos"><label class="tp-foto"><span>Foto Pajangan 1 <i>(wajib)</i></span><input type="file" accept="image/*" id="tp-foto0" onchange="tpFoto(0)"><img id="tp-prev0" class="tp-prev hidden" alt=""></label><label class="tp-foto"><span>Foto Pajangan 2 <i>(opsional)</i></span><input type="file" accept="image/*" id="tp-foto1" onchange="tpFoto(1)"><img id="tp-prev1" class="tp-prev hidden" alt=""></label><label class="tp-foto"><span>Foto Pajangan 3 <i>(opsional)</i></span><input type="file" accept="image/*" id="tp-foto2" onchange="tpFoto(2)"><img id="tp-prev2" class="tp-prev hidden" alt=""></label></div><div class="tp-msg" id="tp-msg"></div><button class="tp-save" onclick="saveToko()">Simpan</button><div class="tp-list-h">Input terakhir</div><div id="tp-list" class="tp-list">Memuat…</div></div></div></div>
-<div class="tp-overlay hidden" id="modal-export-pdf-insight" onclick="if(event.target===this)closeExportInsightPdfModal()"><div class="tp-box" style="max-width:440px"><div class="tp-head"><div><div class="tp-title">Export PDF Insight</div><div class="tp-sub">Pilih PIC untuk generate laporan PDF komprehensif</div></div><button class="tp-x" onclick="closeExportInsightPdfModal()">✕</button></div><div class="tp-body"><div style="display:flex;flex-direction:column;gap:12px;margin:10px 0 16px"><label style="font-size:12px;color:var(--t2);font-weight:600">Pilih PIC<select id="sel-export-pic" class="fi" style="width:100%;margin-top:6px"></select></label><div style="font-size:11px;color:var(--t3);line-height:1.4">Laporan PDF Portrait mencakup: ringkasan posisi PIC di Sulawesi, breakdown kabupaten (AV display, omzet &amp; growth penjualan, Line/EA, kuadran, dan toko prioritas perbaikan).</div></div><button class="tp-save" id="btn-do-export-pdf" onclick="generateInsightPdfFromModal()" style="width:100%">⬇ Unduh PDF Insight</button></div></div></div>
-<script src="wow_toko_master.js?v=68"></script>
-<script src="dashboard.js?v=68"></script>
+<div class="tp-overlay hidden" id="modal-export-pdf-insight" onclick="if(event.target===this)closeExportInsightPdfModal()"><div class="tp-box" style="max-width:660px"><div class="tp-head"><div><div class="tp-title">Export PDF Insight</div><div class="tp-sub">Pilih PIC untuk generate laporan PDF komprehensif</div></div><button class="tp-x" onclick="closeExportInsightPdfModal()">✕</button></div><div class="tp-body"><div style="display:flex;flex-direction:column;gap:12px;margin:10px 0 16px"><label style="font-size:12px;color:var(--t2);font-weight:600">Pilih PIC<select id="sel-export-pic" class="fi" style="width:100%;margin-top:6px" onchange="wowSulSetMode(WOW_SUL_MODE)"></select></label><div id="wow-sul-box"></div><div style="font-size:11px;color:var(--t3);line-height:1.4">PDF portrait berisi peta posisi PIC di Sulawesi + gambar (screenshot) tab <b>Insight AV</b>, <b>Insight Penjualan</b>, dan <b>Insight Gabungan</b> untuk PIC terpilih. Wilayah PIC disorot di peta, kabupaten lain tetap tampil sebagai latar.</div></div><button class="tp-save" id="btn-do-export-pdf" onclick="generateInsightPdfFromModal()" style="width:100%">⬇ Unduh PDF Insight</button></div></div></div>
+<script src="wow_toko_master.js?v=70"></script>
+<script src="wow_sulawesi_map.js?v=71"></script>
+<script src="dashboard.js?v=71"></script>
 </body>
 </html>
