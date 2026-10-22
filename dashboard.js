@@ -5630,6 +5630,8 @@ async function exportInsightPdf(targetPic,btn){
       /* peta gagal (mis. SVG→canvas diblokir): PDF tetap dibuat tanpa halaman peta */
       console.warn('peta Sulawesi gagal dibuat, lanjut tanpa peta',e);
     }
+    /* peta kosong (canvas tidak terbaca di perangkat ini): perlakukan sama seperti gagal */
+    if(maps&&!(typeof maps.main==='string'&&maps.main.length>2000&&typeof maps.over==='string'&&maps.over.length>2000)){console.warn('peta kosong, lanjut tanpa peta');maps=null;}
 
     /* ── 2. gambar isi tiga tab insight untuk PIC ini ── */
     const sections=[];
@@ -5655,7 +5657,7 @@ async function exportInsightPdf(targetPic,btn){
     /* ── 3. susun PDF A4 portrait ── */
     if(btn)btn.textContent='Menyusun PDF…';
     wowPdfToast('Menyusun PDF '+sections.reduce((a,x)=>a+x.pngs.shots.length,0)+' halaman…',60000);
-    const doc=new window.jspdf.jsPDF({unit:'mm',format:'a4',orientation:'portrait'});
+    const doc=new window.jspdf.jsPDF({unit:'mm',format:'a4',orientation:'portrait',compress:true});
     const PW=210,PH=297,M=12,CW=PW-2*M;
     const tgl=new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
     const GREEN=[11,43,38],GREEN2=[35,83,71],LIME=[181,211,52],MINT=[218,241,222],INK=[30,45,40],GREY=[110,125,120];
