@@ -5190,7 +5190,7 @@ function wowPdfLoadMapLib(){
 }
 
 /* Render satu tab insight untuk PIC lalu kembalikan elemen DOM-nya (belum di-raster). */
-function wowPdfRenderSection(kind,pic){
+async function wowPdfRenderSection(kind,pic){
   /* Render isi tab insight untuk satu PIC di tempat aslinya, tetapi wadahnya
      dipindah ke luar layar supaya tidak berkedip dan bisa dipotret utuh.
      Semua state (filter, mode, display) dikembalikan setelah selesai. */
@@ -5234,6 +5234,7 @@ function wowPdfRenderSection(kind,pic){
     box.querySelectorAll('.ins-mode,.ins-exp,.ins-chips').forEach(el=>el.remove());
     /* lebar wadah sudah desktop; paksa grid-nya juga supaya tidak mewarisi aturan media query HP */
     box.classList.add('wow-pdf-force');
+    await wowPdfInlineImages(box);
     box.querySelectorAll('canvas').forEach(cv=>{
       try{
         const im=document.createElement('img');im.src=cv.toDataURL('image/png');
@@ -5249,10 +5250,43 @@ function wowPdfRenderSection(kind,pic){
 }
 /* Untuk memeriksa hasil di browser: buka console lalu jalankan
    await __wowPdfDebug('IMAD')  → menempel gambar peta & 3 tangkapan layar ke halaman. */
+window.__wowPdfDiag=async function(pic){
+  pic=pic||(document.getElementById('sel-export-pic')||{}).value||INS_PIC||Object.keys(WOW_PIC_KAB).sort()[0];
+  const log=[];
+  const step=async(label,fn)=>{
+    const t0=Date.now();
+    try{const r=await fn();log.push('✅ '+label+' ('+(Date.now()-t0)+' ms)');return r;}
+    catch(e){log.push('❌ '+label+' → '+(e&&e.message||e));throw e;}
+  };
+  try{
+    await step('library jsPDF',()=>wrLoadLib('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',()=>!!(window.jspdf&&window.jspdf.jsPDF)));
+    await step('library autotable',()=>wrLoadLib('https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js',()=>!!(window.jspdf&&window.jspdf.jsPDF&&window.jspdf.jsPDF.API.autoTable)));
+    await step('modul peta Sulawesi',()=>wowPdfLoadMapLib());
+    const sales=await step('data penjualan',()=>typeof WOW_SALES!=='undefined'?Promise.resolve():new Promise(ok=>wsEnsure(ok)));
+    wsNormMaster();
+    await step('data PIC',()=>Promise.resolve(wowPdfPicFacts(pic)));
+    const maps=await step('gambar peta (SVG→canvas)',()=>wowSulMakeImages(pic));
+    step_note('ukuran peta',Math.round((maps.main||'').length/1024)+' KB PNG');
+    for(const kind of ['av','sales','combo']){
+      const nm=kind==='av'?'Insight AV':kind==='sales'?'Insight Penjualan':'Insight Gabungan';
+      const built=await step('render tab '+nm,()=>wowPdfRenderSection(kind,pic));
+      try{
+        const pngs=await step('rasterisasi '+nm,()=>wowPdfElementToPngs(built.sec,{width:1120,slicePx:1400}));
+        step_note(nm+' → '+pngs.shots.length+' gambar, tinggi '+Math.round(pngs.height)+' px');
+      }finally{built.restore();}
+    }
+  }catch(e){/* sudah dicatat */}
+
+  function step_note(k,v){log.push('   · '+k+': '+v);}
+  const t=wowPdfToast(log.join('<br>').replace(/✅/g,'✅').replace(/❌/g,'❌'),120000);
+  t.style.maxHeight='60vh';t.style.overflow='auto';
+  console.log(log.join('\n'));
+  return log;
+};
+
 window.__wowPdfDebug=async function(pic){
   pic=pic||Object.keys(WOW_PIC_KAB).sort()[0];
   await wowPdfLoadMapLib();
-  await wowPdfLoadHtml2Canvas();
   if(typeof WOW_SALES==='undefined')await new Promise(ok=>wsEnsure(ok));
   wsNormMaster();
   const maps=await wowSulMakeImages(pic);
@@ -5263,12 +5297,13 @@ window.__wowPdfDebug=async function(pic){
   wrap.appendChild(mk(maps.main,520));wrap.appendChild(mk(maps.over,320));wrap.appendChild(mk(maps.all,520));
   document.body.appendChild(wrap);
   for(const kind of ['av','sales','combo']){
-    const built=wowPdfRenderSection(kind,pic);
-    await new Promise(r=>setTimeout(r,200));
-    const out=await wowPdfElementToPngs(built.sec,{scale:1,width:1120,slicePx:1500});
-    built.restore();
-    const h=document.createElement('h3');h.textContent=kind;h.style.fontFamily='Poppins';wrap.appendChild(h);
-    out.shots.forEach(sh=>wrap.appendChild(mk(sh.data,1080)));
+    const built=await wowPdfRenderSection(kind,pic);
+    try{
+      await new Promise(r=>setTimeout(r,200));
+      const out=await wowPdfElementToPngs(built.sec,{width:1120,slicePx:1400});
+      const h=document.createElement('h3');h.textContent=kind;h.style.fontFamily='Poppins';wrap.appendChild(h);
+      out.shots.forEach(sh=>wrap.appendChild(mk(sh.data,1080)));
+    }finally{built.restore();}
   }
   const close=document.createElement('button');close.textContent='tutup';
   close.style.cssText='position:fixed;right:16px;top:16px;z-index:100000;padding:8px 14px;';
@@ -5284,44 +5319,90 @@ function wowPdfSectionHead(kind,pic){
     +'<div style="font-size:15px;font-weight:800;color:#0B2B26;margin-top:2px;">'+wowInsEsc(t[1])+'</div></div>';
 }
 
-/* Rasterisasi elemen DOM menjadi beberapa gambar PNG yang dipotong per halaman. */
+/* ── Rasterisasi elemen DOM → gambar per halaman (hemat memori, untuk HP) ──
+   Catatan memori: canvas besar gampang bikin tab mati di iOS/Android. Jadi:
+   lebar maksimum dibatasi, skala diturunkan saat data URI membengkak, dan
+   tiap potongan langsung dikecilkan agar canvas sementara tidak menumpuk. */
+/* Batas piksel per SISI canvas. Skala dihitung supaya lebar hasil ≥ ~1100 px
+   (cukup tajam untuk A4) tapi tidak melebihi batas memori perangkat. */
+const WOW_PDF_MAXPX=(typeof navigator!=='undefined'&&navigator.deviceMemory&&navigator.deviceMemory>=8)?2600:2200;
+const WOW_PDF_MINW=1100;
+function wowPdfScaleFor(w,h,opts){
+  const want=(opts&&opts.scale)||16/9;
+  const maxPx=(opts&&opts.maxPx)||WOW_PDF_MAXPX;
+  let sc=want;
+  /* turunkan hanya kalau melewati batas piksel */
+  const byW=maxPx/w, byH=maxPx/Math.max(1,h);
+  sc=Math.min(sc,byW,byH);
+  /* tapi jangan sampai lebar gambar di bawah ambang ketajaman */
+  sc=Math.max(sc,WOW_PDF_MINW/w);
+  return Math.max(0.75,Math.min(2.2,Math.round(sc*100)/100));
+}
+/* potong satu canvas sumber jadi beberapa halaman; tiap halaman dikecilkan
+   bila data URInya kebesaran (batas aman PDF & memori) */
+function wowPdfSliceCanvas(cv,W,scale,slicePx){
+  const per=(slicePx||1400);
+  const pageH=Math.min(cv.height,per*scale);
+  const shots=[];
+  const MAXB=1500*1024;          // ±1,5 MB per gambar di dalam PDF
+  for(let y=0;y<cv.height;y+=pageH){
+    const h=Math.min(pageH,cv.height-y);
+    let c=document.createElement('canvas');c.width=cv.width;c.height=h;
+    let ctx=c.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height);
+    ctx.drawImage(cv,0,y,cv.width,h,0,0,cv.width,h);
+    let data=c.toDataURL('image/png');
+    if(data.length>MAXB){                      // PNG besar → kecilkan bertahap
+      let k=0.8;
+      while(data.length>MAXB&&k>0.4){
+        const c2=document.createElement('canvas');
+        c2.width=Math.max(320,Math.round(c.width*k));c2.height=Math.max(120,Math.round(c.height*k));
+        const x2=c2.getContext('2d');x2.fillStyle='#fff';x2.fillRect(0,0,c2.width,c2.height);
+        x2.drawImage(c,0,0,c2.width,c2.height);
+        c=c2;data=c.toDataURL('image/png');k-=0.15;
+      }
+    }
+    shots.push({data:data,w:W,sliceH:h/scale});
+    c.width=c.height=0;                        // lepas memori
+  }
+  return shots;
+}
 async function wowPdfElementToPngs(el,opts){
   opts=opts||{};
-  if(window.html2canvas){
+  const W=Math.max(720,Math.min(1120,opts.width||1120));
+  const H=Math.max(200,Math.ceil(el.getBoundingClientRect().height));
+  const scale=wowPdfScaleFor(W,Math.min(H,1400),opts);
+  const o=Object.assign({},opts,{width:W,scale:scale});
+  /* 1) jalur ringan (SVG) — cukup untuk Chrome/Firefox dan hemat memori */
+  try{
+    const r=await wowPdfViaForeignObject(el,o);
+    if(r&&r.shots&&r.shots.length&&r.height>20)return r;
+    console.warn('jalur SVG menghasilkan gambar kosong');
+  }catch(e){console.warn('jalur SVG gagal:',e&&e.message);}
+  /* 2) cadangan html2canvas (lebih berat) — dimuat hanya bila jalur 1 gagal */
+  if(await wowPdfLoadHtml2Canvas()){
     try{
-      const r=await wowPdfViaHtml2canvas(el,opts);
-      /* hasil kosong (mis. elemen di luar layar gagal dipotret) → pakai jalur SVG */
+      const r=await wowPdfViaHtml2canvas(el,Object.assign({},o,{scale:Math.min(1.5,scale)}));
       if(r&&r.shots&&r.shots.length&&r.height>20)return r;
-      console.warn('html2canvas menghasilkan gambar kosong, memakai jalur SVG');
-    }catch(e){console.warn('html2canvas gagal, memakai jalur SVG',e);}
+    }catch(e){console.warn('html2canvas juga gagal:',e&&e.message);}
   }
-  return wowPdfViaForeignObject(el,opts);
+  throw new Error('konten tidak bisa dijadikan gambar di perangkat ini');
 }
 async function wowPdfViaHtml2canvas(el,opts){
   const PX=opts.scale||2;
-  const W=Math.max(760,Math.min(1180,opts.width||1120));
+  const W=Math.max(720,Math.min(1120,opts.width||1120));
   const oldW=el.style.width;el.style.width=W+'px';
   try{
     await new Promise(r=>setTimeout(r,50));
     const cv=await html2canvas(el,{scale:PX,backgroundColor:'#ffffff',useCORS:true,logging:false,
       width:W,windowWidth:W+60,
       ignoreElements:x=>x.classList&&(x.classList.contains('ins-exp')||x.tagName==='BUTTON')});
-    const per=opts.slicePx||1500;           // tinggi potongan dalam px CSS
-    const shots=[];
-    const pageH=Math.min(cv.height,per*PX);
-    for(let y=0;y<cv.height;y+=pageH){
-      const h=Math.min(pageH,cv.height-y);
-      const c=document.createElement('canvas');c.width=cv.width;c.height=h;
-      const ctx=c.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height);
-      ctx.drawImage(cv,0,y,cv.width,h,0,0,cv.width,h);
-      shots.push({data:c.toDataURL('image/png'),w:W,sliceH:h/PX});
-    }
-    return {shots:shots,width:W,height:cv.height/PX};
+    const shots=wowPdfSliceCanvas(cv,W,PX,opts.slicePx||1400);
+    const height=cv.height/PX;
+    cv.width=cv.height=0;
+    return {shots:shots,width:W,height:height};
   }finally{el.style.width=oldW;}
 }
-
-/* Fallback tanpa pustaka: layout HTML diubah ke SVG foreignObject lalu digambar ke canvas.
-   Dipakai bila html2canvas tidak tersedia (mis. CDN diblokir). */
+/* Fallback tanpa pustaka: layout HTML diubah ke SVG foreignObject lalu digambar ke canvas. */
 function wowPdfCssAll(){
   let css='';
   Array.from(document.styleSheets).forEach(sh=>{
@@ -5330,11 +5411,49 @@ function wowPdfCssAll(){
   return css;
 }
 async function wowPdfViaForeignObject(el,opts){
-  const W=Math.max(760,Math.min(1180,opts.width||1120));
-  const oldW=el.style.width;el.style.width=W+'px';
+  const W=Math.max(720,Math.min(1120,opts.width||1120));
+  const scale=opts.scale||1.5;
+  const chunk=Math.max(600,opts.slicePx||1400);       // tinggi satu potongan (px CSS)
+  const css=wowPdfCssAll();
+  const oldW=el.style.width;
+  el.style.width=W+'px';
   await new Promise(r=>setTimeout(r,60));
-  const clone=el.cloneNode(true);
-  /* foreignObject tidak menggambar kontrol form (select/input) — ganti jadi teks biasa */
+  const totalH=Math.max(200,Math.ceil(el.getBoundingClientRect().height));
+  el.style.width=oldW;
+  /* Render per potongan: tiap canvas hanya setinggi `chunk`, jadi tidak pernah
+     membuat satu canvas raksasa (penyebab tab HP kehabisan memori). */
+  const shots=[];
+  for(let y=0;y<totalH;y+=chunk){
+    const h=Math.min(chunk,totalH-y);
+    const clone=el.cloneNode(true);
+    wowPdfPrepareClone(clone,W,h,y);          // ganti kontrol form + potong bagian ini
+    let body;
+    try{body=new XMLSerializer().serializeToString(clone);}
+    catch(e){body=clone.outerHTML;}
+    const html='<div xmlns="http://www.w3.org/1999/xhtml" style="background:#fff;width:'+W+'px">'
+      +'<style>'+css+'</style>'+body+'</div>';
+    const svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+W+'" height="'+h+'">'
+      +'<foreignObject x="0" y="0" width="100%" height="100%">'+html+'</foreignObject></svg>';
+    const img=new Image();
+    await new Promise((ok,err)=>{
+      img.onload=ok;
+      img.onerror=()=>err(new Error('gagal rasterisasi konten (SVG)'));
+      img.src='data:image/svg+xml;base64,'+btoa(unescape(encodeURIComponent(svg)));
+    });
+    const cv=document.createElement('canvas');
+    cv.width=Math.max(1,Math.round(W*scale));
+    cv.height=Math.max(1,Math.round(h*scale));
+    const ctx=cv.getContext('2d');
+    ctx.fillStyle='#fff';ctx.fillRect(0,0,cv.width,cv.height);
+    ctx.drawImage(img,0,0,cv.width,cv.height);
+    shots.push({data:wowPdfShrink(cv),w:W,sliceH:h});
+    cv.width=cv.height=0;                      // lepas memori sebelum potongan berikutnya
+  }
+  return {shots:shots,width:W,height:totalH};
+}
+/* siapkan salinan DOM untuk satu potongan: kontrol form jadi teks, bagian lain
+   digeser ke atas sehingga potongan ke-y tampil mulai dari 0 */
+function wowPdfPrepareClone(clone,W,h,y){
   clone.querySelectorAll('select').forEach(sel=>{
     const o=sel.options&&sel.options[sel.selectedIndex];
     const sp=document.createElement('span');
@@ -5346,55 +5465,90 @@ async function wowPdfViaForeignObject(el,opts){
     const sp=document.createElement('span');sp.textContent=inp.value||'';
     inp.parentNode.replaceChild(sp,inp);
   });
-  clone.style.cssText='width:'+W+'px;background:#fff;padding:6px;';
-  const H=Math.max(200,Math.ceil(el.getBoundingClientRect().height));
-  const css=wowPdfCssAll();
-  const html='<div xmlns="http://www.w3.org/1999/xhtml"><style>'+css+'</style>'+clone.outerHTML+'</div>';
-  const svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+W+'" height="'+H+'">'
-    +'<foreignObject width="100%" height="100%">'+html+'</foreignObject></svg>';
-  el.style.width=oldW;
-  const scale=2;
-  const img=new Image();
-  await new Promise((ok,err)=>{
-    img.onload=ok;img.onerror=()=>err(new Error('gagal rasterisasi konten'));
-    img.src='data:image/svg+xml;base64,'+btoa(unescape(encodeURIComponent(svg)));
-  });
-  const cv=document.createElement('canvas');cv.width=W*scale;cv.height=H*scale;
-  const ctx=cv.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,cv.width,cv.height);
-  ctx.drawImage(img,0,0,cv.width,cv.height);
-  const per=opts.slicePx||1400,pageH=Math.min(cv.height,per*scale),shots=[];
-  for(let y=0;y<cv.height;y+=pageH){
-    const h=Math.min(pageH,cv.height-y);
-    const c=document.createElement('canvas');c.width=cv.width;c.height=h;
-    const cx=c.getContext('2d');cx.fillStyle='#fff';cx.fillRect(0,0,c.width,c.height);
-    cx.drawImage(cv,0,y,cv.width,h,0,0,cv.width,h);
-    shots.push({data:c.toDataURL('image/png'),w:W,sliceH:h/scale});
+  /* pembungkus: tinggi tetap = tinggi potongan, isi digeser -y */
+  const wrap=document.createElement('div');
+  wrap.setAttribute('style','width:'+W+'px;height:'+h+'px;overflow:hidden;position:relative;background:#fff;');
+  const inner=document.createElement('div');
+  inner.setAttribute('style','position:absolute;left:0;top:'+(-y)+'px;width:'+W+'px;background:#fff;');
+  inner.appendChild(clone);
+  wrap.appendChild(inner);
+  return wrap;
+}
+/* PNG → data URI; kalau kebesaran, perkecil bertahap (batas aman PDF & memori) */
+function wowPdfShrink(cv){
+  const MAXB=1200*1024;
+  let data=cv.toDataURL('image/png');
+  let k=0.85;
+  while(data.length>MAXB&&k>0.45){
+    const c2=document.createElement('canvas');
+    c2.width=Math.max(320,Math.round(cv.width*k));
+    c2.height=Math.max(120,Math.round(cv.height*k));
+    const x2=c2.getContext('2d');
+    x2.fillStyle='#fff';x2.fillRect(0,0,c2.width,c2.height);
+    x2.drawImage(cv,0,0,c2.width,c2.height);
+    data=c2.toDataURL('image/png');
+    c2.width=c2.height=0;
+    k-=0.15;
   }
-  return {shots:shots,width:W,height:H};
+  return data;
 }
 
-/* Dialog export: peta posisi PIC ditampilkan lebih dulu sebelum unduh */
-function openExportInsightPdfModal(){
-  const m=document.getElementById('modal-export-pdf-insight');
-  const sel=document.getElementById('sel-export-pic');
-  if(!m||!sel)return;
-  const curPic=(document.getElementById('f-mds')||{}).value||INS_PIC||'';
-  const picList=typeof WOW_PIC_KAB!=='undefined'?Object.keys(WOW_PIC_KAB).sort():[];
-  sel.innerHTML=picList.map(p=>`<option value="${p}"${p===curPic?' selected':''}>${p}</option>`).join('');
-  wowPdfLoadMapLib().then(()=>{
-    const box=document.getElementById('wow-sul-box');
-    if(box)box.innerHTML=wowSulMapBoxHTML(sel.value||picList[0]||'');
-  }).catch(()=>{});
-  m.classList.remove('hidden');
+/* Gambar di dalam konten (logo, dsb) harus dijadikan data URI dulu: saat konten
+   dipindah ke SVG, alamat relatif seperti img/nutrisari.png tidak bisa dimuat. */
+function wowPdfInlineImages(root){
+  const imgs=Array.from(root.querySelectorAll('img'));
+  if(!imgs.length)return Promise.resolve();
+  return Promise.all(imgs.map(im=>new Promise(ok=>{
+    if(/^data:/i.test(im.src)){ok();return;}
+    const done=()=>ok();
+    im.addEventListener('load',done,{once:true});
+    im.addEventListener('error',()=>{im.style.display='none';ok();},{once:true});
+    try{
+      const c=document.createElement('canvas');
+      c.width=im.naturalWidth||im.width||60;c.height=im.naturalHeight||im.height||40;
+      if(!c.width||!c.height){ok();return;}
+      c.getContext('2d').drawImage(im,0,0,c.width,c.height);
+      im.src=c.toDataURL('image/png');       // sudah dimuat → langsung bisa dipakai
+      c.width=c.height=0;ok();
+    }catch(e){ok();}
+  })));
 }
 
-/* ══════════════════════════════════════════════════════════════════════════
-   PDF INSIGHT · penyusun dokumen (peta posisi + gambar 3 tab insight)
-   ══════════════════════════════════════════════════════════════════════════ */
+/* html2canvas hanya dimuat sebagai cadangan (jalur utama memakai SVG yang lebih hemat memori) */
 function wowPdfLoadHtml2Canvas(){
   if(window.html2canvas)return Promise.resolve(true);
   return wrLoadLib('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js',
     ()=>!!window.html2canvas).then(()=>true).catch(()=>false);
+}
+
+/* Simpan PDF sebagai Blob. Di HP, doc.save() (data URI) sering diblokir karena
+   URL-nya kepanjangan; blob URL jauh lebih pendek dan didukung Chrome/Safari. */
+function wowPdfSaveBlob(blob,fn){
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=fn;a.rel='noopener';a.style.display='none';
+  document.body.appendChild(a);
+  a.click();
+  /* kalau unduhan tidak jalan (mis. iOS membuka PDF di tab baru), sediakan tautan */
+  wowPdfToast('PDF siap: <b>'+wowInsEsc(fn)+'</b><br><a href="'+url+'" target="_blank" rel="noopener" style="color:#B5D334">buka / unduh lagi</a>',20000);
+  setTimeout(()=>{try{a.remove();}catch(e){}},3000);
+  setTimeout(()=>{try{URL.revokeObjectURL(url);}catch(e){}},120000);
+  return true;
+}
+/* notifikasi kecil di bawah layar (bukan alert, supaya tidak memblokir) */
+function wowPdfToast(html,ms){
+  let t=document.getElementById('wow-pdf-toast');
+  if(!t){
+    t=document.createElement('div');t.id='wow-pdf-toast';
+    t.style.cssText='position:fixed;left:12px;right:12px;bottom:14px;z-index:100000;background:#0B2B26;'
+      +'color:#DAF1DE;font:600 12px Poppins,system-ui,sans-serif;padding:11px 14px;border-radius:10px;'
+      +'line-height:1.45;word-break:break-word;';
+    document.body.appendChild(t);
+  }
+  t.innerHTML=html;t.style.display='block';
+  clearTimeout(t._t);
+  t._t=setTimeout(()=>{t.style.display='none';},ms||8000);
+  return t;
 }
 
 /* nama provinsi (singkat) untuk daftar kabupaten tertentu */
@@ -5455,7 +5609,9 @@ async function exportInsightPdf(targetPic,btn){
     await wrLoadLib('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',()=>!!(window.jspdf&&window.jspdf.jsPDF));
     await wrLoadLib('https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js',()=>!!(window.jspdf&&window.jspdf.jsPDF&&window.jspdf.jsPDF.API.autoTable));
     await wowPdfLoadMapLib();
-    await wowPdfLoadHtml2Canvas();   /* opsional: bila CDN diblokir, dipakai jalur foreignObject */
+    /* Catatan: sengaja TIDAK memakai html2canvas — pustaka itu menggambar ulang
+       seluruh DOM ke satu canvas besar dan sering membuat tab HP kehabisan memori
+       (gejala: tombol unduh diklik lalu tidak terjadi apa-apa). Jalur SVG lebih ringan. */
 
     if(typeof WOW_SALES==='undefined'){
       if(btn)btn.textContent='Memuat data penjualan…';
@@ -5478,13 +5634,18 @@ async function exportInsightPdf(targetPic,btn){
     /* ── 2. gambar isi tiga tab insight untuk PIC ini ── */
     const sections=[];
     for(const kind of ['av','sales','combo']){
-      if(btn)btn.textContent='Mengambil gambar Insight '+(kind==='av'?'AV':kind==='sales'?'Penjualan':'Gabungan')+'…';
-      const built=wowPdfRenderSection(kind,targetPic);
+      const nmStep=kind==='av'?'Insight AV':kind==='sales'?'Insight Penjualan':'Insight Gabungan';
+      if(btn)btn.textContent='Mengambil gambar '+nmStep+'…';
+      wowPdfToast('Memotret '+nmStep+'… (jangan tutup halaman)',60000);
+      const built=await wowPdfRenderSection(kind,targetPic);
       hosts.push(built);
       try{
-        await new Promise(r=>setTimeout(r,150));   // beri waktu font & SVG selesai dilukis
-        const pngs=await wowPdfElementToPngs(built.sec,{scale:2,width:1120,slicePx:1500});
+        await new Promise(r=>setTimeout(r,200));   // beri waktu font & gambar selesai dilukis
+        const pngs=await wowPdfElementToPngs(built.sec,{width:1120,slicePx:1400});
+        if(!pngs||!pngs.shots||!pngs.shots.length)throw new Error('halaman '+kind+' kosong');
         sections.push({kind:kind,pngs:pngs});
+      }catch(e){
+        throw new Error('Gagal memotret tab '+(kind==='av'?'Insight AV':kind==='sales'?'Insight Penjualan':'Insight Gabungan')+': '+(e&&e.message||e));
       }finally{
         built.restore();
         hosts.pop();
@@ -5493,6 +5654,7 @@ async function exportInsightPdf(targetPic,btn){
 
     /* ── 3. susun PDF A4 portrait ── */
     if(btn)btn.textContent='Menyusun PDF…';
+    wowPdfToast('Menyusun PDF '+sections.reduce((a,x)=>a+x.pngs.shots.length,0)+' halaman…',60000);
     const doc=new window.jspdf.jsPDF({unit:'mm',format:'a4',orientation:'portrait'});
     const PW=210,PH=297,M=12,CW=PW-2*M;
     const tgl=new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
@@ -5677,13 +5839,20 @@ async function exportInsightPdf(targetPic,btn){
     });
 
     const fn='Insight_WOW_'+wrSafe(targetPic,20)+'_'+new Date().toISOString().slice(0,10)+'.pdf';
-    doc.save(fn);
+    if(btn)btn.textContent='Menyimpan berkas…';
+    wowPdfToast('Menyimpan berkas PDF…',60000);
+    wowPdfSaveBlob(doc.output('blob'),fn);
   }catch(err){
     console.error('exportInsightPdf error',err);
-    alert('Gagal membuat PDF: '+(err&&err.message||err));
+    const msg='Gagal membuat PDF: '+(err&&err.message||err);
+    alert(msg+'\n\nCoba: (1) tutup tab/aplikasi lain lalu ulangi, (2) pakai Chrome/Edge terbaru, '
+      +'(3) atau ketik  __wowPdfDebug()  di alamat/console untuk melihat bagian mana yang gagal.');
   }finally{
     hosts.forEach(h=>{try{h.restore();}catch(e){}});
     PDF_INSIGHT=false;
     if(btn){btn.disabled=false;btn.textContent=oldText;}
+    try{render();}catch(e){}
+    const t=document.getElementById('wow-pdf-toast');
+    if(t&&t._t)clearTimeout(t._t);
   }
 }
