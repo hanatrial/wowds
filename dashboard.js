@@ -3149,6 +3149,7 @@ function renderWow(wowF){
     <th onclick="sortBy('id')">ID${ar('id')}</th>
     <th onclick="sortBy('timestamp')">Waktu${ar('timestamp')}</th>
     <th onclick="sortBy('mds')">PIC${ar('mds')}</th>
+    <th onclick="sortBy('mdsAsli')">MDS${ar('mdsAsli')}</th>
     <th onclick="sortBy('area')">Kabupaten${ar('area')}</th>
     <th onclick="sortBy('store')">Toko${ar('store')}</th>
     <th>Toko Pasangan</th>
@@ -3177,6 +3178,7 @@ function renderWow(wowF){
       <td class="td-id">${r.id||'—'}</td>
       <td class="td-dim">${ts.toLocaleDateString('id-ID',{day:'numeric',month:'short'})} ${ts.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})}</td>
       <td class="td-main">${r.mds||'—'}</td>
+      <td class="td-dim">${r.mdsAsli||'—'}</td>
       <td class="td-dim">${r.area||'—'}</td>
       <td class="td-mid">${wowSides(r.store,r.storePasangan)[0]||'—'}${hasPhoto?' <span style="font-size:9px;color:var(--accent)">📷</span>':canExpand?' <span style="font-size:9px;color:var(--t3)">▾</span>':''}</td>
       <td class="td-dim">${wowSides(r.store,r.storePasangan)[1]||'—'}</td>
@@ -3201,7 +3203,7 @@ function renderWow(wowF){
         </select>
       </td>
     </tr>`;
-  }).join(''):`<tr><td colspan="12"><div class="empty-state">Tidak ada data Validasi Display WOW.</div></td></tr>`;
+  }).join(''):`<tr><td colspan="13"><div class="empty-state">Tidak ada data Validasi Display WOW.</div></td></tr>`;
   const tf=document.getElementById('tfoot-wow');
   if(tf)tf.textContent=`${rows.length} kunjungan`;
   if(_expandedWowVid){const tr=document.querySelector(`tr[data-vid="${_expandedWowVid}"]`);if(tr)toggleWowDetail(tr,_expandedWowVid);}
