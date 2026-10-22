@@ -23958,7 +23958,7 @@ function wowGetItems(){
   return ns.concat(hilo,ts);
 }
 function initWow(){
-  Object.assign(WOW,{step:0,area:'',mds:'',date:'',store:'',storePasangan:'',photo:null,photoUpload:null,uploadDone:false,items:{},photos:[null,null,null],uploads:[null,null,null],done:[true,true,true]});
+  Object.assign(WOW,{step:0,area:'',mds:'',mdsNama:'',date:'',store:'',storePasangan:'',photo:null,photoUpload:null,uploadDone:false,items:{},photos:[null,null,null],uploads:[null,null,null],done:[true,true,true]});
   const as=document.getElementById('wow-area-sel');
   wowFillMds();
   document.getElementById('wow-store-input').value='';
@@ -23985,7 +23985,28 @@ function wowFillKab(){
   (WOW_PIC_KAB[pic]||[]).forEach(n=>{ const o=document.createElement('option'); o.value=n; o.textContent=n; ks.appendChild(o); });
   wowCheck(0);
 }
-function wowPicChanged(){ wowFillKab(); wowFillStore(); }
+// Nama MDS yang pernah visit per PIC (dari kunjungan lama). Nama baru: pilih "Lainnya" lalu ketik.
+const WOW_MDS_BY_PIC={"BINCHA":["Marwan","Muh Adrian Idris","Muhlis","Sugiono","Yurike Kyusuchi"],"FATUR":["Syaifullah"],"HENDRY":["Ignacia Regina Naung","Melisa Pungky Mapaliey","Ridlan Mangilong","Rivanti Gusti Husein","Tesar"],"IAN":["Kadek Adi Merta Sastrawan"],"IMAD":["A. Mappanyukki","Andi Iswan Tenri Bau","Andi Muh. Nurfikrahturrahman","Hasrar","Musdalifah","Rahmat","Sulfiana Rusdy","Syafri"],"IMAD GTO":["Abd. Rahman Lahay","Aditya Hulopi","Mohammad Rahman Marwan","Satrio Yusuf"],"LAYWITH":["Firman","Hijrayanti Mahruddin"],"PANCA":["Abdul Rahman (Rangga)","Dwi Haryanto","Laode Asrad Ilhamid"],"VILO":["Muh Nasir K","Rafdi","Vicry","Yuliana Rusli"],"WAFI":["A. Arwandi Amrah","Andi Reski","Ilham"]};
+function wowFillMdsNama(){
+  const pic=document.getElementById('wow-mds-sel').value;
+  const wrap=document.getElementById('wow-mdsnama-wrap'),sel=document.getElementById('wow-mdsnama-sel'),txt=document.getElementById('wow-mdsnama-txt');
+  if(!wrap||!sel)return;
+  wrap.style.display=pic?'':'none';
+  sel.innerHTML='<option value="">— Pilih nama MDS —</option>'+(WOW_MDS_BY_PIC[pic]||[]).map(n=>'<option>'+n+'</option>').join('')+'<option value="__lain">Lainnya (ketik nama)</option>';
+  if(txt){txt.value='';txt.style.display='none';}
+  wowCheck(0);
+}
+function wowMdsNamaValue(){
+  const sel=document.getElementById('wow-mdsnama-sel'),txt=document.getElementById('wow-mdsnama-txt');
+  if(!sel)return '';
+  return sel.value==='__lain'?((txt&&txt.value)||'').replace(/\s+/g,' ').trim():sel.value;
+}
+function wowMdsNamaChanged(){
+  const sel=document.getElementById('wow-mdsnama-sel'),txt=document.getElementById('wow-mdsnama-txt');
+  if(txt)txt.style.display=sel&&sel.value==='__lain'?'':'none';
+  wowCheck(0);
+}
+function wowPicChanged(){ wowFillKab(); wowFillStore(); wowFillMdsNama(); }
 const WOW_MDS_SHORT_TO_FULL={
   'Gorontalo':{'Apin':'Mohammad Rahman Marwan','Rio':'Satrio Yusuf','Abdul':'Abd. Rahman Lahay','Adit':'Aditya Hulopi'}
 };
@@ -24156,7 +24177,7 @@ function wowCheck(step){
   if(step===0){
     const sel=document.getElementById('wow-mds-sel').value;
     const date=document.getElementById('wow-date-input').value;
-    ok=sel!==''&&date!=='';
+    ok=sel!==''&&date!==''&&wowMdsNamaValue()!=='';
   } else if(step===1){
     const val=document.getElementById('wow-store-input').value.trim();
     ok=val!==''&&WOW.kabOk===true;
@@ -24174,6 +24195,9 @@ function wowNext(){
   if(WOW.step===0){
     const mds=document.getElementById('wow-mds-sel').value;
     if(!WOW_PIC.includes(mds)){ alert('Pilih PIC dari daftar.'); return; }
+    const mn=wowMdsNamaValue();
+    if(!mn){ alert('Pilih atau isi nama MDS yang visit.'); return; }
+    WOW.mdsNama=mn;
     WOW.area='';
     WOW.date=document.getElementById('wow-date-input').value;
     WOW.mds=mds;
@@ -24286,7 +24310,7 @@ async function submitWow(){
     const _tout=new Promise((_,r)=>setTimeout(()=>r(new Error('Tersimpan offline — akan sinkron otomatis saat sinyal bagus')),30000));
     const _ITEMS=wowGetItems();
     const _namedItems={};Object.entries(WOW.items).forEach(([i,v])=>{const it=_ITEMS[+i];if(it)_namedItems[it.name]=v;});
-    await withFirestoreRetry(()=>Promise.race([db.collection('wow_logs').add({id,area:WOW.area,mds:WOW.mds,store:WOW.store,...(WOW.storePasangan?{storePasangan:WOW.storePasangan}:{}),tanggalVisit:WOW.date,timestamp:firebase.firestore.FieldValue.serverTimestamp(),avail,unavail,needsval,items:_namedItems,...(PH[0]?{photoData:PH[0]}:{}),...(PH[1]?{photoData2:PH[1]}:{}),...(PH[2]?{photoData3:PH[2]}:{})}),_tout]));
+    await withFirestoreRetry(()=>Promise.race([db.collection('wow_logs').add({id,area:WOW.area,mds:WOW.mds,...(WOW.mdsNama?{mdsAsli:WOW.mdsNama}:{}),store:WOW.store,...(WOW.storePasangan?{storePasangan:WOW.storePasangan}:{}),tanggalVisit:WOW.date,timestamp:firebase.firestore.FieldValue.serverTimestamp(),avail,unavail,needsval,items:_namedItems,...(PH[0]?{photoData:PH[0]}:{}),...(PH[1]?{photoData2:PH[1]}:{}),...(PH[2]?{photoData3:PH[2]}:{})}),_tout]));
     document.getElementById('wow-sm-status').textContent='✅ Tersimpan ke server';
     document.getElementById('wow-sm-foto').textContent=nFoto?'✅ '+nFoto+' foto':'—';
   }catch(e){
@@ -24304,6 +24328,7 @@ function resetWow(){
   document.getElementById('wow-dt').classList.add('hidden');
   document.getElementById('wow-area-sel').value='';
   document.getElementById('wow-mds-sel').value='';
+  wowFillMdsNama();
   document.getElementById('wow-store-input').value='';
   document.getElementById('wow-store-pasangan').value='';
   document.getElementById('wow-store-pasangan-wrap').classList.add('hidden');

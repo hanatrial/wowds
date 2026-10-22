@@ -14,8 +14,8 @@
 <link rel="icon" type="image/svg+xml" href="icon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="app.css?v=76">
-<link rel="stylesheet" href="lite.css?v=76">
+<link rel="stylesheet" href="app.css?v=77">
+<link rel="stylesheet" href="lite.css?v=77">
 </head>
 <body>
 <div id="app">
@@ -44,13 +44,19 @@
       <!-- Step 0: Area / MDS / Tanggal -->
       <div class="step-section active" id="wow-s0">
         <div class="s-title">Info Kunjungan</div>
-        <div class="s-sub">PIC, kabupaten, dan tanggal visit</div>
+        <div class="s-sub">PIC, nama MDS, kabupaten, dan tanggal visit</div>
         <div class="field">
           <label class="f-label">PIC</label>
           <select class="f-input sel" id="wow-mds-sel" onchange="wowPicChanged()">
             <option value="">— Pilih Area dulu —</option>
           </select>
           <div style="font-size:11px;color:var(--t3);margin-top:6px">PIC dipilih dari daftar.</div>
+        </div>
+        <div class="field" id="wow-mdsnama-wrap" style="display:none">
+          <label class="f-label">Nama MDS</label>
+          <select class="f-input sel" id="wow-mdsnama-sel" onchange="wowMdsNamaChanged()"></select>
+          <input class="f-input" id="wow-mdsnama-txt" type="text" placeholder="Ketik nama MDS" autocomplete="off" style="display:none;margin-top:8px" oninput="wowCheck(0)">
+          <div style="font-size:11px;color:var(--t3);margin-top:6px">Siapa yang melakukan visit. Nama baru: pilih Lainnya lalu ketik.</div>
         </div>
         <div class="field">
           <label class="f-label">Kabupaten</label>
@@ -175,12 +181,12 @@
 
 </div><!-- #app -->
 
-<script src="wow_toko_master.js?v=76"></script>
-<script src="app.js?v=76"></script>
+<script src="wow_toko_master.js?v=77"></script>
+<script src="app.js?v=77"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
-<script src="app-init.js?v=76"></script>
+<script src="app-init.js?v=77"></script>
 <script>openWow();</script>
 </body>
 </html>
