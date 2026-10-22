@@ -5240,6 +5240,8 @@ async function wowPdfRenderSection(kind,pic){
     else if(kind==='sales')renderWowSales();
     else renderWowCombo();
     /* kontrol yang tidak relevan di kertas */
+    /* kartu dengan tombol Export Excel (daftar toko) tidak dimasukkan ke PDF */
+    box.querySelectorAll('.ins-card').forEach(c=>{if(c.querySelector('.ins-exp'))c.remove();});
     box.querySelectorAll('.ins-mode,.ins-exp,.ins-chips').forEach(el=>el.remove());
     /* lebar wadah sudah desktop; paksa grid-nya juga supaya tidak mewarisi aturan media query HP */
     box.classList.add('wow-pdf-force');
@@ -5419,6 +5421,23 @@ function wowPdfCssAll(){
   });
   return css;
 }
+/* Potong gambar di batas antar baris kartu, bukan di tengah kartu. Tiap potongan <= maxH (muat satu halaman A4). */
+function wowPdfBreakSlices(el,totalH,maxH){
+  const t0=el.getBoundingClientRect().top;
+  const bs=[...el.querySelectorAll('.ins-grid > *')].map(c=>Math.round(c.getBoundingClientRect().top-t0)).filter(v=>v>0&&v<totalH);
+  const uniq=[...new Set(bs)].sort((a,b)=>a-b);
+  const out=[];let cur=0;
+  while(totalH-cur>maxH){
+    let cut=-1;
+    for(const b of uniq){if(b>cur+60&&b-cur<=maxH)cut=b;}
+    if(cut<0)cut=cur+maxH;           // satu blok lebih tinggi dari halaman: terpaksa dipotong
+    out.push({y:cur,h:cut-cur});cur=cut;
+  }
+  out.push({y:cur,h:totalH-cur});
+  /* sisa kecil di halaman terakhir digabung ke halaman sebelumnya (gambar diperkecil sedikit) */
+  if(out.length>1){const L=out[out.length-1],P=out[out.length-2];if(L.h<420&&(L.y+L.h-P.y)<=maxH*1.3){P.h=L.y+L.h-P.y;out.pop();}}
+  return out;
+}
 async function wowPdfViaForeignObject(el,opts){
   const W=Math.max(720,Math.min(1120,opts.width||1120));
   const scale=opts.scale||1.5;
@@ -5432,13 +5451,15 @@ async function wowPdfViaForeignObject(el,opts){
   /* Render per potongan: tiap canvas hanya setinggi `chunk`, jadi tidak pernah
      membuat satu canvas raksasa (penyebab tab HP kehabisan memori). */
   const shots=[];
-  for(let y=0;y<totalH;y+=chunk){
-    const h=Math.min(chunk,totalH-y);
+  const slices=opts.breakAtCards?wowPdfBreakSlices(el,totalH,Math.round(opts.maxSliceH||1440)):null;
+  const jobs=slices||(()=>{const l=[];for(let y=0;y<totalH;y+=chunk)l.push({y:y,h:Math.min(chunk,totalH-y)});return l;})();
+  for(const job of jobs){
+    const y=job.y,h=job.h;
     const clone=el.cloneNode(true);
-    wowPdfPrepareClone(clone,W,h,y);          // ganti kontrol form + potong bagian ini
+    const wrap=wowPdfPrepareClone(clone,W,h,y);   // ganti kontrol form + potong bagian ini (yang dipotret = pembungkus, bukan isi penuh)
     let body;
-    try{body=new XMLSerializer().serializeToString(clone);}
-    catch(e){body=clone.outerHTML;}
+    try{body=new XMLSerializer().serializeToString(wrap);}
+    catch(e){body=wrap.outerHTML;}
     const html='<div xmlns="http://www.w3.org/1999/xhtml" style="background:#fff;width:'+W+'px">'
       +'<style>'+css+'</style>'+body+'</div>';
     const svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+W+'" height="'+h+'">'
@@ -5712,7 +5733,7 @@ async function exportInsightPdf(targetPic,btn){
       }
       try{
         await new Promise(r=>setTimeout(r,200));   // beri waktu font & gambar selesai dilukis
-        const pngs=await wowPdfElementToPngs(built.sec,{width:1120,slicePx:1400});
+        const pngs=await wowPdfElementToPngs(built.sec,{width:1120,slicePx:1400,breakAtCards:true,maxSliceH:1440});
         if(!pngs||!pngs.shots||!pngs.shots.length)throw new Error('halaman '+kind+' kosong');
         sections.push({kind:kind,pngs:pngs});
       }catch(e){
