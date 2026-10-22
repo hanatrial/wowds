@@ -5704,6 +5704,12 @@ async function exportInsightPdf(targetPic,btn){
       wowPdfToast('Memotret '+nmStep+'… (jangan tutup halaman)',60000);
       const built=await wowPdfRenderSection(kind,targetPic);
       hosts.push(built);
+      /* tab tanpa data untuk PIC ini (mis. belum ada penjualan): jangan dianggap gagal */
+      if(!built.sec.querySelector('.ins-card')){
+        const em=built.sec.querySelector('.ins-empty');
+        sections.push({kind:kind,pngs:{shots:[]},empty:(em?em.textContent:'Belum ada data pada tab ini untuk PIC ini.').trim()});
+        built.restore();hosts.pop();continue;
+      }
       try{
         await new Promise(r=>setTimeout(r,200));   // beri waktu font & gambar selesai dilukis
         const pngs=await wowPdfElementToPngs(built.sec,{width:1120,slicePx:1400});
@@ -5748,7 +5754,12 @@ async function exportInsightPdf(targetPic,btn){
     sections.forEach(sx=>{sx.pngs.shots.forEach((sh,i)=>imgByKind[sx.kind].push({kind:sx.kind,shot:sh,i:i,n:sx.pngs.shots.length}));});
     const secTitle={av:'Insight AV Display',sales:'Insight Penjualan',combo:'Insight Gabungan'};
     const plan=[{t:'ringkas'}];
-    ['av','sales','combo'].forEach(k=>{if(POS.some(m=>m.kind===k))plan.push({t:'posisi',kind:k});imgByKind[k].forEach(p=>plan.push({t:'img',p}));});
+    const emptyBy={};sections.forEach(sx=>{if(sx.empty)emptyBy[sx.kind]=sx.empty;});
+    ['av','sales','combo'].forEach(k=>{
+      if(POS.some(m=>m.kind===k)&&wowPdfNilai(POS.filter(m=>m.kind===k)[0],targetPic))plan.push({t:'posisi',kind:k});
+      imgByKind[k].forEach(p=>plan.push({t:'img',p}));
+      if(emptyBy[k]&&!imgByKind[k].length)plan.push({t:'kosong',kind:k,msg:emptyBy[k]});
+    });
     const TOTAL=plan.length;
     const ORANGE=[232,131,58],BAR=[190,214,198];
     const nilai=POS.map(m=>({m,v:wowPdfNilai(m,targetPic)})).filter(x=>x.v);
@@ -5801,7 +5812,7 @@ async function exportInsightPdf(targetPic,btn){
         header('Posisi PIC '+targetPic+' dibanding PIC lain dan Sulawesi','Ringkasan '+nilai.length+' indikator dari Insight AV, Penjualan, dan Gabungan · tahun berjalan '+F.Y1);
         let y=31;
         const kpiW=(CW-3*3)/4;
-        [['Peringkat Omzet','#'+F.pos+' / '+F.rank.length],['Pangsa Sulawesi',wsNum(F.share,1)+'%'],['Line / EA 3 Bln',wsNum(F.lineEa,2)],['Rata-rata AV',F.av==null?'—':wsNum(F.av,1)+' item']].forEach((k,i)=>{
+        [['Peringkat Omzet',F.rank.some(x=>x.p===targetPic)?'#'+F.pos+' / '+F.rank.length:'—'],['Pangsa Sulawesi',F.rank.some(x=>x.p===targetPic)?wsNum(F.share,1)+'%':'—'],['Line / EA 3 Bln',F.rank.some(x=>x.p===targetPic)?wsNum(F.lineEa,2):'—'],['Rata-rata AV',F.av==null?'—':wsNum(F.av,1)+' item']].forEach((k,i)=>{
           const x=M+i*(kpiW+3);
           doc.setDrawColor(226,233,229);doc.setFillColor(247,250,248);doc.roundedRect(x,y,kpiW,14,1.4,1.4,'FD');
           doc.setFillColor(...hex2rgb(picColor));doc.rect(x,y,kpiW,1.2,'F');
@@ -5814,7 +5825,7 @@ async function exportInsightPdf(targetPic,btn){
         doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(...GREEN);doc.text('Bahasan singkat',M,y);y+=4.5;
         doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(...INK);
         const line=(txt)=>{const t=doc.splitTextToSize(txt,CW);doc.text(t,M,y);y+=t.length*3.8+1.6;};
-        line('PIC '+targetPic+' ada di peringkat #'+F.pos+' dari '+F.rank.length+' PIC untuk omzet '+F.Y1+', dengan pangsa '+wsNum(F.share,1)+'% dari omzet Sulawesi.');
+        line(F.rank.some(x=>x.p===targetPic)?'PIC '+targetPic+' ada di peringkat #'+F.pos+' dari '+F.rank.length+' PIC untuk omzet '+F.Y1+', dengan pangsa '+wsNum(F.share,1)+'% dari omzet Sulawesi.':'PIC '+targetPic+' belum punya data penjualan, jadi posisi omzet dan Line/EA belum bisa dihitung. Yang tersedia: indikator display dari kunjungan.');
         if(kuat.length)line('Relatif unggul: '+kuat.map(x=>x.m.label+' (#'+x.v.rank+' dari '+x.v.n+')').join('; ')+'.');
         if(lemah.length)line('Perlu perhatian: '+lemah.map(x=>x.m.label+' (#'+x.v.rank+' dari '+x.v.n+')').join('; ')+'. Cari penyebabnya di toko-toko PIC ini lalu bandingkan dengan PIC yang peringkatnya lebih baik pada indikator yang sama.');
         y+=1;
@@ -5828,6 +5839,13 @@ async function exportInsightPdf(targetPic,btn){
           columnStyles:{0:{cellWidth:20},2:{halign:'right'},3:{halign:'right'},4:{halign:'center',cellWidth:20}},
           didParseCell:(d)=>{if(d.section==='body'&&d.column.index===5){d.cell.styles.textColor=d.cell.raw==='di atas Sulawesi'?GREEN2:(d.cell.raw==='di bawah Sulawesi'?ORANGE:GREY);d.cell.styles.fontStyle='bold';}}
         });
+      }else if(pg.t==='kosong'){
+        header(secTitle[pg.kind]+' — PIC '+targetPic,'Belum ada data untuk ditampilkan');
+        doc.setFont('helvetica','bold');doc.setFontSize(11);doc.setTextColor(...GREEN);
+        doc.text('Belum ada data pada '+secTitle[pg.kind],M,48);
+        doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(...INK);
+        const tsAll=(typeof WOW_TOKO_MASTER!=='undefined'?WOW_TOKO_MASTER:[]).filter(t=>t.pic===targetPic),allCancel=tsAll.length&&tsAll.every(t=>t.st==='Cancel');
+        doc.text(doc.splitTextToSize(allCancel?'Semua '+tsAll.length+' toko PIC '+targetPic+' berstatus Cancel, sedangkan Insight tidak menghitung toko Cancel. Halaman ini terisi begitu ada toko PIC ini yang berstatus New atau Existing.':pg.msg+'. Halaman ini terisi otomatis begitu PIC '+targetPic+' sudah punya data yang dibutuhkan tab tersebut (kunjungan display dan/atau data penjualan).',CW),M,55);
       }else if(pg.t==='posisi'){
         const t=secTitle[pg.kind];
         header('Posisi di '+t+' — PIC '+targetPic,'Batang gelap = PIC '+targetPic+' · garis putus-putus oranye = rata-rata Sulawesi · diurut dari yang terbaik');
