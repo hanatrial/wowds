@@ -3133,8 +3133,9 @@ function renderStore(rkaF){
 
 // ── TAB: DISPLAY WOW ─────────────────────────────────────────────────────────
 let _expandedWowVid=null;
-/* Ringkasan semesta di atas tab Display WOW. Semua toko di database dihitung,
-   termasuk yang berstatus Cancel — jadi "sudah divisit + belum divisit = semesta".
+/* Ringkasan semesta di atas tab Display WOW. "Sudah divisit" menghitung semua toko
+   di database (termasuk Cancel). "Belum divisit" memakai toko aktif saja, dengan
+   jumlah toko Cancel yang belum divisit ditulis dalam tanda kurung.
    Validasi hanya menampilkan dua angka yang perlu ditindak: perlu validasi dan
    belum dicek (per kunjungan, sama dengan filter "Validasi PIC" di tabel).
    Ikut filter PIC / kabupaten / toko; filter tanggal & bulan sengaja diabaikan
@@ -3170,7 +3171,10 @@ function renderWowSummary(){
     return (a&&b)?((a.timestamp||0)>=(b.timestamp||0)?a:b):(a||b);
   };
   const sudah=uni.filter(t=>lastOf(t)).length;
-  const belum=uni.length-sudah;
+  const aktif=uni.filter(t=>t.st!=='Cancel');
+  const sudahAktif=aktif.filter(t=>lastOf(t)).length;
+  const belumAktif=aktif.length-sudahAktif;
+  const belumCancel=uni.length-sudah-belumAktif;
   const loaded=WOW_ALL.length>0;
   const vf=WOW_ALL.filter(r=>{
     if(fa&&(r.area||'').toLowerCase()!==fa)return false;
@@ -3185,7 +3189,7 @@ function renderWowSummary(){
   const tilesToko=[
     {c:'cyan',l:'Semesta WOW',v:num(uni.length),s:'seluruh toko di database'},
     {c:'blue',l:'Sudah divisit',v:num(sudah),s:pct(sudah,uni.length)+'% dari '+num(uni.length)+' toko'},
-    {c:'violet',l:'Belum divisit',v:num(belum),s:pct(belum,uni.length)+'% dari '+num(uni.length)+' toko'}
+    {c:'violet',l:'Belum divisit',v:num(belumAktif),s:pct(belumAktif,aktif.length)+'% dari '+num(aktif.length)+' aktif · ('+num(belumCancel)+' Cancel)'}
   ];
   const tilesVisit=[
     {c:'amber',l:'Perlu validasi',v:loaded?num(pv.perlu):'—',s:loaded?'menunggu validasi PIC':'memuat…'},
