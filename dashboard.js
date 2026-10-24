@@ -1593,6 +1593,7 @@ function render(){
     else if(SUBTAB_SPG==='indogrosir')renderSpgIndogrosir(spgF);
     else renderSpgRank(spgF);
   }else if(TAB==='wow'){
+    renderWowSummary();
     if(SUBTAB_WOW==='unvisited')renderWowUnvisited();
     else renderWow(wowF);
   }else if(TAB==='insight'){
@@ -3132,6 +3133,77 @@ function renderStore(rkaF){
 
 // ── TAB: DISPLAY WOW ─────────────────────────────────────────────────────────
 let _expandedWowVid=null;
+/* Ringkasan semesta di atas tab Display WOW: jumlah toko di database, sudah/belum
+   divisit (semua periode — sama dengan sub-tab "Toko Belum Divisit"), dan status
+   validasi PIC per kunjungan (sama dengan filter "Validasi PIC" di tabel).
+   Ikut filter PIC / kabupaten / toko; filter tanggal & bulan sengaja diabaikan
+   supaya angka "belum divisit" tidak berubah jadi "belum divisit bulan ini". */
+function renderWowSummary(){
+  const el=document.getElementById('wow-summary');
+  if(!el)return;
+  if(typeof WOW_TOKO_MASTER==='undefined'||!WOW_TOKO_MASTER.length){
+    el.innerHTML='<div class="wsum-empty">Daftar master toko belum termuat.</div>';
+    return;
+  }
+  const fa=(document.getElementById('f-area')?.value||'').trim().toLowerCase();
+  const fm=(document.getElementById('f-mds')?.value||'').trim().toLowerCase();
+  const fst=(document.getElementById('f-store')?.value||'').trim().toLowerCase();
+  const up=s=>String(s||'').trim().toUpperCase();
+  const uni=WOW_TOKO_MASTER.filter(t=>{
+    if(fa&&(t.kab||'').toLowerCase()!==fa)return false;
+    if(fm&&(t.pic||'').toLowerCase()!==fm)return false;
+    if(fst&&!String(t.name||'').toLowerCase().includes(fst)&&!String(t.pair||'').toLowerCase().includes(fst))return false;
+    return true;
+  });
+  const aktif=uni.filter(t=>t.st!=='Cancel');
+  // kunjungan terakhir per nama toko; WOW_ALL sudah lewat wowRenameVisit
+  const last=new Map();
+  WOW_ALL.forEach(r=>{
+    if(!(r.avail>0))return;
+    [r.store,r.storePasangan].filter(Boolean).forEach(n=>{
+      const k=up(n),p=last.get(k);
+      if(!p||(r.timestamp||0)>(p.timestamp||0))last.set(k,r);
+    });
+  });
+  const lastOf=t=>{
+    const a=last.get(up(t.name)),b=t.pair?last.get(up(t.pair)):null;
+    return (a&&b)?((a.timestamp||0)>=(b.timestamp||0)?a:b):(a||b);
+  };
+  const sudah=aktif.filter(t=>lastOf(t)).length;
+  const belum=aktif.length-sudah;
+  const cancelVisited=uni.filter(t=>t.st==='Cancel'&&lastOf(t)).length;
+  const loaded=WOW_ALL.length>0;
+  const vf=WOW_ALL.filter(r=>{
+    if(fa&&(r.area||'').toLowerCase()!==fa)return false;
+    if(fm&&(r.mds||'').toLowerCase()!==fm)return false;
+    if(fst&&!String(r.store||'').toLowerCase().includes(fst)&&!String(r.storePasangan||'').toLowerCase().includes(fst))return false;
+    return true;
+  });
+  const pv=vf.reduce((o,r)=>{const k=r.picValidated===true?'valid':r.picValidated===false?'invalid':r.picValidated==='perlu'?'perlu':'belum';o[k]++;return o;},{valid:0,invalid:0,perlu:0,belum:0});
+  const pct=(n,d)=>d?(Math.round(n/d*1000)/10).toLocaleString('id-ID'):'0';
+  const num=n=>n.toLocaleString('id-ID');
+  const av0=vf.filter(r=>!(r.avail>0)).length;
+  const filterAktif=!!(fa||fm||fst);
+  const tilesToko=[
+    {c:'cyan',l:'Semesta WOW',v:num(uni.length),s:num(aktif.length)+' aktif · '+num(uni.length-aktif.length)+' Cancel'},
+    {c:'blue',l:'Sudah divisit',v:num(sudah),s:pct(sudah,aktif.length)+'% dari '+num(aktif.length)+' aktif'+(cancelVisited?' · '+num(cancelVisited)+' Cancel':'')},
+    {c:'violet',l:'Belum divisit',v:num(belum),s:pct(belum,aktif.length)+'% dari '+num(aktif.length)+' aktif'}
+  ];
+  const tilesVisit=[
+    {c:'dim',l:'Kunjungan',v:loaded?num(vf.length):'—',s:loaded?(num(vf.length-av0)+' ada display · '+num(av0)+' AV 0'):'memuat…'},
+    {c:'green',l:'Sudah valid',v:loaded?num(pv.valid):'—',s:loaded?pct(pv.valid,vf.length)+'% dari '+num(vf.length)+' kunjungan':'memuat…'},
+    {c:'amber',l:'Perlu validasi',v:loaded?num(pv.perlu):'—',s:loaded?'menunggu validasi PIC':'memuat…'},
+    {c:'red',l:'Tidak valid',v:loaded?num(pv.invalid):'—',s:loaded?'perlu kunjungan ulang':'memuat…'},
+    {c:'dim',l:'Belum divalidasi',v:loaded?num(pv.belum):'—',s:loaded?'belum diklik PIC':'memuat…'}
+  ];
+  const tileHtml=t=>'<div class="wsum-t c-'+t.c+'"><div class="wsum-l">'+t.l+'</div><div class="wsum-v">'+t.v+'</div><div class="wsum-s">'+t.s+'</div></div>';
+  el.innerHTML='<div class="wsum-head"><div class="wsum-title">Ringkasan Semesta Display WOW</div>'
+    +'<div class="wsum-note">Semua periode'+(filterAktif?' · filter PIC/kabupaten/toko aktif':'')+'</div></div>'
+    +'<div class="wsum-glabel">Semesta toko <i>· status Cancel tidak dihitung sudah/belum divisit</i></div>'
+    +'<div class="wsum-grid wsum-g3">'+tilesToko.map(tileHtml).join('')+'</div>'
+    +'<div class="wsum-glabel">Validasi kunjungan <i>· sama dengan filter “Validasi PIC” di tabel</i></div>'
+    +'<div class="wsum-grid wsum-g5">'+tilesVisit.map(tileHtml).join('')+'</div>';
+}
 function renderWow(wowF){
   const picF=document.getElementById('wow-pic-filter')?.value||'';
   if(picF)wowF=wowF.filter(r=>picF==='none'?(r.picValidated==null):String(r.picValidated)===picF);
