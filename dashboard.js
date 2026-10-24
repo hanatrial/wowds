@@ -3209,10 +3209,8 @@ function renderWow(wowF){
   const rows=doSort(wowF);
   const wowK=wowF; // tab Display WOW: semua kunjungan dihitung (Cancel hanya dikeluarkan di Insight dan Penjualan)
   const totVisit=wowK.length;
-  const avgAv=wowK.length?Math.round(wowK.reduce((s,r)=>s+((r.avail+r.unavail)>0?r.avail/(r.avail+r.unavail)*100:0),0)/wowK.length):0;
   const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
   set('ds-wow-total',totVisit||'—');
-  set('ds-wow-av',totVisit?avgAv+'%':'—');
   const th=document.getElementById('table-head-wow');
   const tb=document.getElementById('table-body-wow');
   if(!th)return;
