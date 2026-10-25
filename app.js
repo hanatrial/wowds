@@ -24117,7 +24117,9 @@ function wowRenderLists(){
   sudah.sort((x,y)=>x.last-y.last);
   const dt=ms=>new Date(ms).toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'});
   const item=(x,withDate)=>'<button type="button" class="wl-i" data-n="'+esc(x.n)+'" onclick="wowPickStore(this.dataset.n)"><span>'+esc(x.n)+'</span>'+(withDate?'<em>'+dt(x.last)+' · '+Math.max(0,Math.floor((now-x.last)/86400000))+' hari lalu</em>':(x.st==='Cancel'?'<em>Cancel</em>':''))+'</button>';
-  box.innerHTML='<details open><summary>Belum divisit <b>'+belum.length+'</b></summary><div class="wl-l">'+(belum.length?belum.map(x=>item(x,false)).join(''):'<div class="wl-e">Semua toko PIC ini sudah divisit.</div>')+'</div></details>'
+  const mn=wowMdsNamaValue(),cov=(typeof WOW_COVER_MDS!=='undefined'&&WOW_COVER_MDS[mn])||[];
+  const covHtml=cov.length?'<details open><summary>Area MDS '+esc(mn)+' <b>'+cov.length+'</b></summary><div class="wl-l">'+cov.map(c=>{const l=WOW_VISIT_LAST.get(c.n.trim().toUpperCase());return '<div class="wl-i"><button type="button" class="wl-p" data-n="'+esc(c.n)+'" onclick="wowPickStore(this.dataset.n)">'+esc(c.n)+(l?' <em>sudah divisit</em>':'')+'</button><a class="wl-m" target="_blank" rel="noopener" href="https://www.google.com/maps?q='+c.lat+','+c.lng+'">📍 Maps</a></div>';}).join('')+'</div></details>':'';
+  box.innerHTML=covHtml+'<details open><summary>Belum divisit <b>'+belum.length+'</b></summary><div class="wl-l">'+(belum.length?belum.map(x=>item(x,false)).join(''):'<div class="wl-e">Semua toko PIC ini sudah divisit.</div>')+'</div></details>'
     +'<details><summary>Sudah divisit · kunjungan lagi <b>'+sudah.length+'</b></summary><div class="wl-l">'+(sudah.length?sudah.map(x=>item(x,true)).join(''):'<div class="wl-e">Belum ada yang tercatat.</div>')+'</div><p class="wl-n">Urut dari yang paling lama belum dikunjungi.</p></details>';
   box.classList.remove('hidden');
 }
