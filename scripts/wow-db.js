@@ -23,6 +23,25 @@ const FILE_PJ = path.join(__dirname, '..', 'wow_penjualan.js');
 
 const norm = (s) => String(s == null ? '' : s).replace(/\s+/g, ' ').trim();
 
+/* Unduh dengan retry: koneksi HP ke docs.google.com kadang putus (ECONNRESET).
+   Tanpa retry, satu sambungan putus menggagalkan seluruh impor. */
+const tidur = (ms) => new Promise((res) => setTimeout(res, ms));
+async function fetchRetry(url, opsi = {}, percobaanMaks = 4) {
+  let alasan = 'tidak diketahui';
+  for (let i = 1; i <= percobaanMaks; i++) {
+    try {
+      return await fetch(url, opsi);
+    } catch (e) {
+      alasan = (e && e.cause && e.cause.code) || (e && e.message) || String(e);
+      if (i < percobaanMaks) {
+        console.warn(`  (percobaan unduh ${i} gagal: ${alasan}) — ulangi dalam ${i * 2} detik`);
+        await tidur(i * 2000);
+      }
+    }
+  }
+  throw new Error(`Gagal mengunduh setelah ${percobaanMaks} percobaan: ${alasan}`);
+}
+
 /* CSV dari Google (export?format=csv) — tanpa pustaka luar. */
 function parseCsv(teks) {
   const out = [];
@@ -60,7 +79,7 @@ function keObjek(rows, wajib, namaTab) {
 
 async function ambilCsv(gid, namaTab, wajib) {
   const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${gid}`;
-  const res = await fetch(url, { redirect: 'follow' });
+  const res = await fetchRetry(url, { redirect: 'follow' });
   if (!res.ok) throw new Error(`Unduh tab "${namaTab}" gagal: HTTP ${res.status}`);
   const teks = await res.text();
   if (/^\s*<(!doctype|html)/i.test(teks)) throw new Error(`Tab "${namaTab}" tidak bisa diunduh (Sheet tidak publik / GID salah)`);
@@ -82,7 +101,7 @@ function bacaLama() {
    Baris judul: [tahun][bulan][label]. Hasil: wow_penjualan.js (dimuat dashboard saat tab Penjualan dibuka). */
 async function tarikPenjualan() {
   const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${GID_PJ}`;
-  const res = await fetch(url, { redirect: 'follow' });
+  const res = await fetchRetry(url, { redirect: 'follow' });
   if (!res.ok) throw new Error('Unduh tab Penjualan gagal: HTTP ' + res.status);
   const teks = await res.text();
   if (/^\s*<(!doctype|html)/i.test(teks)) throw new Error('Tab Penjualan tidak bisa diunduh (Sheet tidak publik / GID salah)');
