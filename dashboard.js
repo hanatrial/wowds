@@ -4977,9 +4977,23 @@ function renderWowSales(){
   const gFoot='<tr class="hm-tot"><th>'+(modePic?'Total '+wsEsc(INS_PIC):'Sulawesi')+'</th><td class="ws-cnt">'+rows.length+'</td>'+gCell(gTot.g.om,gTot.c.om,gTot.p.om,fOm)+gCell(gTot.g.ns,gTot.c.ns,gTot.p.ns,fLe)+gCell(gTot.g.hi,gTot.c.hi,gTot.p.hi,fLe)+'</tr>';
   const hmG='<div class="ins-card ins-wide"><h4>Heatmap growth rata-rata · '+(modePic?'per kabupaten':'per PIC')+'</h4><p class="ins-note">Growth average: rata-rata bulanan '+Y1+' ('+lblM[idxY1[0]]+'–'+lblM[idxY1[idxY1.length-1]]+', dibagi '+idxY1.length+' bulan) dibanding rata-rata bulanan '+Y0+' ('+lblM[idxY0[0]]+'–'+lblM[idxY0[idxY0.length-1]]+', dibagi '+idxY0.length+' bulan). Angka kecil = rata-rata '+Y1+'. Line/EA = total line (PA) ÷ jumlah bulan ÷ jumlah toko.</p><div class="ins-hm"><table class="ws-hmg"><thead><tr><th>'+(modePic?'Kabupaten':'PIC')+'</th><th>Jumlah toko</th><th>Omzet</th><th>Line/EA NS</th><th>Line/EA HILO</th></tr></thead><tbody>'+gBody+gFoot+'</tbody></table></div><div class="ins-legend"><span class="h0">minus (&lt;0%)</span><span class="h2">0 s/d +10%</span><span class="h3">+10 s/d +30%</span><span class="h4">&gt;+30%</span></div></div>';
   const card=(t,body,wide)=>'<div class="ins-card'+(wide?' ins-wide':'')+'"><h4>'+t+'</h4>'+body+'</div>';
+  // kabupaten bermasalah: growth rata-rata omzet negatif (minimal 3 toko), terburuk dulu; PIC = yang memegang tokonya
+  let kabBermasalah='';
+  if(!modePic){
+    const tk=kabArr.filter(x=>x.toko>=3&&!/^\(/.test(x.k)).map(x=>{
+      const gr=wsGrowthAvg(x.e,idxY1,idxY0,x.toko),pc={};
+      (perKab[x.k]||[]).forEach(r=>{pc[r[1]]=(pc[r[1]]||0)+1;});
+      const pics=Object.entries(pc).sort((a,b)=>b[1]-a[1]).map(([p,c])=>wsEsc(p)+(Object.keys(pc).length>1?' <small>('+c+')</small>':'')).join(', ');
+      return {k:x.k,toko:x.toko,g:gr.g.om,om:gr.c.om,le:gr.c.ns!=null&&gr.c.hi!=null?gr.c.ns+gr.c.hi:null,pics};
+    }).filter(x=>x.g!=null&&x.g<0).sort((a,b)=>a.g-b.g);
+    kabBermasalah=card('Kabupaten bermasalah di Sulawesi · omzet turun',
+      '<p class="ins-note">Growth rata-rata omzet '+Y1+' dibanding '+Y0+' di bawah 0% (kabupaten dengan minimal 3 toko, tanpa Cancel). Terburuk di atas.</p>'
+      +wowInsTable(['Kabupaten','PIC','Toko','Growth omzet','Omzet/bulan','Line/EA'],tk.map(x=>[wsEsc(x.k),x.pics,x.toko,'<span class="ins-w">'+wsPct(x.g)+'</span>',wsRp(x.om,true),wsNum(x.le,1)]),'Tidak ada kabupaten yang omzetnya turun.'),true);
+  }
   box.innerHTML=modeBar+kpis+tkHtml+'<div class="ins-grid">'
     +card('Tren omzet bulanan · '+Y0+' vs '+Y1,trenOmzet,true)
     +hmG
+    +kabBermasalah
     +leP+leKabCard+tMati
     +'</div>';
 }
