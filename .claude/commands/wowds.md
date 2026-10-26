@@ -34,6 +34,6 @@ Gunakan konektor **Google Sheets** (`get_values`, `update_values`, `append_value
 
 ## Laporan akhir
 
-Laporan WAJIB memuat tabel **Status akhir**: semua entri di `.claude/wowds-log.json` dari 7 hari terakhir (termasuk run ini), dengan kolom toko, SO, perubahan (dari → ke), **status/kabupaten sekarang di Sheet** (baca sel lewat `get_values`) dan **di `wow_toko_master.js`**. Tandai baris yang tidak sama atau yang berubah balik. Jangan hanya melaporkan perubahan run ini. Kalau ada toko bernama mirip (SO berbeda), sebutkan keduanya supaya tidak tertukar.
+Laporan WAJIB memuat tabel **Status akhir**: semua entri di `.claude/wowds-log.json` yang `tgl`-nya **hari ini** (tanggal WITA, termasuk run ini; tidak perlu hari-hari sebelumnya karena sinkron berjalan tiap hari), dengan kolom toko, SO, perubahan (dari → ke), **status/kabupaten sekarang di Sheet** (baca sel lewat `get_values`) dan **di `wow_toko_master.js`**. Tandai baris yang tidak sama atau yang berubah balik. Kalau ada beberapa run di hari yang sama, tampilkan semuanya. Kalau ada toko bernama mirip (SO berbeda), sebutkan keduanya supaya tidak tertukar.
 
 Sebutkan: apa yang diexport (toko, sel, nilai lama → baru), apa yang berubah saat import, commit yang dipush, dan apa yang sengaja tidak dikerjakan. Deploy GitHub Pages butuh 1–2 menit; sarankan Ctrl+F5.
