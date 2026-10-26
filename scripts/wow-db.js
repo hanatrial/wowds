@@ -1,6 +1,6 @@
 /* Tarik "Database" + "Database Kabupaten" dari Google Sheet WOW DS → wow_toko_master.js
    (dipakai dashboard.html: WOW_TOKO_MASTER = daftar toko + PIC, WOW_PIC_KAB = PIC → kabupaten).
-   Dijalankan terjadwal oleh run.sh (08.00 WITA, Senin–Sabtu).
+   Dijalankan lewat perintah /wowds (import) dan scheduled task "WOWDS sync harian" (08.00 WITA, Senin–Sabtu).
 
    Aturan:
    - spasi ganda dirapikan (sheet sering menulis "TK  MAYA"), huruf tidak diubah
