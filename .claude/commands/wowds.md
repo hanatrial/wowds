@@ -22,7 +22,8 @@ Gunakan konektor **Google Sheets** (`get_values`, `update_values`, `append_value
 2. Cari baris toko di tab Database lewat kolom F/G (nama persis). Kode SO berurutan, jadi baris = nomor SO + 1, tapi **selalu baca baris itu dulu dan cocokkan nama sebelum menulis**.
 3. Tulis hanya sel yang berubah (satu sel per `update_values`), jangan menimpa baris lain. Toko baru ditambah dengan `append_values` di baris kosong berikutnya. Pengaman: nama dan kode SO harus cocok persis, Status Sewa hanya Existing/New/Cancel, kabupaten harus nama yang dikenal (minimal 3 huruf, ada di `WOW_PIC_KAB`), dan maksimal 30 sel per run (kalau lebih, jangan tulis apa pun dan laporkan daftarnya).
 4. Baca ulang sel yang ditulis dan pastikan nilainya benar.
-5. Tandai yang sudah masuk Sheet (atau nilainya sudah sama dengan Sheet) di Firestore (`statusSynced: true` / `synced: true`, PATCH dengan `updateMask`) supaya tidak muncul lagi. Item yang dilewati jangan ditandai.
+5. **Catat ke log:** tambahkan satu entri per sel yang ditulis ke `.claude/wowds-log.json` (`tgl` YYYY-MM-DD, `toko`, `so`, `pic`, `field` = `status`/`kab`/`toko-baru`, `dari`, `ke`), lalu commit dan push bersama import (atau sendiri kalau mode `export`).
+6. Tandai yang sudah masuk Sheet (atau nilainya sudah sama dengan Sheet) di Firestore (`statusSynced: true` / `synced: true`, PATCH dengan `updateMask`) supaya tidak muncul lagi. Item yang dilewati jangan ditandai.
 
 ## import (Sheet → dashboard)
 
@@ -32,5 +33,7 @@ Gunakan konektor **Google Sheets** (`get_values`, `update_values`, `append_value
 4. Jangan pernah mengedit `wow_toko_master.js` / `wow_penjualan.js` dengan tangan; file itu ditimpa tiap sinkron (08.00 WITA, Senin–Sabtu). Perubahan data harus lewat Sheet.
 
 ## Laporan akhir
+
+Laporan WAJIB memuat tabel **Status akhir**: semua entri di `.claude/wowds-log.json` dari 7 hari terakhir (termasuk run ini), dengan kolom toko, SO, perubahan (dari → ke), **status/kabupaten sekarang di Sheet** (baca sel lewat `get_values`) dan **di `wow_toko_master.js`**. Tandai baris yang tidak sama atau yang berubah balik. Jangan hanya melaporkan perubahan run ini. Kalau ada toko bernama mirip (SO berbeda), sebutkan keduanya supaya tidak tertukar.
 
 Sebutkan: apa yang diexport (toko, sel, nilai lama → baru), apa yang berubah saat import, commit yang dipush, dan apa yang sengaja tidak dikerjakan. Deploy GitHub Pages butuh 1–2 menit; sarankan Ctrl+F5.
