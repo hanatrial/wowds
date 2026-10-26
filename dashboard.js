@@ -4816,7 +4816,7 @@ function wsGrowthAvg(e,idxCur,idxPrev,toko){
 function wsExport(kind){
   const l=WS_LISTS[kind]||[];if(!l.length){alert('Tidak ada data untuk diexport.');return;}
   ensureXlsx().then(()=>{
-    const head={top:['Nama PIC','Nama MDS','Nama Toko','Kabupaten','Status','Omzet periode','Omzet rata-rata/bulan'],turun:['Nama PIC','Nama MDS','Nama Toko','Kabupaten','Status','Omzet tahun lalu','Omzet sekarang','Selisih','Perubahan %'],mati:['Nama PIC','Nama MDS','Nama Toko','Kabupaten','Status','Omzet terakhir ada','Bulan terakhir transaksi'],cancel:['Nama PIC','Nama MDS','Nama Toko','Kabupaten','Omzet periode','Bulan terakhir transaksi'],avrendah:['Nama PIC','Nama MDS','Nama Toko','Kabupaten','Status','AV total','Omzet rata-rata/bulan'],avtinggi:['Nama PIC','Nama MDS','Nama Toko','Kabupaten','Status','AV total','Omzet rata-rata/bulan'],kabkosong:['Nama PIC','Nama MDS','Nama Toko','Status','Kabupaten (wajib diisi)']}[kind];
+    const head={minus:['Nama PIC','Nama MDS','Nama Toko','Kabupaten','Status','Omzet/bulan tahun lalu','Omzet/bulan tahun ini','Selisih per bulan','Growth %'],top:['Nama PIC','Nama MDS','Nama Toko','Kabupaten','Status','Omzet periode','Omzet rata-rata/bulan'],turun:['Nama PIC','Nama MDS','Nama Toko','Kabupaten','Status','Omzet tahun lalu','Omzet sekarang','Selisih','Perubahan %'],mati:['Nama PIC','Nama MDS','Nama Toko','Kabupaten','Status','Omzet terakhir ada','Bulan terakhir transaksi'],cancel:['Nama PIC','Nama MDS','Nama Toko','Kabupaten','Omzet periode','Bulan terakhir transaksi'],avrendah:['Nama PIC','Nama MDS','Nama Toko','Kabupaten','Status','AV total','Omzet rata-rata/bulan'],avtinggi:['Nama PIC','Nama MDS','Nama Toko','Kabupaten','Status','AV total','Omzet rata-rata/bulan'],kabkosong:['Nama PIC','Nama MDS','Nama Toko','Status','Kabupaten (wajib diisi)']}[kind];
     const ws=XLSX.utils.aoa_to_sheet([head].concat(l));ws['!cols']=head.map((x,i)=>({wch:i===2?52:i===3?22:16}));
     const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,kind);
     XLSX.writeFile(wb,'penjualan_'+kind+'_'+new Date().toISOString().slice(0,10)+'.xlsx');
@@ -4965,6 +4965,13 @@ function renderWowSales(){
   const tTop='<div class="ins-card ins-wide"><h4>10 toko omzet terbesar · '+Y1+'</h4>'+wowInsTable(['Toko','PIC','Kabupaten','Status','Omzet','Tren '+n+' bulan'],topL.map(x=>[wsEsc(x.r[0]),wsEsc(x.r[1]),wsEsc(wsKabOf(x.r)||'—'),wsEsc(x.r[3]),'<b>'+wsRp(x.v)+'</b>',wsSpark(x.r[7])]))+wsBtn('top','toko omzet terbesar')+'</div>';
   const tTurun='<div class="ins-card"><h4>Toko turun paling dalam vs periode sama '+Y0+'</h4>'+wowInsTable(['Toko','PIC','Selisih'],turun.slice(0,10).map(x=>[wsEsc(x.r[0]),wsEsc(x.r[1]),'<span class="ins-w">'+wsRp(x.d)+'</span> <small>'+wsPct((x.b/x.a-1)*100)+'</small>']),'Tidak ada toko yang turun.')+wsBtn('turun','toko turun')+'</div>';
   const tMati='<div class="ins-card'+(modePic?'':' ins-wide')+'"><h4>Toko tanpa transaksi 3 bulan terakhir</h4><p class="ins-note">Pernah jual, tidak termasuk status Cancel. Diurut dari omzet historis terbesar.</p>'+wowInsTable((modePic?[]:['PIC']).length?['Toko','PIC','Kabupaten','Terakhir transaksi','Omzet historis']:['Toko','Kabupaten','Terakhir','Omzet historis'],mati.slice(0,10).map(x=>(modePic?[wsEsc(x.r[0])]:[wsEsc(x.r[0]),wsEsc(x.r[1])]).concat([wsEsc(wsKabOf(x.r)||'—'),wsEsc(x.last||'—'),wsRp(x.tot,true)])),'Tidak ada.')+wsBtn('mati','toko tanpa transaksi')+'</div>';
+  // toko tidak bertumbuh: growth rata-rata omzet bulanan (tahun ini vs tahun lalu) di bawah 0, hanya toko yang tahun lalu sudah beromzet
+  const minus=rows.map(r=>{const a0=idxY0.length?idxY0.reduce((q,i)=>q+r[7][i],0)/idxY0.length:0,a1=idxY1.length?idxY1.reduce((q,i)=>q+r[7][i],0)/idxY1.length:0;return {r,a0,a1,d:a1-a0,g:a0>0?(a1/a0-1)*100:null};}).filter(x=>x.g!=null&&x.d<0).sort((x,y)=>x.d-y.d);
+  WS_LISTS.minus=minus.map(x=>rowFor(x.r).concat([Math.round(x.a0),Math.round(x.a1),Math.round(x.d),Math.round(x.g*10)/10]));
+  const tokoMinus=modePic?((t,body)=>'<div class="ins-card ins-wide"><h4>'+t+'</h4>'+body+'</div>')('Toko tidak bertumbuh · growth omzet minus',
+    '<p class="ins-note"><b>'+minus.length+' dari '+rows.length+' toko</b> omzet rata-rata per bulannya '+Y1+' lebih kecil dari '+Y0+' (hanya toko yang '+Y0+' sudah beromzet). Diurut dari penurunan terbesar per bulan; 10 teratas ditampilkan, daftar lengkap di Excel.</p>'
+    +wowInsTable(['Toko','Kabupaten','Omzet/bln '+Y0,'Omzet/bln '+Y1,'Growth'],minus.slice(0,10).map(x=>[wsEsc(x.r[0]),wsEsc(wsKabOf(x.r)||'—'),wsRp(x.a0,true),wsRp(x.a1,true),'<span class="ins-w">'+wsPct(x.g)+'</span>']),'Semua toko bertumbuh atau stabil.')
+    +wsBtn('minus','toko tidak bertumbuh'),true):'';
   const tCanc='<div class="ins-card ins-wide"><h4>Toko Cancel yang masih ada omzet · '+Y1+'</h4><div class="ins-big"><b class="w">'+canc.length+'</b><span>toko berstatus Cancel masih bertransaksi, total '+wsRp(canc.reduce((a,x)=>a+x.v,0))+'</span></div>'+wowInsTable(['Toko','PIC','Kabupaten','Omzet'],canc.slice(0,8).map(x=>[wsEsc(x.r[0]),wsEsc(x.r[1]),wsEsc(wsKabOf(x.r)||'—'),wsRp(x.v)]),'Tidak ada.')+wsBtn('cancel','toko Cancel yang masih jualan')+'</div>';
 
   // heatmap growth rata-rata
@@ -4994,6 +5001,7 @@ function renderWowSales(){
     +card('Tren omzet bulanan · '+Y0+' vs '+Y1,trenOmzet,true)
     +hmG
     +kabBermasalah
+    +tokoMinus
     +leP+leKabCard+tMati
     +'</div>';
 }
