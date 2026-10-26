@@ -6,5 +6,6 @@
   {"tgl":"2026-10-26","toko":"TOKO RIKI / LAWOILA NO 24 RT 01 RW 01","so":"SULA-GT-WOW-174","pic":"PANCA","field":"kab","dari":"c","ke":"Konawe Selatan"},
   {"tgl":"2026-10-26","toko":"TOKO SERATUS 100/PASAR TEMPE","so":"SULA-GT-WOW-396","pic":"WAFI","field":"status","dari":"Cancel","ke":"Existing"},
   {"tgl":"2026-10-26","toko":"KAMARUDDIN/ PSR SENTRAL BAWAH SINJAI","so":"SULA-GT-WOW-3","pic":"WAFI","field":"status","dari":"Existing","ke":"Cancel"},
-  {"tgl":"2026-10-26","toko":"A.AKMAL/DS.ANCU.KAJUARA.DEPAN KANTOR CAMAT MASUK 7","so":"SULA-GT-WOW-405","pic":"WAFI","field":"status","dari":"Cancel","ke":"Existing"}
+  {"tgl":"2026-10-26","toko":"A.AKMAL/DS.ANCU.KAJUARA.DEPAN KANTOR CAMAT MASUK 7","so":"SULA-GT-WOW-405","pic":"WAFI","field":"status","dari":"Cancel","ke":"Existing"},
+  {"tgl":"2026-10-26","toko":"(PR) TK. FAIQ/JL. POROS PATTALLASSANG","so":"SULA-GT-WOW-508","pic":"IMAD","field":"status","dari":"New","ke":"Cancel"}
 ]
