@@ -218,14 +218,6 @@ async function tarikPenjualan() {
   // status sewa dari sheet (Existing / New / Cancel) -> dipakai kolom Status di dashboard
   for (const e of urutan) { const st = statusPer.get(e.name); if (st) e.st = st; }
 
-  // Status yang diubah manual (belum diubah di Sheet): menang atas Sheet supaya tidak
-  // kembali ke Existing tiap sinkron. Hapus barisnya kalau Sheet sudah diperbarui.
-  const STATUS_MANUAL = {
-    'TK NURJANNAH': 'Cancel',                              // PIC IMAD, Maros (26 Okt 2026)
-    'TK. CAHAYA RAHMAT 16 / JL.LAIKANG NO 05 DEP': 'Cancel', // PIC IMAD, Makassar (26 Okt 2026)
-  };
-  for (const e of urutan) if (STATUS_MANUAL[e.name]) e.st = STATUS_MANUAL[e.name];
-
   // pertahankan kolom pair / kolom tambahan dari file lama
   for (const e of urutan) {
     const pair = pairLama.get(e.name);
