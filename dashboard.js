@@ -4914,11 +4914,11 @@ function renderWowSales(){
   const secKab='<div class="ins-card"><h4>Omzet '+Y1+' per kabupaten · 12 teratas</h4>'+wowInsBars(kabTop.map(x=>({l:x.k,v:x.sv1,s:x.toko+' toko',t:wsRp(x.sv1,true)+' <small>'+wsPct(x.g)+'</small>',warn:x.g!=null&&x.g<0})))+'</div>';
   const leKabDual=(()=>{
     const l3=[n-3,n-2,n-1];
-    const arr=kabArr.filter(x=>x.toko>=3).map(x=>({k:x.k,toko:x.toko,nn:l3.reduce((t,i)=>t+x.e.ns[i],0)/3/x.toko,h:l3.reduce((t,i)=>t+x.e.hilo[i],0)/3/x.toko})).sort((p,q)=>(p.nn+p.h)-(q.nn+q.h));
+    const arr=kabArr.filter(x=>x.toko>=1).map(x=>({k:x.k,toko:x.toko,nn:l3.reduce((t,i)=>t+x.e.ns[i],0)/3/x.toko,h:l3.reduce((t,i)=>t+x.e.hilo[i],0)/3/x.toko})).sort((p,q)=>(p.nn+p.h)-(q.nn+q.h));
     if(!arr.length)return '<div class="ins-card"><h4>Line/EA per kabupaten · 3 bulan terakhir</h4><div class="ins-empty">Belum cukup data.</div></div>';
     const tampil=arr.length>12?arr.slice(0,6).concat(arr.slice(-6)):arr;
     const mx=Math.max.apply(null,tampil.map(x=>Math.max(x.nn,x.h)).concat([1]));
-    return '<div class="ins-card"><h4>Line/EA per kabupaten · 3 bulan terakhir</h4><p class="ins-note">Terendah dan tertinggi menurut NS + HILO (kabupaten dengan minimal 3 toko).</p><div class="bc"><div class="bc-key"><span class="k1"></span>NS <span class="k2"></span>HILO</div>'+tampil.map(x=>'<div class="bc-row bc-dual"><span class="bc-l">'+wsEsc(x.k)+'<small style="display:block;color:var(--t3)">'+x.toko+' toko</small></span><span class="bc-d"><span class="bc-t"><i style="width:'+Math.max(2,Math.round(x.nn/mx*80))+'%"></i><b>'+wsNum(x.nn,2)+'</b></span><span class="bc-t"><i class="h" style="width:'+Math.max(2,Math.round(x.h/mx*80))+'%"></i><b>'+wsNum(x.h,2)+'</b></span></span></div>').join('')+'</div></div>';
+    return '<div class="ins-card"><h4>Line/EA per kabupaten · 3 bulan terakhir</h4><p class="ins-note">Terendah dan tertinggi menurut NS + HILO.</p><div class="bc"><div class="bc-key"><span class="k1"></span>NS <span class="k2"></span>HILO</div>'+tampil.map(x=>'<div class="bc-row bc-dual"><span class="bc-l">'+wsEsc(x.k)+'<small style="display:block;color:var(--t3)">'+x.toko+' toko</small></span><span class="bc-d"><span class="bc-t"><i style="width:'+Math.max(2,Math.round(x.nn/mx*80))+'%"></i><b>'+wsNum(x.nn,2)+'</b></span><span class="bc-t"><i class="h" style="width:'+Math.max(2,Math.round(x.h/mx*80))+'%"></i><b>'+wsNum(x.h,2)+'</b></span></span></div>').join('')+'</div></div>';
   })();
   const leKabCard=leKabDual;
   // Line/EA per PIC
