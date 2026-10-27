@@ -1,12 +1,245 @@
 [
-  {"tgl":"2026-10-26","toko":"TK NURJANNAH","so":"SULA-GT-WOW-167","pic":"IMAD","field":"status","dari":"Existing","ke":"Cancel"},
-  {"tgl":"2026-10-26","toko":"TK. CAHAYA RAHMAT 16 / JL.LAIKANG NO 05 DEP","so":"SULA-GT-WOW-123","pic":"IMAD","field":"status","dari":"Existing","ke":"Cancel"},
-  {"tgl":"2026-10-26","toko":"DARNA. TK/JL. MUTATTALIB DAENG NARANG NO.","so":"SULA-GT-WOW-431","pic":"IMAD","field":"status","dari":"Cancel","ke":"Existing"},
-  {"tgl":"2026-10-26","toko":"SUMBER REJEKI/JL. MINASA UPA BLOK K NO. RT. 001 R","so":"SULA-GT-WOW-103","pic":"IMAD","field":"status","dari":"Cancel","ke":"Existing"},
-  {"tgl":"2026-10-26","toko":"TOKO RIKI / LAWOILA NO 24 RT 01 RW 01","so":"SULA-GT-WOW-174","pic":"PANCA","field":"kab","dari":"c","ke":"Konawe Selatan"},
-  {"tgl":"2026-10-26","toko":"TOKO SERATUS 100/PASAR TEMPE","so":"SULA-GT-WOW-396","pic":"WAFI","field":"status","dari":"Cancel","ke":"Existing"},
-  {"tgl":"2026-10-26","toko":"KAMARUDDIN/ PSR SENTRAL BAWAH SINJAI","so":"SULA-GT-WOW-3","pic":"WAFI","field":"status","dari":"Existing","ke":"Cancel"},
-  {"tgl":"2026-10-26","toko":"A.AKMAL/DS.ANCU.KAJUARA.DEPAN KANTOR CAMAT MASUK 7","so":"SULA-GT-WOW-405","pic":"WAFI","field":"status","dari":"Cancel","ke":"Existing"},
-  {"tgl":"2026-10-26","toko":"(PR) TK. FAIQ/JL. POROS PATTALLASSANG","so":"SULA-GT-WOW-508","pic":"IMAD","field":"status","dari":"New","ke":"Cancel"},
-  {"tgl":"2026-10-26","toko":"(PR) TK. FAIQ/JL. POROS PATTALLASSANG","so":"SULA-GT-WOW-508","pic":"IMAD","field":"status","dari":"Cancel","ke":"New"}
+ {
+  "tgl": "2026-10-26",
+  "toko": "TK NURJANNAH",
+  "so": "SULA-GT-WOW-167",
+  "pic": "IMAD",
+  "field": "status",
+  "dari": "Existing",
+  "ke": "Cancel"
+ },
+ {
+  "tgl": "2026-10-26",
+  "toko": "TK. CAHAYA RAHMAT 16 / JL.LAIKANG NO 05 DEP",
+  "so": "SULA-GT-WOW-123",
+  "pic": "IMAD",
+  "field": "status",
+  "dari": "Existing",
+  "ke": "Cancel"
+ },
+ {
+  "tgl": "2026-10-26",
+  "toko": "DARNA. TK/JL. MUTATTALIB DAENG NARANG NO.",
+  "so": "SULA-GT-WOW-431",
+  "pic": "IMAD",
+  "field": "status",
+  "dari": "Cancel",
+  "ke": "Existing"
+ },
+ {
+  "tgl": "2026-10-26",
+  "toko": "SUMBER REJEKI/JL. MINASA UPA BLOK K NO. RT. 001 R",
+  "so": "SULA-GT-WOW-103",
+  "pic": "IMAD",
+  "field": "status",
+  "dari": "Cancel",
+  "ke": "Existing"
+ },
+ {
+  "tgl": "2026-10-26",
+  "toko": "TOKO RIKI / LAWOILA NO 24 RT 01 RW 01",
+  "so": "SULA-GT-WOW-174",
+  "pic": "PANCA",
+  "field": "kab",
+  "dari": "c",
+  "ke": "Konawe Selatan"
+ },
+ {
+  "tgl": "2026-10-26",
+  "toko": "TOKO SERATUS 100/PASAR TEMPE",
+  "so": "SULA-GT-WOW-396",
+  "pic": "WAFI",
+  "field": "status",
+  "dari": "Cancel",
+  "ke": "Existing"
+ },
+ {
+  "tgl": "2026-10-26",
+  "toko": "KAMARUDDIN/ PSR SENTRAL BAWAH SINJAI",
+  "so": "SULA-GT-WOW-3",
+  "pic": "WAFI",
+  "field": "status",
+  "dari": "Existing",
+  "ke": "Cancel"
+ },
+ {
+  "tgl": "2026-10-26",
+  "toko": "A.AKMAL/DS.ANCU.KAJUARA.DEPAN KANTOR CAMAT MASUK 7",
+  "so": "SULA-GT-WOW-405",
+  "pic": "WAFI",
+  "field": "status",
+  "dari": "Cancel",
+  "ke": "Existing"
+ },
+ {
+  "tgl": "2026-10-26",
+  "toko": "(PR) TK. FAIQ/JL. POROS PATTALLASSANG",
+  "so": "SULA-GT-WOW-508",
+  "pic": "IMAD",
+  "field": "status",
+  "dari": "New",
+  "ke": "Cancel"
+ },
+ {
+  "tgl": "2026-10-26",
+  "toko": "(PR) TK. FAIQ/JL. POROS PATTALLASSANG",
+  "so": "SULA-GT-WOW-508",
+  "pic": "IMAD",
+  "field": "status",
+  "dari": "Cancel",
+  "ke": "New"
+ },
+ {
+  "tgl": "2026-10-27",
+  "toko": "FADILLA / PASAR BASAH NO.12 A",
+  "so": "SULA-GT-WOW-181",
+  "pic": "PANCA",
+  "field": "status",
+  "dari": "Existing",
+  "ke": "Cancel"
+ },
+ {
+  "tgl": "2026-10-27",
+  "toko": "TULENAN/PAREPEI, LINGK 1",
+  "so": "SULA-GT-WOW-225",
+  "pic": "HENDRY",
+  "field": "status",
+  "dari": "Existing",
+  "ke": "Cancel"
+ },
+ {
+  "tgl": "2026-10-27",
+  "toko": "GLORY/ KAATEN",
+  "so": "SULA-GT-WOW-244",
+  "pic": "HENDRY",
+  "field": "status",
+  "dari": "Existing",
+  "ke": "Cancel"
+ },
+ {
+  "tgl": "2026-10-27",
+  "toko": "DOUTULONG KIOS",
+  "so": "SULA-GT-WOW-253",
+  "pic": "HENDRY",
+  "field": "status",
+  "dari": "Existing",
+  "ke": "Cancel"
+ },
+ {
+  "tgl": "2026-10-27",
+  "toko": "Oroh TOKO /Jl. Desa Kolongan Atas",
+  "so": "SULA-GT-WOW-254",
+  "pic": "HENDRY",
+  "field": "status",
+  "dari": "Existing",
+  "ke": "Cancel"
+ },
+ {
+  "tgl": "2026-10-27",
+  "toko": "DAMAI / LOLAK",
+  "so": "SULA-GT-WOW-272",
+  "pic": "HENDRY",
+  "field": "status",
+  "dari": "Existing",
+  "ke": "Cancel"
+ },
+ {
+  "tgl": "2026-10-27",
+  "toko": "NYOMAN/KAWANGKOAN BARU",
+  "so": "SULA-GT-WOW-282",
+  "pic": "HENDRY",
+  "field": "status",
+  "dari": "Existing",
+  "ke": "Cancel"
+ },
+ {
+  "tgl": "2026-10-27",
+  "toko": "BETSY",
+  "so": "SULA-GT-WOW-467",
+  "pic": "HENDRY",
+  "field": "status",
+  "dari": "Existing",
+  "ke": "Cancel"
+ },
+ {
+  "tgl": "2026-10-27",
+  "toko": "KIOS JEFRI 2",
+  "so": "SULA-GT-WOW-468",
+  "pic": "HENDRY",
+  "field": "status",
+  "dari": "Existing",
+  "ke": "Cancel"
+ },
+ {
+  "tgl": "2026-10-27",
+  "toko": "JASON",
+  "so": "SULA-GT-WOW-469",
+  "pic": "HENDRY",
+  "field": "status",
+  "dari": "Existing",
+  "ke": "Cancel"
+ },
+ {
+  "tgl": "2026-10-27",
+  "toko": "KIOS CHLOE/KAASAR LORONG MESJID /KUBURAN",
+  "so": "SULA-GT-WOW-470",
+  "pic": "HENDRY",
+  "field": "status",
+  "dari": "Existing",
+  "ke": "Cancel"
+ },
+ {
+  "tgl": "2026-10-27",
+  "toko": "KIOS NINA / KOMPLEK PASAR AIRMADIDI BELAKANG KIOS",
+  "so": "SULA-GT-WOW-471",
+  "pic": "HENDRY",
+  "field": "status",
+  "dari": "Existing",
+  "ke": "Cancel"
+ },
+ {
+  "tgl": "2026-10-27",
+  "toko": "CHARIS/KAKASKASEN 3",
+  "so": "SULA-GT-WOW-472",
+  "pic": "HENDRY",
+  "field": "status",
+  "dari": "Existing",
+  "ke": "Cancel"
+ },
+ {
+  "tgl": "2026-10-27",
+  "toko": "LAPAK FEMMY 23",
+  "so": "SULA-GT-WOW-473",
+  "pic": "HENDRY",
+  "field": "status",
+  "dari": "Existing",
+  "ke": "Cancel"
+ },
+ {
+  "tgl": "2026-10-27",
+  "toko": "AHNAF CELL",
+  "so": "SULA-GT-WOW-474",
+  "pic": "HENDRY",
+  "field": "status",
+  "dari": "Existing",
+  "ke": "Cancel"
+ },
+ {
+  "tgl": "2026-10-27",
+  "toko": "KIOS SEAN/JL MAPANGET GRIYA INDAH III NO.NO 117 NO",
+  "so": "SULA-GT-WOW-475",
+  "pic": "HENDRY",
+  "field": "status",
+  "dari": "Existing",
+  "ke": "Cancel"
+ },
+ {
+  "tgl": "2026-10-27",
+  "toko": "KIOS NOVA/JALAN BUNAKEN KECAMATAN",
+  "so": "SULA-GT-WOW-476",
+  "pic": "HENDRY",
+  "field": "status",
+  "dari": "Existing",
+  "ke": "Cancel"
+ }
 ]
