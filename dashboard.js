@@ -4761,11 +4761,13 @@ async function wowRunQuery(q){
 async function wowLoadPending(){
   const sel=a=>({fields:a.map(fieldPath=>({fieldPath}))});
   const [kf,tk]=await Promise.all([
-    wowRunQuery({from:[{collectionId:'app_data'}],where:{fieldFilter:{field:{fieldPath:'synced'},op:'EQUAL',value:{booleanValue:false}}},select:sel(['store','pic','kab'])}),
+    wowRunQuery({from:[{collectionId:'app_data'}],where:{fieldFilter:{field:{fieldPath:'synced'},op:'EQUAL',value:{booleanValue:false}}},select:sel(['store','pic','kab','type','status','so'])}),
     wowRunQuery({from:[{collectionId:'app_data'}],where:{fieldFilter:{field:{fieldPath:'type'},op:'EQUAL',value:{stringValue:'toko'}}},select:sel(['pic','kab','nama1','nama2','kode1','kode2','status'])})
   ]);
   const P={kab:new Map()};
-  kf.forEach(d=>{if(d.store&&d.kab)P.kab.set(String(d.store).trim().toUpperCase(),wowKabCanon(d.kab));});
+  kf.forEach(d=>{if(d.type!=='status'&&d.store&&d.kab)P.kab.set(String(d.store).trim().toUpperCase(),wowKabCanon(d.kab));});
+  /* status toko yang diubah dari dashboard tanpa kunjungan (belum masuk Sheet): berlaku sementara sampai export menandainya synced */
+  kf.forEach(d=>{if(d.type!=='status'||!d.status)return;const t=(d.so&&WOW_TOKO_MASTER.find(x=>x.so===d.so))||wowMasterOf(d.store);if(t){t.st=d.status;t._stPend=1;}});
   // toko popup yang belum ada di Sheet ikut ke daftar toko (dibuang otomatis begitu sudah ada di master dari Sheet)
   const ada=new Set();WOW_TOKO_MASTER.forEach(t=>[t.name,t.pair].filter(Boolean).forEach(n=>ada.add(String(n).replace(/\s+/g,' ').trim().toUpperCase())));
   tk.forEach(v=>{
@@ -4777,6 +4779,7 @@ async function wowLoadPending(){
     WOW_TOKO_MASTER.push(o);ada.add(k);
   });
   _wowPend=P;_wowMasterBy=null;_wsMasterKab=null;_wowStMap=null;
+  if(typeof WOW_SALES!=='undefined')WOW_SALES._norm=-1;   // status penjualan dihitung ulang dari master
   return P;
 }
 function wowKabMaster(pic,name,pair){
