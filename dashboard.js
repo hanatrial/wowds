@@ -937,7 +937,8 @@ const FS_PROJECT='displaywowsulawesi', FS_KEY='AIzaSyDO3IzpBcP9VT5cL7QT4RlK_a9jp
 const WOW_FIELDS=['id','timestamp','mds','area','store','storePasangan','tanggalVisit','avail','unavail','needsval','items','keterangan','picValidated','statusToko','statusSynced','mdsAsli'];
 /* Cache kunjungan di localStorage: kunci khusus (satu origin dipakai semua repo hanatrial.github.io).
    Cache segar (< 6 jam) -> hanya ambil dokumen baru; selain itu baca penuh. Nama item dikompres lewat kamus. */
-const WOW_CK='wowds_logs_cache_v1';
+/* Versi cache data visit. Naikkan angkanya kalau ada visit LAMA yang diubah langsung di database (mis. isi AV): cache hanya menarik visit baru, jadi tanpa ini perubahan baru tampil setelah 6 jam. */
+const WOW_CK='wowds_logs_cache_v2';
 function wowCacheRead(){try{return JSON.parse(localStorage.getItem(WOW_CK)||'null');}catch(e){return null;}}
 function wowCacheEnc(docs,dict){
   const ix=new Map(dict.map((n,i)=>[n,i]));
