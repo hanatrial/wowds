@@ -241,5 +241,23 @@
   "field": "status",
   "dari": "Existing",
   "ke": "Cancel"
+ },
+ {
+  "tgl": "2026-10-27",
+  "toko": "ANA YULIANG/JL. POROS SINJAI - KAJANG SAMATARING D",
+  "so": "SULA-GT-WOW-7",
+  "pic": "WAFI",
+  "field": "status",
+  "dari": "Existing",
+  "ke": "Cancel"
+ },
+ {
+  "tgl": "2026-10-27",
+  "toko": "HARAPAN, TK /JL JEND SUDIRMAN",
+  "so": "SULA-GT-WOW-497",
+  "pic": "BINCHA",
+  "field": "kab",
+  "dari": "Enrekang - Palopo",
+  "ke": "Enrekang - Pare"
  }
 ]
