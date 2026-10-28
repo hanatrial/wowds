@@ -304,5 +304,14 @@
   "field": "kab",
   "dari": "22 kabupaten lama",
   "ke": "nilai Sheet (diimpor atas permintaan user; kab '0' KIOS IDOLA KITA dikembalikan ke Manado)"
+ },
+ {
+  "tgl": "2026-10-28",
+  "toko": "(import Sheet)",
+  "so": "-",
+  "pic": "-",
+  "field": "kab",
+  "dari": "kabupaten salah (Sinjai/Pohuwato) di 22 toko",
+  "ke": "dibetulkan di Sheet lalu diimpor; kab '0' TOKO UD NANDA dikosongkan"
  }
 ]
