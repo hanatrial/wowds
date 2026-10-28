@@ -237,6 +237,10 @@ async function tarikPenjualan() {
   }
 
   // ── pengaman ─────────────────────────────────────────────────────────────
+  // kabupaten wajib untuk toko yang punya PIC (kecuali Cancel): hanya peringatan, import tetap jalan
+  const tanpaKab = urutan.filter((e) => e.pic && !e.kab && e.st !== 'Cancel');
+  if (tanpaKab.length) console.log(`PERINGATAN: ${tanpaKab.length} toko ber-PIC belum ada kabupatennya di Sheet — ${tanpaKab.slice(0, 8).map((e) => `${e.so || '?'} ${e.name}`).join('; ')}${tanpaKab.length > 8 ? '…' : ''}`);
+
   if (urutan.length < 400) throw new Error(`Toko cuma ${urutan.length} (batas minimal 400) — dibatalkan`);
   if (picUrut.length < 8) throw new Error(`PIC cuma ${picUrut.length} (batas minimal 8) — dibatalkan`);
   for (const pic of picUrut) {

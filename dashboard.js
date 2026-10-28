@@ -4342,6 +4342,7 @@ async function saveToko(){
   const d={type:'toko',pic:v('tp-pic'),kab:v('tp-kab'),kode1:v('tp-kode1'),nama1:v('tp-nama1'),kode2:v('tp-kode2'),nama2:v('tp-nama2'),distributor:v('tp-dist'),status:v('tp-status'),ts:Date.now()};
   const m=tpEl('tp-msg');
   const miss=[['pic','PIC'],['kab','Kabupaten'],['distributor','Distributor Penerima'],['status','Status']].filter(([k])=>!d[k]).map(x=>x[1]);
+  if(!d.kab)tpEl('tp-kab').focus();   // kabupaten wajib: arahkan ke kolomnya
   if(miss.length){m.style.color='#B5502A';m.textContent='Wajib diisi: '+miss.join(', ');return;}
   if(!TP_FOTO[0]){m.style.color='#B5502A';m.textContent='Foto Pajangan 1 wajib diisi.';return;}
   if(!d.kode1&&!d.kode2){m.style.color='#B5502A';m.textContent='Isi minimal Kode Dist 1 atau Kode Dist 2.';return;}
