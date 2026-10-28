@@ -286,5 +286,14 @@
   "field": "kab",
   "dari": "BANGGAI",
   "ke": "Banggai"
+ },
+ {
+  "tgl": "2026-10-28",
+  "toko": "Fatur Jaya",
+  "so": "SULA-GT-WOW-509",
+  "pic": "FATUR",
+  "field": "toko-baru",
+  "dari": "",
+  "ke": "New"
  }
 ]
