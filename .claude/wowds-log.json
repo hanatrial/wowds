@@ -322,5 +322,14 @@
   "field": "penjualan",
   "dari": "10 toko omzet nol/berbeda dari import sebelumnya",
   "ke": "data penjualan Sheet terbaru; kab '0' TOKO UD NANDA tetap kosong"
+ },
+ {
+  "tgl": "2026-10-28",
+  "toko": "ANA YULIANG/JL. POROS SINJAI - KAJANG SAMATARING D",
+  "so": "SULA-GT-WOW-7",
+  "pic": "WAFI",
+  "field": "status",
+  "dari": "Cancel",
+  "ke": "Existing"
  }
 ]
