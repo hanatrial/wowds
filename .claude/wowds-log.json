@@ -295,5 +295,14 @@
   "field": "toko-baru",
   "dari": "",
   "ke": "New"
+ },
+ {
+  "tgl": "2026-10-28",
+  "toko": "(import Sheet)",
+  "so": "-",
+  "pic": "-",
+  "field": "kab",
+  "dari": "22 kabupaten lama",
+  "ke": "nilai Sheet (diimpor atas permintaan user; kab '0' KIOS IDOLA KITA dikembalikan ke Manado)"
  }
 ]
