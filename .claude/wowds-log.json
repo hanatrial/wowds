@@ -349,5 +349,14 @@
   "field": "status",
   "dari": "Existing",
   "ke": "Cancel"
+ },
+ {
+  "tgl": "2026-10-30",
+  "toko": "NYOMAN/KAWANGKOAN BARU",
+  "so": "SULA-GT-WOW-282",
+  "pic": "HENDRY",
+  "field": "status",
+  "dari": "Cancel (master lama)",
+  "ke": "Existing (impor dari Sheet, status di Sheet memang sudah Existing)"
  }
 ]
