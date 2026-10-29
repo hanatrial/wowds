@@ -331,5 +331,23 @@
   "field": "status",
   "dari": "Cancel",
   "ke": "Existing"
+ },
+ {
+  "tgl": "2026-10-30",
+  "toko": "TOKO 81",
+  "so": "SULA-GT-WOW-185",
+  "pic": "FATUR",
+  "field": "status",
+  "dari": "Existing",
+  "ke": "Cancel"
+ },
+ {
+  "tgl": "2026-10-30",
+  "toko": "TIGA SAUDARA TK/JL SISWA LING 4",
+  "so": "SULA-GT-WOW-281",
+  "pic": "HENDRY",
+  "field": "status",
+  "dari": "Existing",
+  "ke": "Cancel"
  }
 ]
