@@ -358,5 +358,23 @@
   "field": "status",
   "dari": "Cancel (master lama)",
   "ke": "Existing (impor dari Sheet, status di Sheet memang sudah Existing)"
+ },
+ {
+  "tgl": "2026-10-31",
+  "toko": "TOKO 81",
+  "so": "SULA-GT-WOW-185",
+  "pic": "FATUR",
+  "field": "status",
+  "dari": "Cancel (master lama)",
+  "ke": "Existing (impor dari Sheet — Sheet sudah Existing, tulisan Cancel 30 Okt dibalik)"
+ },
+ {
+  "tgl": "2026-10-31",
+  "toko": "TIGA SAUDARA TK/JL SISWA LING 4",
+  "so": "SULA-GT-WOW-281",
+  "pic": "HENDRY",
+  "field": "status",
+  "dari": "Cancel (master lama)",
+  "ke": "Existing (impor dari Sheet — Sheet sudah Existing, tulisan Cancel 30 Okt dibalik)"
  }
 ]
